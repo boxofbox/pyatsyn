@@ -4,6 +4,9 @@ import soundfile as sf
 from atsa_utils import db_to_amp, next_power_of_2, compute_frames
 from atsa_windows import make_fft_window, window_norm
 
+# TODO: PLOTTING UTILITIES FOR DEBUG ONLY - DELETE LATER
+import matplotlib.pyplot as plt
+
 def analyze (   in_file, 
                 out_snd,
                 start = 0.0, # analysis start point (in seconds)
@@ -63,7 +66,7 @@ def analyze (   in_file,
         # default fft size is next power of 2
         N = next_power_of_2(M)
 
-    # instantiate window
+    # instantiate window    
     window = force_window
     if window is None:
         if window_type is None:
@@ -72,7 +75,7 @@ def analyze (   in_file,
     
     norm = window_norm(window)   
     hop = int(M * hop_size)
-    frames = compute_frames(total_samps, hop, st, nd)
+    frames = compute_frames(total_samps, hop, st, nd)    
 
     # magic number for fft frequencies (frequency resolution)
     fft_mag = sample_rate / N
@@ -93,7 +96,7 @@ def analyze (   in_file,
     highest_bin = int(h_frq / fft_mag)
 
     # used to store central points of the windows
-    win_samps = [0 for _ in range(frames)]
+    win_samps = np.zeros(frames, "int64")
     # storage for lists of peaks
     analysis_frames = [None for _ in range(frames)]
     # central point of the window
@@ -101,7 +104,7 @@ def analyze (   in_file,
     # first point in fft buffer to write
     first_point = N - M_over_2
     # set file pointer half a window from the first sample
-    in_ptr = st - M_over_2
+    fil_ptr = st - M_over_2
 
     # minimum SMR
     min_smr = SMR_threshold
@@ -117,88 +120,73 @@ def analyze (   in_file,
         print(f"frames = {frames}")
         print(f"M = {M}; N = {N}")
         print(f"Beginning FFT -> peak tracking analysis...")
+        report_every_x_percent = 10
+    report_flag = 0
 
     for frame_n in range(frames):
-        pass
+        if verbose:
+            done = frame_n * 100.0 / frames
+            if done > report_flag:
+                print(f"{done}% complete (tracking)")
+                report_flag += report_every_x_percent
+        
+        # store in_sound sample at the middle of the window
+        win_samps[frame_n] = fil_ptr + M_over_2
+
+        ###################
+        # WINDOWING + FFT #
+        ###################
+
+        # padding for window ranges that are out of the input file
+        front_pad = 0
+        back_pad = 0
+        if fil_ptr < 0:
+            front_pad = -fil_ptr
+        if fil_ptr + M >= in_sound.size:
+            back_pad = in_sound.size - fil_ptr
+        
+        data = np.zeros(N,"float64")
+        data[front_pad:M-back_pad] = np.multiply(
+                                            window[front_pad:M-back_pad], 
+                                            in_sound[fil_ptr+front_pad:fil_ptr+M-back_pad]
+                                            )
+
+        # shift window by half of M so that phases in `data` are relatively accurate to midpoints
+        data = np.roll(data, -M_over_2)
+
+        # update file pointer
+        fil_ptr += hop
+
+        # get the DFT
+        fd = np.fft.fft(data)
+
+        ##################
+        # PEAK DETECTION # TODO
+        ##################
+
+        #################
+        # PEAK TRACKING # TODO
+        #################        
+
+    ########################
+    # INITIALIZE ATS SOUND # TODO
+    ########################
+
+    ############
+    # OPTIMIZE # TODO
+    ############
+
+    #####################
+    # RESIDUAL ANALYSIS # TODO
+    #####################
+
 
 
 if __name__ == '__main__':
     analyze('../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True)
 
 
-# 	 (sound (set snd (make-ats-sound :name (string snd))))
 
-# 	 ;;; fft structure
-# 	 (fft-struct (make-ats-fft :size N
-# 				   :rate file-sampling-rate
-# 				   :fdr (make-double-float-array N :initial-element 0.0)
-# 				   :fdi (make-double-float-array N :initial-element 0.0)))
-
-
-# 	 (norm (window-norm window))
-# 	 ;;; hop in samples
-# 	 (hop (floor (* M hop-size)))	
-#  	 ;;; number of analysis frames
-# 	 (frames (compute-frames total-samps hop st nd))
-# 	 ;;; we keep sample numbers of central points of the windows
-# 	 (win-samps (make-array frames :initial-element 0))
-# 	 ;;; magic number for fft frequencies (frquency resolution)
-# 	 (fft-mag (double-float (/ file-sampling-rate N)))
-# 	 ;;; lowest frequency to analyze
-# 	 (l-Frq (if (>= lowest-frequency 0.0)
-# 		    lowest-frequency 0.0))
-# 	 ;;; highest frequency to analyze
-# 	 (h-Frq (if (<= highest-frequency (/ file-sampling-rate 2)) 
-# 		    highest-frequency 
-# 		  (floor file-sampling-rate 2)))
-# 	 ;;; highest bin to read	
-# 	 (lowest-bin (floor l-Frq fft-mag))
-# 	 ;;; highest bin to read	
-# 	 (highest-bin (floor h-Frq fft-mag))
-# 	 ;;; Arrays for data
-# 	 ;;; array of lists for peaks
-# 	 (ana-frames (make-array frames :element-type 'list :initial-element nil))
-# 	 ;;; various vars
-# 	 ;;; timer
-# 	 (tmp 0.0)
-# 	 (smp 0)
-# 	 ;;; central point of the window
-# 	 (M-over-2 (floor (- M 1) 2))
-# 	 ;;; first point in fft buffer where to write
-# 	 (first-point (- N M-over-2))
-# 	 ;;; set file pointer half a window from the first sample
-# 	 (filptr (- st M-over-2))
-# 	 ;;; minimum SMR 
-# 	 (min-smr (if SMR-threshold SMR-threshold 0.0))
-# 	 (n-partials 0)
-# 	 (tracks nil)
-# 	 (peaks nil)
-# 	 (unmatched-peaks nil))
-#     ;;; tell user we start tracking partials
-#     (format t "frames= ~D " frames)
-#     (format t "M = ~D N = ~D~%" M N)
-#     (format t "tracking...~%")
-#     ;;; Main loop
-#     (loop for frame-n from 0 below frames do
-# 	;;; clear fft arrays
-#       (clear-array (ats-fft-fdr fft-struct))
-#       (clear-array (ats-fft-fdi fft-struct))
-# 	;;; multiply by window
-#       (loop for k from 0 below M do
-# 	(if (>= filptr 0) 
-# 	    (setf (aref (ats-fft-fdr fft-struct) (mod (+ k first-point) N)) 
-# 		  (* (aref window k) (ina filptr fil))))
-# 	(incf filptr))
-#       ;;; note that after the loop filptr=M and not M-1
-#       ;;; the sample at the middle of the window is:
-#       (setf smp (- filptr M-over-2 1))
-#       (if debug (format t "smp=~d " smp))
-#       ;;; we keep sample numbers of window midpoints in an array
-#       (setf (aref win-samps frame-n) smp)
-#         ;;; set timer
-#       (setf tmp (double-float (/ (- smp st) file-sampling-rate)))
-#         ;;; get the dft 
-#       (fft  (ats-fft-fdr fft-struct) (ats-fft-fdi fft-struct) (ats-fft-size fft-struct) 1)
 #       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #       ;;; Peak Detection:
 #       ;;; get peaks (amplitudes normalized by window norm)
@@ -290,45 +278,5 @@ if __name__ == '__main__':
 #       (compute-residual fil residual sound win-samps file-sampling-rate verbose)
 #       (residual-analysis residual sound :par-energy par-energy :verbose verbose :debug debug :equalize t))
 #     (close-input fil)))
-
-
-# #|
-
-# ;;; cl
-# (tracker "~/Snd/Dsp/clarinet.aif" 'cl
-# 	 :start 0.0
-# 	 :hop-size 1/4
-# 	 :lowest-frequency 100.0
-# 	 :highest-frequency 20000.0
-# 	 :frequency-deviation 0.05
-# 	 :lowest-magnitude (db-amp -70)
-# 	 :SMR-continuity 0.7
-# 	 :track-length 6
-# 	 :min-segment-length 3
-# 	 :residual "/zap/cl-res.snd"
-# 	 :verbose t
-# 	 :debug nil)
-
-# ;;; crt-cs6
-# (tracker "~/Snd/Tmp/crt-cs6.snd" 'crt-cs6
-# 	 :start 0.1
-# 	 :lowest-frequency 500.0
-# 	 :highest-frequency 20000.0
-# 	 :frequency-deviation 0.15
-# 	 :window-cycles 4
-# 	 :window-type 'blackman-harris-4-1
-# 	 :hop-size 1/8
-# 	 :lowest-magnitude (db-amp -90)
-# 	 :amp-threshold -80
-# 	 :track-length 6
-# 	 :min-segment-length 3
-# 	 :last-peak-contribution 0.5
-# 	 :SMR-continuity 0.3
-# 	 :residual "/zap/crt-cs6-res.snd"
-# 	 :verbose nil
-# 	 :debug nil
-# 	 :optimize t)
-
-# |#
 
 # """
