@@ -6,6 +6,7 @@ from numpy import inf, ceil, log2, pi, log10
 ###################
 
 TWO_PI = 2 * pi
+MAX_DB_SPL = 100.0
 
 
 ###################
@@ -25,6 +26,9 @@ def amp_to_db(amp):
     convert amplitude to decibels
     '''
     return 20 * log10(amp)
+
+def amp_to_db_spl(amp):
+    return MAX_DB_SPL + amp_to_db(amp)
 
 def next_power_of_2(num):
     '''

@@ -169,6 +169,7 @@ def analyze (   in_file,
         
         if peaks:
 
+            # masking curve evaluation using a critical band based model
             evaluate_smr(peaks)
 
             #################
@@ -190,7 +191,7 @@ def analyze (   in_file,
 
 
 if __name__ == '__main__':
-    analyze('../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True)
+    analyze('../sample_sounds/sine440.wav','cougar.ats', debug=True, verbose=True)
 
 
 
