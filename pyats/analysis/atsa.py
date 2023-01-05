@@ -3,6 +3,8 @@ import soundfile as sf
 
 from atsa_utils import db_to_amp, next_power_of_2, compute_frames
 from atsa_windows import make_fft_window, window_norm
+from atsa_peak_detect import peak_detection
+from atsa_critical_bands import evaluate_smr
 
 # TODO: PLOTTING UTILITIES FOR DEBUG ONLY - DELETE LATER
 import matplotlib.pyplot as plt
@@ -75,7 +77,9 @@ def analyze (   in_file,
     
     norm = window_norm(window)   
     hop = int(M * hop_size)
-    frames = compute_frames(total_samps, hop, st, nd)    
+    # central point of the window
+    M_over_2 = (M - 1) // 2
+    frames = compute_frames(total_samps, M_over_2, hop, st, nd)    
 
     # magic number for fft frequencies (frequency resolution)
     fft_mag = sample_rate / N
@@ -99,8 +103,6 @@ def analyze (   in_file,
     win_samps = np.zeros(frames, "int64")
     # storage for lists of peaks
     analysis_frames = [None for _ in range(frames)]
-    # central point of the window
-    M_over_2 = (M - 1) // 2
     # first point in fft buffer to write
     first_point = N - M_over_2
     # set file pointer half a window from the first sample
@@ -110,11 +112,6 @@ def analyze (   in_file,
     min_smr = SMR_threshold
     if min_smr is None:
         min_smr = 0.0
-
-    n_partials = 0
-    tracks = None
-    peaks = None
-    unmatched_peaks = None
 
     if verbose:
         print(f"frames = {frames}")
@@ -143,8 +140,8 @@ def analyze (   in_file,
         if fil_ptr < 0:
             front_pad = -fil_ptr
         if fil_ptr + M >= in_sound.size:
-            back_pad = in_sound.size - fil_ptr
-        
+            back_pad = fil_ptr + M - in_sound.size
+
         data = np.zeros(N,"float64")
         data[front_pad:M-back_pad] = np.multiply(
                                             window[front_pad:M-back_pad], 
@@ -159,14 +156,24 @@ def analyze (   in_file,
 
         # get the DFT
         fd = np.fft.fft(data)
-
+        
         ##################
-        # PEAK DETECTION # TODO
+        # PEAK DETECTION #
         ##################
 
-        #################
-        # PEAK TRACKING # TODO
-        #################        
+        fftfreqs = np.fft.fftfreq(fd.size, 1 / sample_rate)
+        fftmags = np.absolute(fd) * 2.0 * norm # multiply by 2.0 to account for symmetric negative frequencies
+        fftphases = np.angle(fd)
+
+        peaks = peak_detection(fftfreqs, fftmags, fftphases, sample_rate, lowest_bin, highest_bin, lowest_magnitude, norm)         
+        
+        if peaks:
+
+            evaluate_smr(peaks)
+
+            #################
+            # PEAK TRACKING # TODO
+            #################        
 
     ########################
     # INITIALIZE ATS SOUND # TODO
