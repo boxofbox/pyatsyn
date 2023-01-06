@@ -5,6 +5,7 @@ from atsa_utils import db_to_amp, next_power_of_2, compute_frames
 from atsa_windows import make_fft_window, window_norm
 from atsa_peak_detect import peak_detection
 from atsa_critical_bands import evaluate_smr
+from atsa_peak_tracking import update_tracks, peak_tracking
 
 # TODO: PLOTTING UTILITIES FOR DEBUG ONLY - DELETE LATER
 import matplotlib.pyplot as plt
@@ -113,6 +114,9 @@ def analyze (   in_file,
     if min_smr is None:
         min_smr = 0.0
 
+    tracks = []
+    n_partials = 0
+
     if verbose:
         print(f"frames = {frames}")
         print(f"M = {M}; N = {N}")
@@ -166,15 +170,48 @@ def analyze (   in_file,
         fftphases = np.angle(fd)
 
         peaks = peak_detection(fftfreqs, fftmags, fftphases, sample_rate, lowest_bin, highest_bin, lowest_magnitude, norm)         
-        
-        if peaks:
 
+        if peaks:
             # masking curve evaluation using a critical band based model
             evaluate_smr(peaks)
 
-            #################
-            # PEAK TRACKING # TODO
-            #################        
+        #################
+        # PEAK TRACKING # # IN PROGRESS
+        #################
+
+        # only if was at least two frames
+        if frame_n > 0:
+            if tracks:
+                tracks = update_tracks(tracks, track_length, frame_n, analysis_frames, last_peak_contribution)
+            else:
+                tracks = [pk.clone() for pk in analysis_frames[frame_n - 1]]
+
+        if len(tracks) > 0:
+            unmatched_old, unmatched_new = peak_tracking(tracks, peaks, frequency_deviation, SMR_continuity)
+
+            # kill unmatched peaks from previous frame by adding a silent peak in this frame (death trajectory)
+            for pk in unmatched_old:
+                new_pk = pk.clone()
+                new_pk.amp = 0.0
+                new_pk.smr = 0.0
+                peaks.append(new_pk)
+            
+            # set track and add a silent copy of new unmatched peak to previous frame (birth trajectory)
+            for pk in unmatched_new:
+                pk.track = n_partials
+                n_partials += 1
+                new_pk = pk.clone()
+                new_pk.amp = 0.0
+                new_pk.smr = 0.0
+                analysis_frames[frame_n - 1].append(new_pk)
+        else:
+            # otherwise give all peaks a track number
+            for pk in peaks:
+                pk.track = n_partials
+                n_partials += 1                
+
+        # store peaks for this current frame
+        analysis_frames[frame_n] = peaks
 
     ########################
     # INITIALIZE ATS SOUND # TODO

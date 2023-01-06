@@ -9,6 +9,7 @@ ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
                                 6400.0, 7700.0, 9500.0, 12000.0, 15500.0, 
                                 20000.0], dtype="float64")
 
+
 def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50, debug = False):
     """
     evaluates masking values (SMR) for peaks in list <peaks>
@@ -42,6 +43,7 @@ def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50, debug = False):
                 print(f"maskee\tsmr: {maskee.smr}; db_spl: {maskee.db_spl}; adjusted smr -> {maskee.db_spl - maskee.smr}")
             maskee.smr = maskee.db_spl - maskee.smr
 
+
 def frq_to_bark(freq):
     if freq <= 0.0:
         return 0.0
@@ -55,11 +57,13 @@ def frq_to_bark(freq):
         high = ATS_CRITICAL_BAND_EDGES[band+1]
         return 1 + band + abs(log10(freq/low) / log10(low/high))
 
+
 def find_band(freq):
     for ind in range(len(ATS_CRITICAL_BAND_EDGES)-2,0,-1):
         if freq > ATS_CRITICAL_BAND_EDGES[ind]:
             return ind
     return 0
+
 
 def compute_slope_r(masker_amp_db, slope_l = -27.0):
     """
