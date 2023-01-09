@@ -5,12 +5,12 @@ from atsa_utils import db_to_amp, next_power_of_2, compute_frames
 from atsa_windows import make_fft_window, window_norm
 from atsa_peak_detect import peak_detection
 from atsa_critical_bands import evaluate_smr
-from atsa_peak_tracking import update_tracks, peak_tracking
+from atsa_peak_tracking import update_track_averages, peak_tracking
 
 # TODO: PLOTTING UTILITIES FOR DEBUG ONLY - DELETE LATER
 import matplotlib.pyplot as plt
 
-def analyze (   in_file, 
+def tracker (   in_file, 
                 out_snd,
                 start = 0.0, # analysis start point (in seconds)
                 duration = None, # max duration to analyze (in seconds) or 'None' if analyze to end
@@ -23,6 +23,7 @@ def analyze (   in_file,
                 fft_size = None, # None, or force an fft size
                 lowest_magnitude = db_to_amp(-60),
                 track_length = 3,
+                min_gap_length = 3,
                 min_segment_length = 3,
                 last_peak_contribution = 0.0,
                 SMR_continuity = 0.0,
@@ -113,9 +114,12 @@ def analyze (   in_file,
     min_smr = SMR_threshold
     if min_smr is None:
         min_smr = 0.0
+    
+    # guarantee that we have a valid minimum gap length
+    if min_gap_length < 1:
+        min_gap_length = 1
 
     tracks = []
-    n_partials = 0
 
     if verbose:
         print(f"frames = {frames}")
@@ -169,49 +173,27 @@ def analyze (   in_file,
         fftmags = np.absolute(fd) * 2.0 * norm # multiply by 2.0 to account for symmetric negative frequencies
         fftphases = np.angle(fd)
 
-        peaks = peak_detection(fftfreqs, fftmags, fftphases, sample_rate, lowest_bin, highest_bin, lowest_magnitude, norm)         
+        peaks = peak_detection(fftfreqs, fftmags, fftphases, lowest_bin, highest_bin, lowest_magnitude, norm)         
 
         if peaks:
             # masking curve evaluation using a critical band based model
             evaluate_smr(peaks)
 
         #################
-        # PEAK TRACKING # # IN PROGRESS
+        # PEAK TRACKING #
         #################
 
-        # only if was at least two frames
-        if frame_n > 0:
-            if tracks:
-                tracks = update_tracks(tracks, track_length, frame_n, analysis_frames, last_peak_contribution)
-            else:
-                tracks = [pk.clone() for pk in analysis_frames[frame_n - 1]]
-
         if len(tracks) > 0:
-            unmatched_old, unmatched_new = peak_tracking(tracks, peaks, frequency_deviation, SMR_continuity)
-
-            # kill unmatched peaks from previous frame by adding a silent peak in this frame (death trajectory)
-            for pk in unmatched_old:
-                new_pk = pk.clone()
-                new_pk.amp = 0.0
-                new_pk.smr = 0.0
-                peaks.append(new_pk)
-            
-            # set track and add a silent copy of new unmatched peak to previous frame (birth trajectory)
-            for pk in unmatched_new:
-                pk.track = n_partials
-                n_partials += 1
-                new_pk = pk.clone()
-                new_pk.amp = 0.0
-                new_pk.smr = 0.0
-                analysis_frames[frame_n - 1].append(new_pk)
+            update_track_averages(tracks, track_length, frame_n, analysis_frames, last_peak_contribution)
+            peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, frequency_deviation, SMR_continuity, min_gap_length)
         else:
-            # otherwise give all peaks a track number
-            for pk in peaks:
-                pk.track = n_partials
-                n_partials += 1                
+            # otherwise instantiate tracks with the current frame's peaks, if any
+            for pk_ind, pk in enumerate(peaks):
+                pk.track = pk_ind
+            tracks = [pk.clone() for pk in peaks]
 
         # store peaks for this current frame
-        analysis_frames[frame_n] = peaks
+        analysis_frames[frame_n] = peaks    
 
     ########################
     # INITIALIZE ATS SOUND # TODO
@@ -228,100 +210,4 @@ def analyze (   in_file,
 
 
 if __name__ == '__main__':
-    analyze('../sample_sounds/sine440.wav','cougar.ats', debug=True, verbose=True)
-
-
-
-#       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#       ;;; Peak Detection:
-#       ;;; get peaks (amplitudes normalized by window norm)
-#       ;;; list of peaks is sorted by frequency
-#       (setf peaks (peak-detection fft-struct 
-# 				  :lowest-bin lowest-bin 
-# 				  :highest-bin highest-bin 
-# 				  :lowest-magnitude lowest-magnitude 
-# 				  :norm norm))
-#       ;;; process peaks
-#       (when peaks 
-# 	;;; evaluate masking values (SMR) of peaks
-# 	(evaluate-smr peaks)
-# 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-# 	;;; Peak Tracking:
-# 	;;; try to match peaks
-# 	;;; only if we have at least 2 frames
-# 	;;; and if we have active tracks 
-# 	(if (and (> frame-n 0) 
-# 		 (setf tracks (update-tracks tracks track-length frame-n ana-frames last-peak-contribution)))
-# 	    (let ((cpy-peak nil))
-#         ;;; track peaks and get leftover
-# 	      (setf unmatched-peaks (peak-tracking (sort (copy-seq tracks) #'> :key #'ats-peak-smr) 
-# 						   peaks frequency-deviation SMR-continuity))
-#  	;;; kill unmatched peaks from previous frame
-# 	      (dolist (k (first unmatched-peaks))
-# 	      ;;; we copy the peak into this frame but with amp 0.0 
-# 	      ;;; this represents our death trajectory
-# 		(setf cpy-peak (copy-ats-peak k)
-# 		      (ats-peak-amp cpy-peak) 0.0
-# 		      (ats-peak-smr cpy-peak) 0.0)
-# 		(push cpy-peak peaks))
-#           ;;; give birth to peaks from new frame
-# 	      (dolist (k (second unmatched-peaks))
-# 	  ;;; set track number of unmatched peaks
-# 		(setf (ats-peak-track k) n-partials)
-# 		(incf n-partials)
-# 	      ;;; we copy the peak into the previous frame but with amp 0.0 
-# 	      ;;; this represents our born trajectory
-# 		(setf cpy-peak (copy-ats-peak k)
-# 		      (ats-peak-amp cpy-peak) 0.0
-# 		      (ats-peak-smr cpy-peak) 0.0)
-# 		(push cpy-peak (aref ana-frames (1- frame-n)))
-# 		(push (copy-ats-peak k) tracks)))
-# 	    ;;; give number to all peaks
-# 	  (dolist (k (sort (copy-seq peaks) #'< :key #'ats-peak-frq))
-# 	    (setf (ats-peak-track k) n-partials)
-# 	    (incf n-partials)))
-# 	(setf (aref ana-frames frame-n) peaks))
-#       ;;; update file pointer
-#       (setf filptr (+ (- filptr M) hop))
-#       (if verbose (format t "<Frame:~d Time:~4,3F Tracks:~4,3F> " frame-n tmp n-partials)))
-#     ;;; Initialize ATS sound
-#     (init-sound sound 
-# 		:sampling-rate file-sampling-rate
-# 		:frame-size hop
-# 		:window-size M
-# 		:frames frames 
-# 		:duration file-duration 
-# 		:partials n-partials)
-#     ;;; and fill it up with data
-#     (loop for k from 0 below n-partials do
-#       (loop for frame from 0 below frames do
-# 	(let ((pe (find k (aref ana-frames frame) :key #'ats-peak-track)))
-# 	  (if pe
-# 	      (setf (aref (aref (ats-sound-amp sound) k) frame)(double-float (ats-peak-amp pe))
-# 		    (aref (aref (ats-sound-frq sound) k) frame)(double-float (ats-peak-frq pe))
-# 		    (aref (aref (ats-sound-pha sound) k) frame)(double-float (ats-peak-pha pe))))
-# 	  ;;; set time anyways
-# 	  (setf (aref (aref (ats-sound-time sound) k) frame)
-# 		(double-float (/ (- (aref win-samps frame) st) file-sampling-rate))))))
-#     ;;; finally optimize and declare new sound in ATS
-#     (if optimize 
-# 	(optimize-sound sound
-# 			:min-frq lowest-frequency 
-# 			:max-frq highest-frequency
-# 			:min-length (if min-segment-length
-# 					min-segment-length
-# 				      *ats-min-segment-length*)
-# 			:amp-threshold (if amp-threshold
-# 					   amp-threshold
-# 					 *ats-amp-threshold*)
-# 			:verbose verbose))
-#     (if verbose (format t "Partials: ~d Frames: ~d~%" (ats-sound-partials sound)(ats-sound-frames sound)))
-#     ;;; register sound in the system
-#     (add-sound sound)
-#   ;;; now get the residual
-#     (when residual
-#       (compute-residual fil residual sound win-samps file-sampling-rate verbose)
-#       (residual-analysis residual sound :par-energy par-energy :verbose verbose :debug debug :equalize t))
-#     (close-input fil)))
-
-# """
+    tracker('../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True)

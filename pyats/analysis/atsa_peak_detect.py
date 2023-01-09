@@ -1,9 +1,9 @@
-from numpy import zeros, pi
+from numpy import pi
 
 from atsa_utils import amp_to_db, db_to_amp, TWO_PI
 from atsa_struct import ats_peak
 
-def peak_detection (fftfreqs, fftmags, fftphases, sample_rate, 
+def peak_detection (fftfreqs, fftmags, fftphases, 
                     lowest_bin=None, highest_bin=None, lowest_magnitude=None, norm=1.0):
     
     peaks = []
@@ -32,9 +32,9 @@ def peak_detection (fftfreqs, fftmags, fftphases, sample_rate,
             offset, pk.amp = parabolic_interp(left, center, right)
             pk.frq = frqs[k] + (fq_scale * offset)
             if (offset > 0):
-                pk.pha = phase_interp(phs[k-1], phs[k], offset)
+                pk.pha = phase_correct(phs[k-1], phs[k], offset)
             else:
-                pk.pha = phase_interp(phs[k], phs[k+1], offset)
+                pk.pha = phase_correct(phs[k], phs[k+1], offset)
             peaks.append(pk)
 
     return peaks
@@ -55,7 +55,7 @@ def parabolic_interp(alpha, beta, gamma):
     height = db_to_amp(dB_beta - (0.25 * dB_alpha_minus_gamma * offset))
     return offset, height
 
-def phase_interp(left, right, offset):
+def phase_correct(left, right, offset):
     """
     angular interpolation
     """  
