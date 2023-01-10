@@ -48,7 +48,7 @@ class ats_sound:
         self.frqmax = 0.0
         self.frq_av = zeros(partials,"float64")
         self.amp_av = zeros(partials,"float64")
-        self.time = zeros([partials,frames],"float64")
+        self.time = zeros(frames,"float64")
         self.frq = zeros([partials,frames],"float64")
         self.amp = zeros([partials,frames],"float64")
         self.pha = None
