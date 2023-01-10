@@ -110,6 +110,3 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, 
         analysis_frames[frame_n] = new_frame
     
     return tracks
-
-def ats_save(ats_snd): # TODO
-    pass

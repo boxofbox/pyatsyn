@@ -1,7 +1,7 @@
 from numpy import pi
 
-from atsa_utils import amp_to_db, db_to_amp, TWO_PI
-from atsa_struct import ats_peak
+from .utils import amp_to_db, db_to_amp, TWO_PI
+from .struct import ats_peak
 
 def peak_detection (fftfreqs, fftmags, fftphases, 
                     lowest_bin=None, highest_bin=None, lowest_magnitude=None, norm=1.0):

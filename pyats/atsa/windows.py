@@ -1,7 +1,7 @@
 
 from numpy import zeros, cos, log, exp, sqrt, absolute
 
-from atsa_utils import TWO_PI
+from .utils import TWO_PI
 
 """
 All data coming form Harris' famous paper:

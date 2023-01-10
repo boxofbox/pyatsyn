@@ -1,12 +1,15 @@
 import numpy as np
 import soundfile as sf
 
-from atsa_utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks, ats_save
-from atsa_windows import make_fft_window, window_norm
-from atsa_peak_detect import peak_detection
-from atsa_critical_bands import evaluate_smr, ATS_CRITICAL_BANDS
-from atsa_peak_tracking import update_track_averages, peak_tracking
-from atsa_struct import ats_sound
+from ..io import ats_save
+
+from .utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
+from .windows import make_fft_window, window_norm
+from .peak_detect import peak_detection
+from .critical_bands import evaluate_smr, ATS_CRITICAL_BANDS
+from .peak_tracking import update_track_averages, peak_tracking
+from .struct import ats_sound
+
 
 # TODO: PLOTTING UTILITIES FOR DEBUG ONLY - DELETE LATER
 import matplotlib.pyplot as plt
@@ -235,4 +238,8 @@ def tracker (   in_file,
 
 
 if __name__ == '__main__':
-    ats_save(tracker('../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True))
+    ats_save(   tracker( '../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True), 
+                '/Users/jgl/Desktop/out.ats', 
+                save_phase=True, 
+                save_noise=False
+                )
