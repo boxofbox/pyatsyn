@@ -9,6 +9,8 @@ ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
                                 6400.0, 7700.0, 9500.0, 12000.0, 15500.0, 
                                 20000.0], dtype="float64")
 
+ATS_CRITICAL_BANDS = ATS_CRITICAL_BAND_EDGES.size
+
 
 def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50, debug = False):
     """

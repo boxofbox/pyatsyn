@@ -26,3 +26,6 @@ atsa.py
 
 IDEAS
 * online ATS, optimize dropping tracks, and improving default sorted state
+
+
+* for amp thresholding is it better to use amp_av or amp_max?

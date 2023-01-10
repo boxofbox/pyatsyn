@@ -1,11 +1,12 @@
 import numpy as np
 import soundfile as sf
 
-from atsa_utils import db_to_amp, next_power_of_2, compute_frames
+from atsa_utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks, ats_save
 from atsa_windows import make_fft_window, window_norm
 from atsa_peak_detect import peak_detection
-from atsa_critical_bands import evaluate_smr
+from atsa_critical_bands import evaluate_smr, ATS_CRITICAL_BANDS
 from atsa_peak_tracking import update_track_averages, peak_tracking
+from atsa_struct import ats_sound
 
 # TODO: PLOTTING UTILITIES FOR DEBUG ONLY - DELETE LATER
 import matplotlib.pyplot as plt
@@ -196,18 +197,42 @@ def tracker (   in_file,
         analysis_frames[frame_n] = peaks    
 
     ########################
-    # INITIALIZE ATS SOUND # TODO
+    # INITIALIZE ATS SOUND #
     ########################
 
-    ############
-    # OPTIMIZE # TODO
-    ############
+    if optimize:
+        tracks = optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, highest_frequency, lowest_frequency)
+
+    ats_snd = ats_sound(out_snd, sample_rate, hop, M, len(tracks), frames, ATS_CRITICAL_BANDS, duration, has_phase = True)
+
+    if optimize:
+        ats_snd.optimized = True
+        amp_max = 0.0
+        frq_max = 0.0
+        for tk in tracks:
+            ats_snd.frq_av[tk.track] = tk.frq
+            ats_snd.amp_av[tk.track] = tk.amp
+            amp_max = max(amp_max, tk.amp_max)
+            frq_max = max(frq_max, tk.frq_max)
+
+    # fill up with data
+    for frame_n in range(frames):
+        frame_time = (win_samps[frame_n] - st) / sample_rate
+        ats_snd.time[frame_n] = frame_time
+        for pk in analysis_frames[frame_n]:
+            ats_snd.frq[pk.track][frame_n] = pk.frq
+            ats_snd.amp[pk.track][frame_n] = pk.amp
+            ats_snd.pha[pk.track][frame_n] = pk.pha     
 
     #####################
-    # RESIDUAL ANALYSIS # TODO
+    # RESIDUAL ANALYSIS # IN PROGRESS
     #####################
 
+    if residual:
+        pass
+
+    return ats_snd
 
 
 if __name__ == '__main__':
-    tracker('../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True)
+    ats_save(tracker('../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True))
