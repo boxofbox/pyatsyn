@@ -1,18 +1,14 @@
 import numpy as np
 import soundfile as sf
 
-from ..io import ats_save
+from ats_io import ats_save
 
-from .utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
-from .windows import make_fft_window, window_norm
-from .peak_detect import peak_detection
-from .critical_bands import evaluate_smr, ATS_CRITICAL_BANDS
-from .peak_tracking import update_track_averages, peak_tracking
-from .struct import ats_sound
-
-
-# TODO: PLOTTING UTILITIES FOR DEBUG ONLY - DELETE LATER
-import matplotlib.pyplot as plt
+from atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
+from atsa.windows import make_fft_window, window_norm
+from atsa.peak_detect import peak_detection
+from atsa.critical_bands import evaluate_smr, ATS_CRITICAL_BANDS
+from atsa.peak_tracking import update_track_averages, peak_tracking
+from atsa.structure import ats_sound
 
 def tracker (   in_file, 
                 out_snd,
@@ -206,7 +202,7 @@ def tracker (   in_file,
     if optimize:
         tracks = optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, highest_frequency, lowest_frequency)
 
-    ats_snd = ats_sound(out_snd, sample_rate, hop, M, len(tracks), frames, ATS_CRITICAL_BANDS, duration, has_phase = True)
+    ats_snd = ats_sound(out_snd, sample_rate, hop, M, len(tracks), frames, ATS_CRITICAL_BANDS, analysis_duration, has_phase = True)
 
     if optimize:
         ats_snd.optimized = True
@@ -217,6 +213,8 @@ def tracker (   in_file,
             ats_snd.amp_av[tk.track] = tk.amp
             amp_max = max(amp_max, tk.amp_max)
             frq_max = max(frq_max, tk.frq_max)
+        ats_snd.amp_max = amp_max
+        ats_snd.frq_max = frq_max
 
     # fill up with data
     for frame_n in range(frames):
@@ -239,7 +237,7 @@ def tracker (   in_file,
 
 if __name__ == '__main__':
     ats_save(   tracker( '../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True), 
-                '/Users/jgl/Desktop/out.ats', 
+                '/Users/jgl/Desktop/cougar.ats', 
                 save_phase=True, 
                 save_noise=False
                 )

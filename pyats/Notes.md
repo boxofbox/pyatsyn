@@ -1,7 +1,12 @@
 REQUIRES LIBSNDFILE
-REMOVE UNECESSARY REQUIREMENTS
 
-in general, phase calculations are an issue
+atsa.util.py
+* for amp thresholding is it better to use amp_av or amp_max?
+
+atsa.peak_tracking.py
+* the way we are finding peaks to update averages in previous frames can be faster?
+* possible speed up in inital cost calculations if we sort and terminate once we're out of range?
+* in general, phase calculations are an issue
     * we are assuming interpolatable phase, because we are assuming continuous partials
     * however, there is not guarantee the truth is smoothly linear
     * thus later samples of phase via the fft may not adhere to this model
@@ -10,22 +15,23 @@ in general, phase calculations are an issue
     * however, interpolated phases (e.g., during gap fills) are not guarantee to be so
     * the are built based on the assumed correctness of the previously obtained fft phase
 
-atsa_peak_tracking.py
-* the way we are finding peaks to update averages in previous frames can be faster?
-* possible speed up in inital cost calculations if we sort and terminate once we're out of range?
-
-atsa_peak_detect.py
-* phase interpolation is not accurate
-
-atsa_windows.py
+atsa.windows.py
 * Potentially replace with scipy.signal.windows
 * TEST ALL WINDOWS
 
-atsa.py
+atsa_tracker.py
 * clean-up numpy imports
+
+
 
 IDEAS
 * online ATS, optimize dropping tracks, and improving default sorted state
 
 
-* for amp thresholding is it better to use amp_av or amp_max?
+1.0 TODO
+* ats_save
+* residual
+* test windows
+* clean-up/minimal imports
+* rebuild requirements.txt
+* test & deploy package mode

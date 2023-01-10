@@ -44,8 +44,8 @@ class ats_sound:
         self.dur = dur
         # Info deduced from analysis
         self.optimized = False
-        self.ampmax = 0.0
-        self.frqmax = 0.0
+        self.amp_max = 0.0
+        self.frq_max = 0.0
         self.frq_av = zeros(partials,"float64")
         self.amp_av = zeros(partials,"float64")
         self.time = zeros(frames,"float64")
