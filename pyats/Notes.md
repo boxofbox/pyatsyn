@@ -25,11 +25,12 @@ IDEAS
 
 
 1.0 TODO
-* residual
+* finish residual calc: gain, phaseless, st/en/dur
+* residual analysis
 * ats_save/ats_load & re-optimize
-* residual synthesis speed-up
-* double check phase interpolation scheme
+* double check phase interpolation scheme in peak_tracking.py
 * test windows
 * clean-up/minimal imports
 * rebuild requirements.txt
 * test & deploy package mode
+** how do we tell it we need libsndfile?

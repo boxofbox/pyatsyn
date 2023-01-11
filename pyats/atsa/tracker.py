@@ -106,8 +106,6 @@ def tracker (   in_file,
     win_samps = np.zeros(frames, "int64")
     # storage for lists of peaks
     analysis_frames = [None for _ in range(frames)]
-    # first point in fft buffer to write
-    first_point = N - M_over_2
     # set file pointer half a window from the first sample
     fil_ptr = st - M_over_2
 

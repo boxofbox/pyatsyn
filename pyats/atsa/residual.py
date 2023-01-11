@@ -25,6 +25,10 @@ def compute_residual(   residual_file,
 
     frame_size_range = frame_size
     
+    """
+    for cubic polynomial interpolation of phase
+    credit: McAulay & Quatieri (1986)
+    """
     alpha_beta_coeffs = zeros([2,2], "float64")
     alpha_beta_coeffs[0][0] = 3 / (frame_size**2)
     alpha_beta_coeffs[0][1] = -1 / frame_size
@@ -92,6 +96,6 @@ def compute_residual(   residual_file,
 
     return synthesized
 
-
+# TODO
 def residual_analysis(residual):
     pass
