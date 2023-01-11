@@ -238,7 +238,7 @@ def tracker (   in_file,
 
 
 if __name__ == '__main__':
-    filename = 'trumpetc3'
+    filename = 'cougar'
     ats_save(   tracker('../sample_sounds/'+filename+'.wav',
                         filename+'.ats', 
                         debug=True, 
