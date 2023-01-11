@@ -15,10 +15,6 @@ atsa.peak_tracking.py
     * however, interpolated phases (e.g., during gap fills) are not guarantee to be so
     * the are built based on the assumed correctness of the previously obtained fft phase
 
-atsa.windows.py
-* Potentially replace with scipy.signal.windows
-* TEST ALL WINDOWS
-
 atsa_tracker.py
 * clean-up numpy imports
 
@@ -29,8 +25,10 @@ IDEAS
 
 
 1.0 TODO
-* ats_save
 * residual
+* ats_save/ats_load & re-optimize
+* residual synthesis speed-up
+* double check phase interpolation scheme
 * test windows
 * clean-up/minimal imports
 * rebuild requirements.txt

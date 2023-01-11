@@ -9,6 +9,7 @@ from atsa.peak_detect import peak_detection
 from atsa.critical_bands import evaluate_smr, ATS_CRITICAL_BANDS
 from atsa.peak_tracking import update_track_averages, peak_tracking
 from atsa.structure import ats_sound
+from atsa.residual import compute_residual, residual_analysis
 
 def tracker (   in_file, 
                 out_snd,
@@ -29,7 +30,7 @@ def tracker (   in_file,
                 SMR_continuity = 0.0,
                 SMR_threshold = None,
                 amp_threshold = None,
-                residual = None,
+                residual_file = None,
                 par_energy = True,
                 optimize = True,
                 debug = False,
@@ -229,15 +230,22 @@ def tracker (   in_file,
     # RESIDUAL ANALYSIS # IN PROGRESS
     #####################
 
-    if residual:
-        pass
+    if residual_file:
+        synthesized_residual = compute_residual(residual_file, ats_snd, in_sound, st)
+        residual_analysis(synthesized_residual)
 
     return ats_snd
 
 
 if __name__ == '__main__':
-    ats_save(   tracker( '../sample_sounds/cougar.wav','cougar.ats', debug=True, verbose=True), 
-                '/Users/jgl/Desktop/cougar.ats', 
+    filename = 'trumpetc3'
+    ats_save(   tracker('../sample_sounds/'+filename+'.wav',
+                        filename+'.ats', 
+                        debug=True, 
+                        verbose=True, 
+                        residual_file='/Users/jgl/Desktop/'+filename+'_residual.wav'
+                        ), 
+                '/Users/jgl/Desktop/'+filename+'.ats', 
                 save_phase=True, 
                 save_noise=False
                 )
