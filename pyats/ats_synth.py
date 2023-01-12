@@ -1,7 +1,7 @@
 from numpy import zeros, matmul, arange, cos, linspace, cumsum
 import soundfile as sf
 
-from atsa.utils import TWO_PI
+from pyats.atsa.utils import TWO_PI
 
 
 def synth(ats_snd, out_size, normalize=False, compute_phase=True, compute_noise=False, export_file=None):

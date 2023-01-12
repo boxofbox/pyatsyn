@@ -1,6 +1,6 @@
 from numpy import log10, array
 
-from atsa.utils import amp_to_db_spl
+from pyats.atsa.utils import amp_to_db_spl
 
 ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
                                 510.0, 630.0, 770.0, 920.0, 1080.0,

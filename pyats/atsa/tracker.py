@@ -2,15 +2,15 @@ from numpy import zeros, multiply, roll, absolute, angle
 from numpy.fft import fft, fftfreq
 import soundfile as sf
 
-from ats_io import ats_save
-from ats_structure import ats_sound
+from pyats.ats_io import ats_save
+from pyats.ats_structure import ats_sound
 
-from atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
-from atsa.windows import make_fft_window, window_norm
-from atsa.peak_detect import peak_detection
-from atsa.critical_bands import evaluate_smr
-from atsa.peak_tracking import update_track_averages, peak_tracking
-from atsa.residual import compute_residual, residual_analysis
+from pyats.atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
+from pyats.atsa.windows import make_fft_window, window_norm
+from pyats.atsa.peak_detect import peak_detection
+from pyats.atsa.critical_bands import evaluate_smr
+from pyats.atsa.peak_tracking import update_track_averages, peak_tracking
+from pyats.atsa.residual import compute_residual, residual_analysis
 
 def tracker (   in_file, 
                 out_snd,

@@ -1,8 +1,8 @@
 from numpy import pi
 
-from ats_structure import ats_peak
+from pyats.ats_structure import ats_peak
 
-from atsa.utils import amp_to_db, db_to_amp, TWO_PI
+from pyats.atsa.utils import amp_to_db, db_to_amp, TWO_PI
 
 
 def peak_detection (fftfreqs, fftmags, fftphases, 
