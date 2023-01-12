@@ -1,6 +1,6 @@
 from numpy import log10, array
 
-from .utils import amp_to_db_spl
+from atsa.utils import amp_to_db_spl
 
 ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
                                 510.0, 630.0, 770.0, 920.0, 1080.0,
@@ -8,8 +8,6 @@ ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
                                 2700.0, 3150.0, 3700.0, 4400.0, 5300.0, 
                                 6400.0, 7700.0, 9500.0, 12000.0, 15500.0, 
                                 20000.0], dtype="float64")
-
-ATS_CRITICAL_BANDS = ATS_CRITICAL_BAND_EDGES.size
 
 
 def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50, debug = False):

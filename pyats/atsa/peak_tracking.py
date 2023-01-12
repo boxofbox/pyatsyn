@@ -1,6 +1,6 @@
-import heapq
-import queue
-import math
+from heapq import heappop, heappush
+from queue import SimpleQueue
+from math import tau, remainder
 
 def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta = 0.0):
     """
@@ -74,10 +74,10 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, frequenc
             for pk_ind, pk in enumerate(peaks):
                 if are_valid_candidates(tk, pk, frequency_deviation):
                     cost = peak_dist(tk, pk, SMR_continuity)
-                    heapq.heappush(peak_costs[pk_ind], MatchCost(cost, tk_ind))
+                    heappush(peak_costs[pk_ind], MatchCost(cost, tk_ind))
     
     # perform Gale-Shapley stable matching
-    peak_queue = queue.SimpleQueue()
+    peak_queue = SimpleQueue()
     for ind in range(len(peaks)):
         peak_queue.put(ind)
     
@@ -89,7 +89,7 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, frequenc
         
         made_match = False
         while(len(peak_costs[pk_ind]) > 0):
-            tk = heapq.heappop(peak_costs[pk_ind])
+            tk = heappop(peak_costs[pk_ind])
             # if the track is unmatched
             if track_matches[tk.index] is None:
                 # update match
@@ -183,6 +183,6 @@ def phase_interp(freq_0, freq_t, pha_0, t):
     '''
     # assuming smooth linear interpolation the average frequency dictates phase rate estimate
     freq_est = (freq_t + freq_0) / 2
-    new_phase = pha_0 + (math.tau * freq_est * t)
-    return math.remainder(new_phase, math.tau) # NOTE: IEEE remainder
+    new_phase = pha_0 + (tau * freq_est * t)
+    return remainder(new_phase, tau) # NOTE: IEEE remainder
     

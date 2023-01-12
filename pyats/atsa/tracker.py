@@ -1,14 +1,15 @@
-import numpy as np
+from numpy import zeros, multiply, roll, absolute, angle
+from numpy.fft import fft, fftfreq
 import soundfile as sf
 
 from ats_io import ats_save
+from ats_structure import ats_sound
 
 from atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
 from atsa.windows import make_fft_window, window_norm
 from atsa.peak_detect import peak_detection
-from atsa.critical_bands import evaluate_smr, ATS_CRITICAL_BANDS
+from atsa.critical_bands import evaluate_smr
 from atsa.peak_tracking import update_track_averages, peak_tracking
-from atsa.structure import ats_sound
 from atsa.residual import compute_residual, residual_analysis
 
 def tracker (   in_file, 
@@ -33,12 +34,11 @@ def tracker (   in_file,
                 residual_file = None,
                 par_energy = True,
                 optimize = True,
-                debug = False,
-                verbose = False,
                 force_M = None, # None, or a forced window length in samples
                 force_window = None, # None, or a numpy.ndarray of floats
                 window_mu = 0.0,
-                window_beta = 1.0
+                window_beta = 1.0,
+                verbose = True,                
                 ):
     
     # read input audio file
@@ -103,7 +103,7 @@ def tracker (   in_file,
     highest_bin = int(h_frq / fft_mag)
 
     # used to store central points of the windows
-    win_samps = np.zeros(frames, "int64")
+    win_samps = zeros(frames, "int64")
     # storage for lists of peaks
     analysis_frames = [None for _ in range(frames)]
     # set file pointer half a window from the first sample
@@ -118,6 +118,7 @@ def tracker (   in_file,
     if min_gap_length < 1:
         min_gap_length = 1
 
+    fft_mags = None
     tracks = []
 
     if verbose:
@@ -149,30 +150,38 @@ def tracker (   in_file,
         if fil_ptr + M >= in_sound.size:
             back_pad = fil_ptr + M - in_sound.size
 
-        data = np.zeros(N,"float64")
-        data[front_pad:M-back_pad] = np.multiply(
+        data = zeros(N, "float64")
+        data[front_pad:M-back_pad] = multiply(
                                             window[front_pad:M-back_pad], 
                                             in_sound[fil_ptr+front_pad:fil_ptr+M-back_pad]
                                             )
 
         # shift window by half of M so that phases in `data` are relatively accurate to midpoints
-        data = np.roll(data, -M_over_2)
+        data = roll(data, -M_over_2)
 
         # update file pointer
         fil_ptr += hop
 
         # get the DFT
-        fd = np.fft.fft(data)
+        fd = fft(data)
         
         ##################
         # PEAK DETECTION #
         ##################
 
-        fftfreqs = np.fft.fftfreq(fd.size, 1 / sample_rate)
-        fftmags = np.absolute(fd) * 2.0 * norm # multiply by 2.0 to account for symmetric negative frequencies
-        fftphases = np.angle(fd)
+        fftfreqs = fftfreq(fd.size, 1 / sample_rate)
+                
+        if front_pad or back_pad:
+            # apply correction for frames that hang off the edge of the input file, thus downscaling the actual amplitude            
+            # multiply by additional 2.0 to account for symmetric negative frequencies
+            fft_mags = absolute(fd) * 2.0 * window_norm(window[front_pad:M-back_pad])
+        else:
+            # multiply by additional 2.0 to account for symmetric negative frequencies
+            fft_mags = absolute(fd) * 2.0 * norm 
 
-        peaks = peak_detection(fftfreqs, fftmags, fftphases, lowest_bin, highest_bin, lowest_magnitude, norm)         
+        fftphases = angle(fd)
+
+        peaks = peak_detection(fftfreqs, fft_mags, fftphases, lowest_bin, highest_bin, lowest_magnitude, norm)         
 
         if peaks:
             # masking curve evaluation using a critical band based model
@@ -201,7 +210,7 @@ def tracker (   in_file,
     if optimize:
         tracks = optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, highest_frequency, lowest_frequency)
 
-    ats_snd = ats_sound(out_snd, sample_rate, hop, M, len(tracks), frames, ATS_CRITICAL_BANDS, analysis_duration, has_phase = True)
+    ats_snd = ats_sound(out_snd, sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
 
     if optimize:
         ats_snd.optimized = True
@@ -225,23 +234,22 @@ def tracker (   in_file,
             ats_snd.pha[pk.track][frame_n] = pk.pha     
 
     #####################
-    # RESIDUAL ANALYSIS # IN PROGRESS
+    # RESIDUAL ANALYSIS #
     #####################
 
     if residual_file:
-        synthesized_residual = compute_residual(residual_file, ats_snd, in_sound, st)
-        residual_analysis(synthesized_residual)
+        residual = compute_residual(residual_file, ats_snd, in_sound, st, nd)
+        residual_analysis(residual, ats_snd,par_energy=par_energy, equalize=True, verbose=verbose)        
 
     return ats_snd
 
 
 if __name__ == '__main__':
-    filename = 'cougar'
+    filename = 'sine440'
     ats_save(   tracker('../sample_sounds/'+filename+'.wav',
                         filename+'.ats', 
-                        debug=True, 
                         verbose=True, 
-                        residual_file='/Users/jgl/Desktop/'+filename+'_residual.wav'
+                        residual_file='/Users/jgl/Desktop/'+filename+'_residual.wav',
                         ), 
                 '/Users/jgl/Desktop/'+filename+'.ats', 
                 save_phase=True, 

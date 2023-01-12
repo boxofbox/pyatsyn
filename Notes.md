@@ -1,8 +1,3 @@
-REQUIRES LIBSNDFILE
-
-atsa.util.py
-* for amp thresholding is it better to use amp_av or amp_max?
-
 atsa.peak_tracking.py
 * the way we are finding peaks to update averages in previous frames can be faster?
 * possible speed up in inital cost calculations if we sort and terminate once we're out of range?
@@ -15,22 +10,29 @@ atsa.peak_tracking.py
     * however, interpolated phases (e.g., during gap fills) are not guarantee to be so
     * the are built based on the assumed correctness of the previously obtained fft phase
 
-atsa_tracker.py
-* clean-up numpy imports
-
-
-
-IDEAS
-* online ATS, optimize dropping tracks, and improving default sorted state
-
-
 1.0 TODO
-* finish residual calc: gain, phaseless, st/en/dur
 * residual analysis
 * ats_save/ats_load & re-optimize
+* ats_sound.clone()
+* ats synth for noise
 * double check phase interpolation scheme in peak_tracking.py
 * test windows
-* clean-up/minimal imports
+* add verbosity & remove debug flag
 * rebuild requirements.txt
+* documentation
 * test & deploy package mode
-** how do we tell it we need libsndfile?
+* how do we tell setuptools we need libsndfile?
+
+BUGBIN
+* start end of residual has a blip for the sine test ?due to inaccurate phase calc at beginning & end?
+
+OPEN Qs
+* for amp thresholding in atsa_util.py is it better to use amp_av or amp_max?
+
+IDEAS
+* numpy-ify and add numba for every major calculation loop
+* online ATS, optimize dropping tracks, and improving default sorted state
+* set operations when hybridizing
+* ats aware xfade (maybe a logic/reaper extension?)
+* scour through PV & ATS methods in csound to build CLI versions
+* scour throug the old cl code for additional functionality to implement

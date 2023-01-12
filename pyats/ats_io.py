@@ -104,7 +104,7 @@ def ats_save(sound, file, save_phase=True, save_noise=True):
             
             # TODO
             # write noise
-            if type == 4 or type == 3:
+            if has_noi:
                 pass
 
     

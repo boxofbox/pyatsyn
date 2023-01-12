@@ -33,14 +33,13 @@ class ats_sound:
     noise modeling information (experimental format)
     """    
     def __init__ (self, name, sampling_rate, frame_size, window_size, 
-                  partials, frames, bands, dur, has_phase=True):
+                  partials, frames, dur, has_phase=True):
         self.name = name
         self.sampling_rate = sampling_rate
         self.frame_size = frame_size
         self.window_size = window_size
         self.partials = partials
         self.frames = frames
-        self.bands = bands
         self.dur = dur
         # Info deduced from analysis
         self.optimized = False
@@ -56,5 +55,5 @@ class ats_sound:
             self.pha = zeros([partials,frames],"float64")
         # Noise Data
         self.energy = []        
-        self.band_energy = []
-        
+        self.band_energy = []        
+        self.bands = []
