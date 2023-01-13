@@ -1,4 +1,4 @@
-from numpy import zeros, mean, roll, arange, absolute
+from numpy import zeros, mean, roll, arange, absolute, asarray
 from numpy.fft import fft
 import soundfile as sf
 
@@ -33,16 +33,14 @@ def residual_analysis(  residual,
                         equalize = False,
                         pad_factor = 2,
                         band_edges = None,
-                        par_energy = None,
+                        par_energy = False,
                         verbose = True,                                               
                         ):
     
     hop = ats_snd.frame_size
     M = ats_snd.window_size
     M_over_2 = (M - 1) // 2
-    window_gain = 1 / M
-    norm = 1.0 # we will use a rectangular window of area 1
-    
+
     threshold = db_to_amp(ATS_NOISE_THRESHOLD)
 
     N = residual_N(M, min_fft_size, pad_factor)
@@ -63,6 +61,7 @@ def residual_analysis(  residual,
     report_flag = 0
 
     fft_mags = None
+    t_domain_energy = 0.0
     fil_ptr = -M_over_2
 
     for frame_n in range(frames):
@@ -82,9 +81,13 @@ def residual_analysis(  residual,
             back_pad = fil_ptr + M - residual.size
         
         data = zeros(N, "float64")
-        # windowed data
-        data[front_pad:M-back_pad] = residual[fil_ptr+front_pad:fil_ptr+M-back_pad] * window_gain
 
+        # pull in data
+        data[front_pad:M-back_pad] = residual[fil_ptr+front_pad:fil_ptr+M-back_pad]                    
+        if equalize:
+            # store the time domain energy for equalization
+            t_domain_energy = sum(data[front_pad:M-back_pad]**2)
+        
         # shift window by half of M so that phases in `data` are relatively accurate to midpoints
         data = roll(data, -M_over_2)
         
@@ -97,37 +100,29 @@ def residual_analysis(  residual,
         # FFT
         fd = fft(data)
 
-        if front_pad or back_pad:
-            # apply correction for frames that hang off the edge of the input file, thus downscaling the actual amplitude            
-            # multiply by additional 2.0 to account for symmetric negative frequencies
-            adjusted_norm = 1 / (M - back_pad - front_pad)
-            fft_mags = absolute(fd) * 2.0 * adjusted_norm
-        else:
-            # multiply by additional 2.0 to account for symmetric negative frequencies
-            fft_mags = absolute(fd) * 2.0 * norm 
+        fft_mags = absolute(fd) * 2.0
 
         residual_compute_band_energy(fft_mags, band_limits, band_energy, frame_n)
 
         if equalize:
-            # re-scale frequency band energy to the energy in the time domain
-            t_domain_energy = sum(data**2) # via Parseval's Theorem         
+            # re-scale frequency band energy to the energy in the time domain                 
             f_domain_energy = sum(band_energy[:,frame_n])
+            
             eq_ratio = 1.0
             if f_domain_energy > 0.0:
                 eq_ratio = t_domain_energy / f_domain_energy
-            band_energy[:,frame_n] /= eq_ratio
+            band_energy[:,frame_n] *= eq_ratio
             
-
     # apply noise threshold
     band_energy[band_energy < threshold] = 0.0
-
+    
     # store in ats object
     ats_snd.band_energy = band_energy
     ats_snd.bands = arange(n_bands, dtype='int64')
 
     if par_energy:
         band_to_energy(ats_snd, band_edges)
-        remove_bands(ats_snd, threshold)
+        remove_bands(ats_snd, ATS_NOISE_THRESHOLD)
 
 
 def residual_N(M, min_fft_size, factor = 2):
@@ -145,9 +140,7 @@ def residual_get_band_limits(fft_mag, band_edges):
 
 
 def residual_compute_band_energy(fft_mags, band_limits, band_energy, frame_n):
-
     for band in range(len(band_limits) - 1):
-
         low = band_limits[band]
         if low < 0:
             low = 0
@@ -158,110 +151,72 @@ def residual_compute_band_energy(fft_mags, band_limits, band_energy, frame_n):
         band_energy[band][frame_n] = sum(fft_mags[low:high]**2) / fft_mags.size
 
 
-def band_to_energy(ats_snd, band_edges):    
+def band_to_energy(ats_snd, band_edges, use_smr = False):    
     bands = len(ats_snd.bands)
     partials = ats_snd.partials
     frames = ats_snd.frames
     par_energy = zeros([partials,frames],"float64")
-    
+    partial_ind = 0
+
     for frame_n in range(frames):
-        pass
-    # TODO
+        for band in range(bands):
 
+            # get frame's partials that are within the subband
+            lo_frq = band_edges[band]
+            hi_frq = band_edges[band + 1]
+            par = []
+            while (partial_ind < partials):
+                check = ats_snd.frq[partial_ind][frame_n]
+                if check < lo_frq:
+                    partial_ind += 1
+                elif check >= lo_frq and check <= hi_frq:
+                    par.append(partial_ind)
+                    partial_ind += 1
+                else:
+                    break
+            
+            if par and ats_snd.band_energy[band][frame_n] > 0.0:
+                
+                amp_source = ats_snd.amp
+                if use_smr:
+                    amp_source = ats_snd.smr
 
-# TODO
-def remove_bands(ats_snd, threshold):
-    pass
-
-
+                # get the current energy of the subband
+                par_amp_sum = 0.0
+                for p_ind in par:
+                    par_amp_sum += amp_source[p_ind][frame_n]
+                
+                if par_amp_sum > 0.0:
+                    # if the sub-band is active store band energy proportionally among activate partials
+                    for p in par:
+                        par_energy[p][frame_n] = amp_source[p][frame_n] * ats_snd.band_energy[band][frame_n] / par_amp_sum
+                else:
+                    # otherwise spread the energy across the inactive partials
+                    energy_per_partial = ats_snd.band_energy[band][frame_n] / len(par)
+                    for p in par:
+                        par_energy[p][frame_n] = energy_per_partial
         
-"""
+                # clear energy redistributed to partials from band
+                ats_snd.band_energy[band][frame_n] = 0.0
 
-
-(defun get-band-partials (lo hi sound frame)
-  "returns a list of partial numbers that fall 
-in frequency between lo and hi
-"
-  (let ((par nil))
-    (loop for k from 0 below (ats-sound-partials sound) do 
-      (if (<= lo (aref (aref (ats-sound-frq sound) k) frame) hi)
-	  (push k par)))
-    (nreverse par)))
-
-
-(defun band-to-energy (sound &key (use-smr NIL)(debug NIL))
-"
-transfers band energy to partials
-"
-  (let* ((bands (if (ats-sound-bands sound)(length (ats-sound-bands sound)) *ats-critical-bands*))
-	 (partials (ats-sound-partials sound))
-	 (frames (ats-sound-frames sound))
-	 (par-energy (make-array partials :element-type 'array)))
-    ;;; create storage place for partial energy
-    (loop for i from 0 below partials do
-      (setf (aref par-energy i) (make-double-float-array frames :initial-element 0.0)))
-    ;;; now compute par-energy frame by frame
-    (loop for frame from 0 below frames do
-      (let ((smr (if use-smr (smr-frame sound frame) nil)))
-	(loop for b from 0 below (1- bands) do
-	  (let* ((lo-frq (nth b *ats-critical-band-edges*))
-		 (hi-frq (nth (1+ b) *ats-critical-band-edges*))
-		 (par (get-band-partials lo-frq hi-frq sound frame))
-		 (band-energy (aref (aref (ats-sound-band-energy sound) b) frame)))
-	    ;;; if we found partials in this band evaluate the energy
-	    (if (and (> band-energy 0.0) par)
-		(let* ((par-amp-sum (loop for p in par sum 
-				      (if smr (aref smr p)
-					(aref (aref (ats-sound-amp sound) p) frame))))
-		       (n-pars (list-length par)))
-		  ;;; check if we have active partials and store band-energy proportionally
-		  (if (> par-amp-sum 0.0)
-		      (loop for p in par do
-			(setf (aref (aref par-energy p) frame) 
-			      (/ (* (if smr (aref smr p)
-				      (aref (aref (ats-sound-amp sound) p) frame)) band-energy)
-				 par-amp-sum)))
-		    ;;; inactive partials: split energy by partials
-		    (loop 
-		      for p in par 
-		      with eng = (/ band-energy n-pars)
-		      do
-		      (setf (aref (aref par-energy p) frame) eng)))
-		  ;;; clear energy from band
-		  (setf (aref (aref (ats-sound-band-energy sound) b) frame) (double-float 0.0))
-		  )
-	      (if (and debug (> band-energy 0.0))
-		  (format t "Frame: ~d Band: ~d Energy: ~a no partials~%" frame b band-energy)))))))
-      (setf (ats-sound-energy sound) par-energy)))
-
-
-
-(defun energy-to-band (sound band frame)
-  "
-transfers energy from partials to a band
-"
-  (let* ((lo-frq (nth band *ats-critical-band-edges*))
-	 (hi-frq (nth (1+ band) *ats-critical-band-edges*))
-	 (par (get-band-partials lo-frq hi-frq sound frame)))
-    (loop for p in par sum
-      (aref (aref (ats-sound-energy sound) p) frame))))
-
-
-
-;;; removes bands that have average energy below threshold
-(defun remove-bands (sound &optional (threshold *ats-noise-threshold*))
-  (let* ((frames (ats-sound-frames sound))
-	 (threshold (db-amp threshold))
-	 (band-l (get-valid-bands sound threshold))
-	 (new-bands (make-array (list-length band-l) :element-type 'array)))
-    ;;; now we only keep the bands we want 
-    (loop 
-      for i in band-l
-      for k from 0
-      do
-      (setf (aref new-bands k)
-	    (aref (ats-sound-band-energy sound) i)))
-    ;;; finally we store things in the sound
-    (setf (ats-sound-band-energy sound) new-bands)
-    (setf (ats-sound-bands sound)(coerce band-l 'array))))
-"""
+    ats_snd.energy = par_energy
+            
+            
+def remove_bands(ats_snd, threshold):
+    '''
+    remove bands from ats_snd that are below threshold (in dB)
+    '''
+    frames = ats_snd.frames
+    threshold = db_to_amp(threshold)
+    
+    valid_bands = []
+    for band in ats_snd.bands:
+        if mean(ats_snd.band_energy[band][ats_snd.band_energy[band] > 0.0]) >= threshold:
+            valid_bands.append(band)
+    
+    if valid_bands:
+        ats_snd.band_energy = ats_snd.band_energy[valid_bands,:]
+        ats_snd.bands = asarray(valid_bands, 'int64')
+    else:
+        ats_snd.band_energy = []
+        ats_snd.bands = []

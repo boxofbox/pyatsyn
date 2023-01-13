@@ -71,7 +71,10 @@ ATS_MAGIC_NUMBER = 123.0
 def ats_save(sound, file, save_phase=True, save_noise=True):
 
     has_pha = save_phase and len(sound.pha) > 0
-    has_noi = save_noise and (sound.energy or sound.band_energy)
+    has_noi = save_noise and (len(sound.energy) > 0 or len(sound.band_energy) > 0)
+
+    if has_noi and len(sound.bands) != 25:
+        print("WARNING: outputing noise energies with other than the expected 25 critical bands")
 
     type = 1
     if has_pha and has_noi:
@@ -102,12 +105,10 @@ def ats_save(sound, file, save_phase=True, save_noise=True):
                 if has_pha:
                     fil.write(pack('d',sound.pha[partial][frame_n]))
             
-            # TODO
-            # write noise
             if has_noi:
-                pass
+                for band in range(len(sound.bands)):
+                    fil.write(pack('d',sound.band_energy[band][frame_n]))                    
 
-    
 
 def write_array_of_numbers_to_binary_doubles(file, arr):
     for n in arr:

@@ -11,8 +11,7 @@ atsa.peak_tracking.py
     * the are built based on the assumed correctness of the previously obtained fft phase
 
 1.0 TODO
-* residual analysis
-* ats_save/ats_load & re-optimize
+* ats_load & re-optimize
 * ats_sound.clone()
 * ats synth for noise
 * double check phase interpolation scheme in peak_tracking.py
@@ -25,9 +24,15 @@ atsa.peak_tracking.py
 
 BUGBIN
 * start end of residual has a blip for the sine test ?due to inaccurate phase calc at beginning & end?
+* the consequence of par_energy=True is not clearly specified in legacy code, thus it is not properly implemented. Band size will no longer be 25, and the energy is not output with the ats.file
+* current ats standard silently assumes 25 critical bands for noise, but this is not strictly required in the pyats environment
+* i suspect the window norm is not entirely accurate, b/c for a rectangular window it applies a non x1.0 gain change
+* equalization of the residual energy using Parseval's thereom leads to significantly quieter default noise synthesis in supercollider than is expected compared to the true residual
 
 OPEN Qs
 * for amp thresholding in atsa_util.py is it better to use amp_av or amp_max?
+* in the residual analysis we do not re-perform smr evaluation on the frame, but in the original CL code this was done. Which is correct?
+
 
 IDEAS
 * numpy-ify and add numba for every major calculation loop

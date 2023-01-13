@@ -32,7 +32,6 @@ def tracker (   in_file,
                 SMR_threshold = None,
                 amp_threshold = None,
                 residual_file = None,
-                par_energy = True,
                 optimize = True,
                 force_M = None, # None, or a forced window length in samples
                 force_window = None, # None, or a numpy.ndarray of floats
@@ -181,7 +180,7 @@ def tracker (   in_file,
 
         fftphases = angle(fd)
 
-        peaks = peak_detection(fftfreqs, fft_mags, fftphases, lowest_bin, highest_bin, lowest_magnitude, norm)         
+        peaks = peak_detection(fftfreqs, fft_mags, fftphases, lowest_bin, highest_bin, lowest_magnitude)         
 
         if peaks:
             # masking curve evaluation using a critical band based model
@@ -239,19 +238,19 @@ def tracker (   in_file,
 
     if residual_file:
         residual = compute_residual(residual_file, ats_snd, in_sound, st, nd)
-        residual_analysis(residual, ats_snd,par_energy=par_energy, equalize=True, verbose=verbose)        
+        residual_analysis(residual, ats_snd, equalize=True, verbose=verbose)       
 
     return ats_snd
 
 
 if __name__ == '__main__':
-    filename = 'sine440'
+    filename = 'trumpetc3'
     ats_save(   tracker('../sample_sounds/'+filename+'.wav',
                         filename+'.ats', 
-                        verbose=True, 
+                        verbose=False, 
                         residual_file='/Users/jgl/Desktop/'+filename+'_residual.wav',
                         ), 
                 '/Users/jgl/Desktop/'+filename+'.ats', 
                 save_phase=True, 
-                save_noise=False
+                save_noise=True
                 )

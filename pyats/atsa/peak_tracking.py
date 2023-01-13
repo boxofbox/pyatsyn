@@ -46,7 +46,7 @@ def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta =
             tk.frq = ((1 - beta) * (frq_acc / f)) + (beta * last_frq)
         if a > 0:
             tk.amp = ((1 - beta) * (amp_acc / a)) + (beta * last_amp)
-        if f > 0:
+        if s > 0:
             tk.smr = ((1 - beta) * (smr_acc / s)) + (beta * last_smr)    
 
 

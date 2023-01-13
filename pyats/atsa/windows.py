@@ -1,4 +1,3 @@
-
 from numpy import zeros, cos, log, exp, sqrt, absolute
 
 from pyats.atsa.utils import TWO_PI
@@ -145,8 +144,8 @@ def window_norm (window):
     if norm_factor == 0.0:
         raise Exception('Cannot normalize window with absolute sum of 0.0')
     return 1.0 / norm_factor
-    
-    
+
+
 # Modified Bessel Function of the First Kind
 # from "Numerical Recipes in C"
 def bes_i0 (x):
