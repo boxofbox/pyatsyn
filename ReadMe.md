@@ -5,8 +5,8 @@ requires LIBSNDFILE
 
 `brew install libsndfile`
 
-if using from source
-recommend running in a virtual environment
+# for Developers, if using from source
+i recommend running in a virtual environment from within the project base directory
 
 `python -m venv .venv`
 

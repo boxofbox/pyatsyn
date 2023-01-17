@@ -1,7 +1,6 @@
 from numpy import zeros, matmul, arange, cos, linspace, cumsum
 import soundfile as sf
-
-from pyats.atsa.utils import TWO_PI
+from math import tau
 
 
 def synth(ats_snd, out_size, normalize=False, compute_phase=True, compute_noise=False, export_file=None):
@@ -13,7 +12,7 @@ def synth(ats_snd, out_size, normalize=False, compute_phase=True, compute_noise=
     n_partials = ats_snd.partials
     frames = ats_snd.frames
 
-    freq_to_radians_per_sample = TWO_PI / sample_rate
+    freq_to_radians_per_sample = tau / sample_rate
 
     frame_size_range = frame_size
     
@@ -74,8 +73,8 @@ def synth(ats_snd, out_size, normalize=False, compute_phase=True, compute_noise=
                 cubic polynomial interpolation of phase
                 credit: McAulay & Quatieri (1986)
                 """
-                M = round((((pha_0 + (w_0 * frame_size) - pha_t) + (half_T * (w_t - w_0))) / TWO_PI))
-                alpha_beta_terms[0] = pha_t - pha_0 - (w_0 * frame_size) + (TWO_PI * M)
+                M = round((((pha_0 + (w_0 * frame_size) - pha_t) + (half_T * (w_t - w_0))) / tau))
+                alpha_beta_terms[0] = pha_t - pha_0 - (w_0 * frame_size) + (tau * M)
                 alpha_beta_terms[1] = w_t - w_0
                 alpha, beta = matmul(alpha_beta_coeffs, alpha_beta_terms)
 
@@ -85,7 +84,7 @@ def synth(ats_snd, out_size, normalize=False, compute_phase=True, compute_noise=
                                                                             (beta * samps_cubed[:frame_size_range]))
             
             else:
-                # TODO in prog phaseless version
+                # phaseless version
                 pha_0 = prior_partial_phases[partial]
                 w = cumsum(linspace(w_0, w_t, frame_size))
                 synthesized[fil_ptr:fil_ptr + frame_size_range] += ((samps[:frame_size_range] * amp_step) + amp_0) * \

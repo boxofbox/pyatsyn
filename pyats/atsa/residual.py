@@ -1,10 +1,13 @@
 from numpy import zeros, mean, roll, arange, absolute, asarray
 from numpy.fft import fft
 import soundfile as sf
+from math import tau
 
-from pyats.atsa.utils import TWO_PI, next_power_of_2, db_to_amp, ATS_NOISE_THRESHOLD
-from pyats.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
 from pyats.ats_synth import synth
+
+from pyats.atsa.utils import next_power_of_2, db_to_amp, ATS_NOISE_THRESHOLD
+from pyats.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
+
 
 def compute_residual(   residual_file, 
                                 ats_snd, 

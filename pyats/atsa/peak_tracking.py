@@ -1,6 +1,8 @@
 from heapq import heappop, heappush
 from queue import SimpleQueue
 from math import tau, remainder
+from numpy import zeros, matmul
+
 
 def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta = 0.0):
     """
@@ -57,7 +59,7 @@ def find_track_in_peaks(track, peaks):
     return None
 
 
-def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, frequency_deviation = 0.45, SMR_continuity = 0.0, min_gap_length = 1):
+def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size, frequency_deviation = 0.45, SMR_continuity = 0.0, min_gap_length = 1):
     """
     adaptation of the Gale-Shapley algorithm for stable matching of peaks_a and peaks_b
     for matched peaks, track numbers are updated
@@ -110,7 +112,6 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, frequenc
             unmatched_peaks.append(pk_ind)
 
     unmatched_tracks = []
-    sample_dur = 1 / sample_rate
 
     # process matches, fixing gaps
     for tk_ind, tk_match in enumerate(track_matches):
@@ -130,13 +131,15 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, frequenc
                 frq_step = tk.frq - pk.frq
                 amp_step = tk.amp - pk.amp
                 smr_step = tk.smr - pk.smr                
-                for i in range(1, interp_range): # Note: we'll walk backward from frame_n
+                for i in range(1, interp_range): # NOTE: we'll walk backward from frame_n
                     new_pk = pk.clone()
                     mult = i / interp_range
                     new_pk.frq = (frq_step * mult) + pk.frq
                     new_pk.amp = (amp_step * mult) + pk.amp
                     new_pk.smr = (smr_step * mult) + pk.smr
-                    new_pk.pha = phase_interp(tk.frq, new_pk.frq, tk.pha, (interp_range - i) * sample_dur)
+                    samps_from_0_to_t = (interp_range + 1) * hop_size
+                    i_samps_from_0 = hop_size * (interp_range - i)                   
+                    new_pk.pha = phase_interp_cubic(tk.frq, pk.frq, tk.pha, pk.pha, i_samps_from_0, samps_from_0_to_t, sample_rate)
                     new_pk.duration -= i
                     analysis_frames[frame_n - i].append(new_pk)
                 tk.asleep_for = None                
@@ -161,8 +164,10 @@ def are_valid_candidates(candidate1, candidate2, deviation):
     min_frq = min(candidate1.frq, candidate2.frq)
     return abs(candidate1.frq - candidate2.frq) <= 0.5 * min_frq * deviation
 
+
 def peak_dist(pk1, pk2, alpha):
     return (abs(pk1.frq - pk2.frq) + (alpha * abs(pk1.smr - pk2.smr))) / (alpha + 1.0)
+
 
 class MatchCost():
     def __init__(self, cost, index):
@@ -175,6 +180,7 @@ class MatchCost():
     def __lt__(self, other):
         return self.cost < other.cost
 
+
 def phase_interp(freq_0, freq_t, pha_0, t):
     '''
     returns the phase (-pi,pi] at time t
@@ -185,4 +191,30 @@ def phase_interp(freq_0, freq_t, pha_0, t):
     freq_est = (freq_t + freq_0) / 2
     new_phase = pha_0 + (tau * freq_est * t)
     return remainder(new_phase, tau) # NOTE: IEEE remainder
+
+
+def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sample_rate):
+    """
+    for cubic polynomial interpolation of phase
+    credit: McAulay & Quatieri (1986)
+    """
+    freq_to_radians_per_sample = tau / sample_rate
+
+    alpha_beta_coeffs = zeros([2,2], "float64")
+    alpha_beta_coeffs[0][0] = 3 / (samps_from_0_to_t**2)
+    alpha_beta_coeffs[0][1] = -1 / samps_from_0_to_t
+    alpha_beta_coeffs[1][0] = -2 / (samps_from_0_to_t**3)
+    alpha_beta_coeffs[1][1] = 1 / (samps_from_0_to_t**2)
+    alpha_beta_terms = zeros([2,1],"float64")
+
+    half_T = samps_from_0_to_t / 2
+
+    w_0 = freq_0 * freq_to_radians_per_sample
+    w_t = freq_t * freq_to_radians_per_sample
+
+    M = round((((pha_0 + (w_0 * samps_from_0_to_t) - pha_t) + (half_T * (w_t - w_0))) / tau))
+    alpha_beta_terms[0] = pha_t - pha_0 - (w_0 * samps_from_0_to_t) + (tau * M)
+    alpha_beta_terms[1] = w_t - w_0
+    alpha, beta = matmul(alpha_beta_coeffs, alpha_beta_terms)
+    return pha_0 + (w_0 * i_samps_from_0) + (alpha * (i_samps_from_0**2)) + (beta * i_samps_from_0**3)
     

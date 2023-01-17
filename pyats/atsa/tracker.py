@@ -2,8 +2,7 @@ from numpy import zeros, multiply, roll, absolute, angle
 from numpy.fft import fft, fftfreq
 import soundfile as sf
 
-from pyats.ats_io import ats_save
-from pyats.ats_structure import ats_sound
+from pyats.ats_structure import AtsSound
 
 from pyats.atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
 from pyats.atsa.windows import make_fft_window, window_norm
@@ -30,7 +29,7 @@ def tracker (   in_file,
                 last_peak_contribution = 0.0,
                 SMR_continuity = 0.0,
                 SMR_threshold = None,
-                amp_threshold = None,
+                amp_threshold = None, # in dB
                 residual_file = None,
                 optimize = True,
                 force_M = None, # None, or a forced window length in samples
@@ -192,7 +191,7 @@ def tracker (   in_file,
 
         if len(tracks) > 0:
             update_track_averages(tracks, track_length, frame_n, analysis_frames, last_peak_contribution)
-            peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, frequency_deviation, SMR_continuity, min_gap_length)
+            peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop, frequency_deviation, SMR_continuity, min_gap_length)
         else:
             # otherwise instantiate tracks with the current frame's peaks, if any
             for pk_ind, pk in enumerate(peaks):
@@ -209,7 +208,7 @@ def tracker (   in_file,
     if optimize:
         tracks = optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, highest_frequency, lowest_frequency)
 
-    ats_snd = ats_sound(out_snd, sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
+    ats_snd = AtsSound(out_snd, sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
 
     if optimize:
         ats_snd.optimized = True
@@ -244,6 +243,7 @@ def tracker (   in_file,
 
 
 if __name__ == '__main__':
+    from pyats.ats_io import ats_save, ats_load
     filename = 'trumpetc3'
     ats_save(   tracker('../sample_sounds/'+filename+'.wav',
                         filename+'.ats', 
@@ -254,3 +254,9 @@ if __name__ == '__main__':
                 save_phase=True, 
                 save_noise=True
                 )
+    ats_load(filename, '/Users/jgl/Desktop/'+filename+'.ats', optimize=True,            
+                min_gap_size = 1,
+                min_segment_length = 8,                     
+                amp_threshold = -20, 
+                highest_frequency = 10000,
+                lowest_frequency = 400)

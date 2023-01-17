@@ -5,7 +5,6 @@ from numpy import inf, ceil, log2, pi, log10
 # UTILITY CONSTANTS
 ###################
 
-TWO_PI = 2 * pi
 MAX_DB_SPL = 100.0
 ATS_MIN_SEGMENT_LENGTH = 3
 ATS_AMP_THRESHOLD = -60
@@ -54,9 +53,12 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, 
 
     if min_segment_length < 1:
         min_segment_length = ATS_MIN_SEGMENT_LENGTH
+
+    # NOTE: amp_threshold is expected in dB
     if amp_threshold == None:
-        amp_threshold = ATS_AMP_THRESHOLD
-    
+        amp_threshold = db_to_amp(ATS_AMP_THRESHOLD)
+    else:
+        amp_threshold = db_to_amp(amp_threshold)
     
     tracks_for_removal = set()
 
@@ -111,3 +113,4 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, 
         analysis_frames[frame_n] = new_frame
     
     return tracks
+

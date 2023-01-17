@@ -1,6 +1,5 @@
 from numpy import zeros, cos, log, exp, sqrt, absolute
-
-from pyats.atsa.utils import TWO_PI
+from math import tau
 
 """
 All data coming form Harris' famous paper:
@@ -38,7 +37,7 @@ def make_blackman_window(window_type, size):
 
     coeffs =  ATS_BLACKMAN_WINDOW_COEFF_LABELS[window_type]
 
-    two_pi_over_size = TWO_PI / size
+    two_pi_over_size = tau / size
     a0 = coeffs[0]
     a1 = coeffs[1]
     a2 = coeffs[2]
@@ -82,9 +81,9 @@ def make_fft_window(window_type, size, beta=1.0, mu=0.0):
    
     midn = size // 2
     midp1 = (size + 1) // 2
-    freq = TWO_PI / size
+    freq = tau / size
     rate = 1.0 / midn
-    sr = TWO_PI / size
+    sr = tau / size
     angle = 0.0
     expn = (1.0 + (log(2) / midn))
     expsum = 1.0

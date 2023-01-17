@@ -11,10 +11,7 @@ atsa.peak_tracking.py
     * the are built based on the assumed correctness of the previously obtained fft phase
 
 1.0 TODO
-* ats_load & re-optimize
-* ats_sound.clone()
 * ats synth for noise
-* double check phase interpolation scheme in peak_tracking.py
 * test windows
 * add verbosity & remove debug flag
 * rebuild requirements.txt
@@ -33,7 +30,6 @@ OPEN Qs
 * for amp thresholding in atsa_util.py is it better to use amp_av or amp_max?
 * in the residual analysis we do not re-perform smr evaluation on the frame, but in the original CL code this was done. Which is correct?
 
-
 IDEAS
 * numpy-ify and add numba for every major calculation loop
 * online ATS, optimize dropping tracks, and improving default sorted state
@@ -41,3 +37,4 @@ IDEAS
 * ats aware xfade (maybe a logic/reaper extension?)
 * scour through PV & ATS methods in csound to build CLI versions
 * scour throug the old cl code for additional functionality to implement
+* vst player with MIDI control (piano roll triggering?)

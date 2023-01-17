@@ -1,8 +1,9 @@
 from numpy import pi
+from math import tau
 
-from pyats.ats_structure import ats_peak
+from pyats.ats_structure import AtsPeak
 
-from pyats.atsa.utils import amp_to_db, db_to_amp, TWO_PI
+from pyats.atsa.utils import amp_to_db, db_to_amp
 
 
 def peak_detection (fftfreqs, fftmags, fftphases, 
@@ -30,7 +31,7 @@ def peak_detection (fftfreqs, fftmags, fftphases,
         right = mags[k+1]
 
         if center > lowest_magnitude and center > right and center > left:
-            pk = ats_peak()
+            pk = AtsPeak()
             offset, pk.amp = parabolic_interp(left, center, right)
             pk.frq = frqs[k] + (fq_scale * offset)
             if (offset > 0):
@@ -62,8 +63,8 @@ def phase_correct(left, right, offset):
     angular interpolation
     """  
     if left - right > 1.5 * pi:
-        return (left + (offset * (right - left + TWO_PI)))
+        return (left + (offset * (right - left + tau)))
     elif right - left > 1.5 * pi:
-        return (left + (offset * (right - left - TWO_PI)))
+        return (left + (offset * (right - left - tau)))
     else:
         return (left + (offset * (right - left)))
