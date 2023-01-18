@@ -80,7 +80,7 @@ def tracker (   in_file,
     hop = int(M * hop_size)
     # central point of the window
     M_over_2 = (M - 1) // 2
-    frames = compute_frames(total_samps, M_over_2, hop, st, nd)    
+    frames = compute_frames(total_samps, hop)    
 
     # magic number for fft frequencies (frequency resolution)
     fft_mag = sample_rate / N
@@ -150,12 +150,10 @@ def tracker (   in_file,
 
         data = zeros(N, "float64")
         if not front_pad and not back_pad:
-            data[:M] = multiply( window, in_sound[fil_ptr:fil_ptr+M])
+            data[:M] = window * in_sound[fil_ptr:fil_ptr+M]
         else:
-            data[front_pad:M-back_pad] = multiply(  window[front_pad:M-back_pad], 
-                                                    in_sound[fil_ptr+front_pad:fil_ptr+M-back_pad]
-                                                    )    
-
+            data[front_pad:M-back_pad] = window[front_pad:M-back_pad] * in_sound[fil_ptr+front_pad:fil_ptr+M-back_pad]
+                                                      
         # shift window by half of M so that phases in `data` are relatively accurate to midpoints
         data = roll(data, -M_over_2)
 
@@ -246,11 +244,12 @@ def tracker (   in_file,
 
 if __name__ == '__main__':
     from pyats.ats_io import ats_save, ats_load
-    filename = 'sine440'
+    filename = 'trumpetc3'
     ats_save(   tracker('../sample_sounds/'+filename+'.wav',
                         filename+'.ats', 
                         verbose=False, 
                         window_type=None,
+                        #duration=44100/44100,
                         residual_file='/Users/jgl/Desktop/'+filename+'_residual.wav',
                         ), 
                 '/Users/jgl/Desktop/'+filename+'.ats', 
