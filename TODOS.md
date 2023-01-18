@@ -11,8 +11,9 @@ atsa.peak_tracking.py
     * the are built based on the assumed correctness of the previously obtained fft phase
 
 1.0 TODO
+* re-write and test windows.py
+* fix window_norm
 * ats synth for noise
-* test windows
 * add verbosity & remove debug flag
 * rebuild requirements.txt
 * documentation

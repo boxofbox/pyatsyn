@@ -34,7 +34,7 @@ def tracker (   in_file,
                 optimize = True,
                 force_M = None, # None, or a forced window length in samples
                 force_window = None, # None, or a numpy.ndarray of floats
-                window_mu = 0.0,
+                window_alpha = 0.5,
                 window_beta = 1.0,
                 verbose = True,                
                 ):
@@ -74,7 +74,7 @@ def tracker (   in_file,
     if window is None:
         if window_type is None:
             window_type='blackman-harris-4-1'
-        window = make_fft_window(window_type, M, beta=window_beta, mu=window_mu)
+        window = make_fft_window(window_type, M, beta=window_beta, alpha=window_alpha)
     
     norm = window_norm(window)   
     hop = int(M * hop_size)

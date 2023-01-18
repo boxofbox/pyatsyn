@@ -1,5 +1,6 @@
-from numpy import zeros, cos, log, exp, sqrt, absolute
+from numpy import zeros, cos, sin, log, exp, sqrt, absolute, ones, pi
 from math import tau
+
 
 """
 All data coming form Harris' famous paper:
@@ -7,10 +8,41 @@ All data coming form Harris' famous paper:
  With The Discrete Fourier Transform"
 Proceedings of the IEEE, Vol. 66, No. 1 (pg. 51 to 84)
 January 1978
+    and
 Albert H. Nuttall, "Some Windows with Very Good Sidelobe Behaviour", 
 IEEE Transactions of Acoustics, Speech, and Signal Processing, Vol. ASSP-29,
 No. 1, February 1981, pp 84-91
 """
+
+VALID_FFT_WINDOW_DEFINITIONS = [
+    'blackman-exact',
+    'blackman',
+    'blackman-harris-3-1',
+    'blackman-harris-3-2',
+    'blackman-harris-4-1',
+    'blackman-harris-4-2',
+    'rectangular',
+    'parzen',
+    'welch',
+    'kaiser',
+    'gaussian',
+    'poisson',
+    'cauchy',
+    'connes',
+    'welch',
+    'kaiser',
+    'gaussian',
+    'poisson',
+    'cauchy',
+    'connes',
+    'exponential',
+    'bartlett',
+    'riemann',
+    'tukey',
+    'hamming',
+    'hann',
+    'hann-poisson',
+]  
 
 
 # Window coefficients (a0, a1, a2, a3)
@@ -49,92 +81,97 @@ def make_blackman_window(window_type, size):
             coeff4 = a3 * cos(3 * two_pi_over_size * count)
         win[count] = a0 + (a1 * cos(two_pi_over_size * count)) + (a2 * cos(2 * two_pi_over_size * count)) + coeff4
     return win
+ 
 
-FFT_WINDOW_DEFINITIONS = {
-        'rectangular' : [0, 'val=1.0'],
-        'parzen' : [0, 'val=(1.0 - abs( float(i - midn) / midp1))'],
-        'welch' : [0, 'val=(1.0 - pow((float(i - midn) / midp1), 2))'],
-        'kaiser' : [0, 'val=(bes_i0((beta * (sqrt(1.0 - pow(float(midn - i) / midn, 2))))) / I0beta)'],
-        'gaussian' : [0, 'val=(exp( -0.5 * pow((beta * (float(midn - i)/ midn)), 2)))'],
-        'poisson' : [0, 'val=(exp( -beta * (float(midn - i) / midn)))'],
-        'cauchy' : [0, 'val=(1.0 / (1.0 + pow(((beta * float(midn - i)) / midn), 2)))'],
-        'connes' : [0, 'val=pow((1.0 - pow( (float(i - midn) / midp1), 2)), 2)'],    
-        'exponential' : [1, 'val=(expsum - 1.0)', 'expsum=(expsum * expn)'],
-        'bartlett' : [1, 'val=angle', 'angle=(angle + rate)'],
-        'riemann' : [2, 'midn==i', 'val=1.0', 'val=(sin(sr * (midn - i)) / (sr * (midn - i)))'],
-        'tukey' : [3, 'pos=(midn * (1.0 - beta))', 'i >= pos', 'val=1.0', 'val=(0.5 * (1.0 - cos( (pi * i) / pos)))'],
-        'hamming' : [4, 'val=(0.54 - (0.46 * cx))'],
-        'hann' : [4, 'val=(0.5 - (0.5 * cx))'],
-        'hann-poisson' : [4,'val=((0.5 - (0.5 * cx)) * exp( -beta * (float(midn - i) / midn)))']
-        }    
-
-
-def make_fft_window(window_type, size, beta=1.0, mu=0.0):
+def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
     if (window_type.startswith('blackman')):
         return make_blackman_window(window_type, size)
-    if window_type not in FFT_WINDOW_DEFINITIONS.keys():
-        raise Exception('Specified Window Type not Defined')
-    
-    param_switch = FFT_WINDOW_DEFINITIONS[window_type][0]
 
-    window = zeros(size, 'float64')
-   
     midn = size // 2
-    midp1 = (size + 1) // 2
-    freq = tau / size
-    rate = 1.0 / midn
-    sr = tau / size
-    angle = 0.0
-    expn = (1.0 + (log(2) / midn))
-    expsum = 1.0
-    IObeta = 0.0
-    val = 0.0
-    j = size - 1
 
-    if (param_switch==0):
-        if window_type == 'kaiser':
-            I0beta = bes_i0(beta)
-        for i in range(0,midn+1):
-            exec(FFT_WINDOW_DEFINITIONS[window_type][1])
+    if window_type == 'rectangular':
+        return ones(size, dtype="float64")
+    elif window_type == 'parzen' or window_type == 'welch' or window_type == 'kaiser' or \
+            window_type == 'gaussian' or window_type == 'poisson' or window_type == 'cauchy' \
+                or window_type == 'connes':
+        window = zeros(size, 'float64')        
+        midp1 = (size + 1) // 2
+        win_fun = lambda x: 1.0 - abs( (x - midn) / midp1) # parzen
+        if window_type == 'welch':
+            win_fun = lambda x: 1.0 - pow(((x - midn) / midp1), 2)
+        elif window_type == 'kaiser':
+            win_fun = lambda x: bes_i0((beta * (sqrt(1.0 - pow((midn - x) / midn, 2))))) / bes_i0(beta)
+        elif window_type == 'gaussian':
+            win_fun = lambda x: exp( -0.5 * pow((beta * ((midn - x)/ midn)), 2))
+        elif window_type == 'poisson':
+            win_fun = lambda x: exp( -beta * ((midn - x) / midn))
+        elif window_type == 'cauchy':
+            win_fun = lambda x: 1.0 / (1.0 + pow(((beta * (midn - x)) / midn), 2))
+        elif window_type == 'connes':
+            win_fun = lambda x: pow((1.0 - pow( ((x - midn) / midp1), 2)), 2)
+        for i in range(0, midn + 1):
+            val = win_fun(i)
             window[i] = val
-            window[j] = val
-            j = j - 1
-    elif (param_switch==1):
-        for i in range(0,midn+1):
-            exec(FFT_WINDOW_DEFINITIONS[window_type][1])
-            exec(FFT_WINDOW_DEFINITIONS[window_type][2])
+            window[-(i+1)] = val            
+        return window
+    elif window_type == 'exponential':
+        window = zeros(size, 'float64')
+        expsum = 1.0
+        expn = (1.0 + (log(2) / midn))
+        for i in range(0, midn + 1):
+            val = expsum - 1.0
+            expsum *= expn
             window[i] = val
-            window[j] = val
-            j = j - 1
-    elif (param_switch==2):
-        for i in range(0,midn+1):
-            if (eval(FFT_WINDOW_DEFINITIONS[window_type][1])):
-                exec(FFT_WINDOW_DEFINITIONS[window_type][2])
+            window[-(i+1)] = val 
+        return window 
+    elif window_type == 'bartlett':
+        window = zeros(size, 'float64')
+        rate = 1.0 / midn
+        angle = 0.0
+        for i in range(0, midn + 1):
+            val = angle
+            angle += rate
+            window[i] = val
+            window[-(i+1)] = val                  
+        return window
+    elif window_type == 'riemann':
+        window = zeros(size, 'float64')
+        sr = tau / size
+        for i in range(0, midn): 
+            val = sin(sr * (midn - i)) / (sr * (midn - i))
+            window[i] = val
+            window[-(i+1)] = val
+        window[midn] = 1                
+        return window        
+    elif window_type == 'tukey':        
+        window = zeros(size, 'float64')
+        knee = alpha * size // 2
+        for i in range(0, midn + 1):
+            if i >= knee:
+                val = 1.0
             else:
-                exec(FFT_WINDOW_DEFINITIONS[window_type][3])
+                val = 0.5 * (1.0 - cos( (pi * i) / knee))
             window[i] = val
-            window[j] = val
-            j = j - 1
-    elif (param_switch==3):
-        exec(FFT_WINDOW_DEFINITIONS[window_type][1])
-        for i in range(0,midn+1):
-            if (eval(FFT_WINDOW_DEFINITIONS[window_type][2])):
-                exec(FFT_WINDOW_DEFINITIONS[window_type][3])
-            else:
-                exec(FFT_WINDOW_DEFINITIONS[window_type][4])
-            window[i] = val
-            window[j] = val
-            j = j - 1
-    elif (param_switch==4):
-        for i in range(0,midn+1):
+            window[-(i+1)] = val            
+        return window
+    elif window_type == 'hamming' or window_type == 'hann' or window_type == 'hann-poisson':
+        window = zeros(size, 'float64')
+        freq = tau / size
+        angle = 0.0
+        win_fun = lambda x: 0.54 - (0.46 * x) # hamming
+        if window_type == 'hann':
+            win_fun = lambda x: 0.5 - (0.5 * x)
+        elif window_type == 'hann-poisson':
+            win_fun = lambda x: (0.5 - (0.5 * cx)) * exp( -beta * ((midn - i) / midn))
+        for i in range(0, midn + 1):
             cx = cos(angle)
-            exec(FFT_WINDOW_DEFINITIONS[window_type][1])
+            val = win_fun(cx)
             window[i] = val
-            window[j] = val
-            j = j - 1
-            angle = angle + freq
-
-    return window
+            window[-(i+1)] = val 
+            angle += freq           
+        return window
+    else:
+        raise Exception('Specified Window Type not Defined')
 
 
 # Returns the norm of the window
@@ -161,4 +198,3 @@ def bes_i0 (x):
             (-0.157565e-2 + (y * (0.916281e-2 + (y * \
             (-0.2057706e-1 + (y * (0.2635537e-1 + (y * \
             (-0.1647633e-1 + (y * 0.392377e-2)))))))))))))))))
-
