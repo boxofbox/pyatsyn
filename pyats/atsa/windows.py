@@ -1,4 +1,4 @@
-from numpy import zeros, cos, sin, log, exp, sqrt, absolute, ones, pi
+from numpy import zeros, cos, sin, log, exp, sqrt, absolute, ones, pi, mean
 from math import tau
 
 
@@ -173,13 +173,23 @@ def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
     else:
         raise Exception('Specified Window Type not Defined')
 
-
 # Returns the norm of the window
 def window_norm (window):
     norm_factor = absolute(window).sum()
     if norm_factor == 0.0:
         raise Exception('Cannot normalize window with absolute sum of 0.0')
     return 1.0 / norm_factor
+    
+def norm_window(window):
+    """
+    returns a normalized window (i.e., integrates to 1.0)
+    """
+    window_sum = sum(window)
+    if window_sum == 0.0:
+        window_sum += 1 / len(window)
+    else:
+        window /= window_sum
+    return window
 
 
 # Modified Bessel Function of the First Kind

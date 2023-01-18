@@ -11,8 +11,6 @@ atsa.peak_tracking.py
     * the are built based on the assumed correctness of the previously obtained fft phase
 
 1.0 TODO
-* re-write and test windows.py
-* fix window_norm
 * ats synth for noise
 * add verbosity & remove debug flag
 * rebuild requirements.txt
@@ -21,11 +19,11 @@ atsa.peak_tracking.py
 * how do we tell setuptools we need libsndfile?
 
 BUGBIN
-* start end of residual has a blip for the sine test ?due to inaccurate phase calc at beginning & end?
+* start end of residual has a blip for the sine test ?due to inaccurate phase/amp calc at beginning & end? the way we calculated  and use window norms may be the culprit. Should we be normalizing with the isolated fft of the window in the freq space?
+* RELATED: i suspect the window norm is not entirely accurate, b/c for a rectangular window it applies a non x1.0 gain change
 * the consequence of par_energy=True is not clearly specified in legacy code, thus it is not properly implemented. Band size will no longer be 25, and the energy is not output with the ats.file
 * current ats standard silently assumes 25 critical bands for noise, but this is not strictly required in the pyats environment
-* i suspect the window norm is not entirely accurate, b/c for a rectangular window it applies a non x1.0 gain change
-* equalization of the residual energy using Parseval's thereom leads to significantly quieter default noise synthesis in supercollider than is expected compared to the true residual
+* equalization of the residual energy using Parseval's thereom leads to significantly quieter default noise synthesis (at least in supercollider) than is expected compared to the true residual
 
 OPEN Qs
 * for amp thresholding in atsa_util.py is it better to use amp_av or amp_max?

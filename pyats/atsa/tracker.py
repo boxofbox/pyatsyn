@@ -5,7 +5,7 @@ import soundfile as sf
 from pyats.ats_structure import AtsSound
 
 from pyats.atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
-from pyats.atsa.windows import make_fft_window, window_norm
+from pyats.atsa.windows import make_fft_window, norm_window, window_norm
 from pyats.atsa.peak_detect import peak_detection
 from pyats.atsa.critical_bands import evaluate_smr
 from pyats.atsa.peak_tracking import update_track_averages, peak_tracking
@@ -75,8 +75,8 @@ def tracker (   in_file,
         if window_type is None:
             window_type='blackman-harris-4-1'
         window = make_fft_window(window_type, M, beta=window_beta, alpha=window_alpha)
-    
-    norm = window_norm(window)   
+      
+    window = norm_window(window)    
     hop = int(M * hop_size)
     # central point of the window
     M_over_2 = (M - 1) // 2
@@ -149,10 +149,12 @@ def tracker (   in_file,
             back_pad = fil_ptr + M - in_sound.size
 
         data = zeros(N, "float64")
-        data[front_pad:M-back_pad] = multiply(
-                                            window[front_pad:M-back_pad], 
-                                            in_sound[fil_ptr+front_pad:fil_ptr+M-back_pad]
-                                            )
+        if not front_pad and not back_pad:
+            data[:M] = multiply( window, in_sound[fil_ptr:fil_ptr+M])
+        else:
+            data[front_pad:M-back_pad] = multiply(  window[front_pad:M-back_pad], 
+                                                    in_sound[fil_ptr+front_pad:fil_ptr+M-back_pad]
+                                                    )    
 
         # shift window by half of M so that phases in `data` are relatively accurate to midpoints
         data = roll(data, -M_over_2)
@@ -167,15 +169,15 @@ def tracker (   in_file,
         # PEAK DETECTION #
         ##################
 
-        fftfreqs = fftfreq(fd.size, 1 / sample_rate)
-                
+        fftfreqs = fftfreq(fd.size, 1 / sample_rate)                
+        
         if front_pad or back_pad:
             # apply correction for frames that hang off the edge of the input file, thus downscaling the actual amplitude            
             # multiply by additional 2.0 to account for symmetric negative frequencies
             fft_mags = absolute(fd) * 2.0 * window_norm(window[front_pad:M-back_pad])
         else:
             # multiply by additional 2.0 to account for symmetric negative frequencies
-            fft_mags = absolute(fd) * 2.0 * norm 
+            fft_mags = absolute(fd) * 2.0
 
         fftphases = angle(fd)
 
@@ -244,10 +246,11 @@ def tracker (   in_file,
 
 if __name__ == '__main__':
     from pyats.ats_io import ats_save, ats_load
-    filename = 'trumpetc3'
+    filename = 'sine440'
     ats_save(   tracker('../sample_sounds/'+filename+'.wav',
                         filename+'.ats', 
                         verbose=False, 
+                        window_type=None,
                         residual_file='/Users/jgl/Desktop/'+filename+'_residual.wav',
                         ), 
                 '/Users/jgl/Desktop/'+filename+'.ats', 
