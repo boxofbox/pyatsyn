@@ -1,6 +1,4 @@
-1.0 TODO
-
-* add verbosity
+1.0.0 TODO
 
 * documentation
 ** USE https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
@@ -15,14 +13,13 @@
 *** ats struct
 *** ats synth
 
-* setup read the docs
-
-* license
+* update Readme
 
 * remove this todo list
-* setup.py - requirements
+
+* update pyproject.toml
+
 * test pypi 
-* update Readme
 * deploy to pypi
 * deploy to github release
 * let people know

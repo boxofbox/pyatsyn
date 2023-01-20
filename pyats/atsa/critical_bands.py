@@ -3,6 +3,16 @@
 
 This module is used to evaluate critical band masking for signal-to-mask ratio calculations
 
+
+pyats Copyright (c) <2023>, <Johnathan G Lyon>
+All rights reserved.
+
+Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
+Di Liscia, Pete Moss and Juan Pampin>
+
+This source code is licensed under the BSD-style license found in the
+LICENSE.rst file in the root directory of this source tree. 
+
 Attributes
 ----------
 ATS_CRITICAL_BAND_EDGES : ndarray

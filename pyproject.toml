@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyats"
+authors = [
+    {name = "Johnathan G. Lyon", email = "johnathanglyon@gmail.com"}
+]
+description = "python-based implementation of Analysis-Synthesis-Transformation (ATS) spectral music system"
+readme = "README.rst"
+version = "1.0.0"
+keywords = ["?", "??"] ################ TODO https://packaging.python.org/en/latest/tutorials/packaging-projects/
+license = {text = "BSD-3-Clause"}
+classifiers = [
+    "Programming Language :: Python :: 3" ################## TODO https://packaging.python.org/en/latest/tutorials/packaging-projects/
+]
+requires-python = ">=3.6"
+dependencies = [
+    "numpy",
+    "soundfile",
+]
+
+[tool.setuptools.packages.find]
+exclude = ['docs*']
+
+[project.scripts]
+pyats-atsa = "pyats.atsa.tracker:tracker_CLI"
+pyats-synth = "pyats.ats_synth:synth_CLI"
+
+[project.optional-dependencies]
+docs = ["sphinx"]
+
+[project.urls]
+"Homepage" = "https://github.com/boxofbox/pyats"
+"Bug Tracker" = "https://github.com/boxofbox/pyats/issues"
+

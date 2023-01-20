@@ -71,7 +71,7 @@ def residual_analysis(  residual,
         if verbose:
             done = frame_n * 100.0 / frames
             if done > report_flag:
-                print(f"{done}% complete (residual analysis)")
+                print(f"\t{done:.2f}% complete (residual analysis)")
                 report_flag += report_every_x_percent
         
         # padding for window ranges that are out of the input file
@@ -123,6 +123,8 @@ def residual_analysis(  residual,
     ats_snd.bands = arange(n_bands, dtype='int64')
 
     if par_energy:
+        if verbose:
+            print("Transferring noise band energy to partials...")
         band_to_energy(ats_snd, band_edges)
         remove_bands(ats_snd, ATS_NOISE_THRESHOLD)
 

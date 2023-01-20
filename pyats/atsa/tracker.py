@@ -125,7 +125,7 @@ def tracker (   in_file,
         if verbose:
             done = frame_n * 100.0 / frames
             if done > report_flag:
-                print(f"{done}% complete (tracking)")
+                print(f"\t{done:.2f}% complete (tracking)")
                 report_flag += report_every_x_percent
         
         # store in_sound sample at the middle of the window
@@ -199,10 +199,19 @@ def tracker (   in_file,
     ########################
     # INITIALIZE ATS SOUND #
     ########################
+    pre_opt_track_len = len(tracks)
+    if verbose:
+        print(f"Tracker found {pre_opt_track_len} partial(s)")
 
     if optimize:
+        if verbose:
+            print("Optimizing...")
         tracks = optimize_tracks(tracks, analysis_frames, min_segment_length, optimize_amp_threshold, highest_frequency, lowest_frequency)
+        if verbose:
+            print(f"Optimization removed {pre_opt_track_len - len(tracks)} partial(s)")
 
+    if verbose:
+        print("Initializing AtsSound object...")
     ats_snd = AtsSound(out_snd, sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
 
     if optimize:
@@ -231,9 +240,16 @@ def tracker (   in_file,
     #####################
 
     if residual_file:
+        if verbose:
+            print("Computing Residual...")
         residual = compute_residual(residual_file, ats_snd, in_sound, st, nd)
+
+        if verbose:
+            print("Analyzing Residual...")
         residual_analysis(residual, ats_snd, equalize=True, verbose=verbose)       
 
+    if verbose:
+        print("Tracking analysis complete")
     return ats_snd
 
 
