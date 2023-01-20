@@ -1,9 +1,33 @@
+# -*- coding: utf-8 -*-
+
+# This source code is licensed under the BSD-style license found in the
+# LICENSE.rst file in the root directory of this source tree. 
+
+# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# All rights reserved.
+
+# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
+# Di Liscia, Pete Moss and Juan Pampin>
+
+
+"""TODO Summary
+
+TODO About
+
+Attributes TODO
+----------
+E!!!!GATS_CRITICAL_BAND_EDGES : ndarray[float]
+    1D array containing 26 frequencies that distinguish the default 25 critical bands
+
+"""
+
 from numpy import zeros, matmul, arange, cos, linspace, cumsum, sin, pi, real
-from numpy.random import uniform
 from numpy.fft import fft, ifft
+from numpy.random import uniform
 import soundfile as sf
 from math import tau
 import argparse
+
 
 from pyats.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
 from pyats.atsa.utils import compute_frames
@@ -134,8 +158,6 @@ def synth(ats_snd, normalize=False, compute_phase=True,
             bin_indices[i] = i
             bin_indices[-(i + 1)] = i
 
-        
-
         # build band-limited noise
         if noise_bands is None:
             noise_bands = ATS_CRITICAL_BAND_EDGES
@@ -170,7 +192,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
                 if out_ptr >= out_size:
                     break 
 
-        # envelope bands TODO
+        # envelope bands
         fil_ptr = 0
         for frame_n in range(frames):
 

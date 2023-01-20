@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyats.atsa.peak_tracking &mdash; pyats 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> pyats
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pyats</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyats</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyats.atsa.peak_tracking</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyats.atsa.peak_tracking</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># This source code is licensed under the BSD-style license found in the</span>
+<span class="c1"># LICENSE.rst file in the root directory of this source tree. </span>
+
+<span class="c1"># pyats Copyright (c) &lt;2023&gt;, &lt;Johnathan G Lyon&gt;</span>
+<span class="c1"># All rights reserved.</span>
+
+<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;, &lt;Oscar Pablo</span>
+<span class="c1"># Di Liscia, Pete Moss and Juan Pampin&gt;</span>
+
+
+<span class="sd">&quot;&quot;&quot;TODO Summary</span>
+
+<span class="sd">TODO About</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">heapq</span> <span class="kn">import</span> <span class="n">heappop</span><span class="p">,</span> <span class="n">heappush</span>
+<span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">SimpleQueue</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">tau</span><span class="p">,</span> <span class="n">remainder</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">matmul</span>
+
+
+<div class="viewcode-block" id="update_track_averages"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.update_track_averages">[docs]</a><span class="k">def</span> <span class="nf">update_track_averages</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">track_length</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    updates the list of current &lt;tracks&gt;</span>
+<span class="sd">    we use &lt;track_length&gt; frames of memory to update average amp, frq, and smr of the tracks</span>
+<span class="sd">    the function returns None, as the tracks are updated directly</span>
+<span class="sd">    &quot;&quot;&quot;</span>        
+    <span class="n">frames</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">frame_n</span><span class="p">,</span> <span class="n">track_length</span><span class="p">)</span>
+    <span class="n">first_frame</span> <span class="o">=</span> <span class="n">frame_n</span> <span class="o">-</span> <span class="n">frames</span>
+
+    <span class="k">for</span> <span class="n">tk</span> <span class="ow">in</span> <span class="n">tracks</span><span class="p">:</span>
+        <span class="n">track</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">track</span>
+        <span class="n">frq_acc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">amp_acc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">smr_acc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">last_frq</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">last_amp</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">last_smr</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_frame</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">):</span>
+
+            <span class="n">l_peaks</span> <span class="o">=</span> <span class="n">analysis_frames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">peak</span> <span class="o">=</span> <span class="n">find_track_in_peaks</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">l_peaks</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">peak</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">peak</span><span class="o">.</span><span class="n">frq</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">last_frq</span> <span class="o">=</span> <span class="n">peak</span><span class="o">.</span><span class="n">frq</span>
+                    <span class="n">frq_acc</span> <span class="o">+=</span> <span class="n">peak</span><span class="o">.</span><span class="n">frq</span>
+                    <span class="n">f</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">peak</span><span class="o">.</span><span class="n">amp</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">last_amp</span> <span class="o">=</span> <span class="n">peak</span><span class="o">.</span><span class="n">amp</span>
+                    <span class="n">amp_acc</span> <span class="o">+=</span> <span class="n">peak</span><span class="o">.</span><span class="n">amp</span>
+                    <span class="n">a</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">peak</span><span class="o">.</span><span class="n">smr</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="n">last_smr</span> <span class="o">=</span> <span class="n">peak</span><span class="o">.</span><span class="n">smr</span>
+                    <span class="n">smr_acc</span> <span class="o">+=</span> <span class="n">peak</span><span class="o">.</span><span class="n">smr</span>
+                    <span class="n">s</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tk</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">frq_acc</span> <span class="o">/</span> <span class="n">f</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">last_frq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tk</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">amp_acc</span> <span class="o">/</span> <span class="n">a</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">last_amp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tk</span><span class="o">.</span><span class="n">smr</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">smr_acc</span> <span class="o">/</span> <span class="n">s</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">last_smr</span><span class="p">)</span>    </div>
+
+
+<div class="viewcode-block" id="find_track_in_peaks"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.find_track_in_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_track_in_peaks</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">peaks</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">track</span> <span class="o">==</span> <span class="n">pk</span><span class="o">.</span><span class="n">track</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pk</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="peak_tracking"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.peak_tracking">[docs]</a><span class="k">def</span> <span class="nf">peak_tracking</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">hop_size</span><span class="p">,</span> <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">min_gap_length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    adaptation of the Gale-Shapley algorithm for stable matching of peaks_a and peaks_b</span>
+<span class="sd">    for matched peaks, track numbers are updated</span>
+<span class="sd">    tracker is gap-size aware, and will monitor &#39;slept&#39; tracks within gap distance as candidates</span>
+<span class="sd">    linear interpolation will be used to fill the gaps</span>
+<span class="sd">    return value is None, function will update tracks, peaks, and analysis_frames directly</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="c1"># state for costs</span>
+    <span class="n">peak_costs</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">]</span>
+
+    <span class="c1"># calculate costs for valid peak/track pairs</span>
+    <span class="k">for</span> <span class="n">tk_ind</span><span class="p">,</span> <span class="n">tk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tracks</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tk</span><span class="o">.</span><span class="n">asleep_for</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tk</span><span class="o">.</span><span class="n">asleep_for</span> <span class="o">&lt;</span> <span class="n">min_gap_length</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pk_ind</span><span class="p">,</span> <span class="n">pk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peaks</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">are_valid_candidates</span><span class="p">(</span><span class="n">tk</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="n">frequency_deviation</span><span class="p">):</span>
+                    <span class="n">cost</span> <span class="o">=</span> <span class="n">peak_dist</span><span class="p">(</span><span class="n">tk</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="n">SMR_continuity</span><span class="p">)</span>
+                    <span class="n">heappush</span><span class="p">(</span><span class="n">peak_costs</span><span class="p">[</span><span class="n">pk_ind</span><span class="p">],</span> <span class="n">MatchCost</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">tk_ind</span><span class="p">))</span>
+    
+    <span class="c1"># perform Gale-Shapley stable matching</span>
+    <span class="n">peak_queue</span> <span class="o">=</span> <span class="n">SimpleQueue</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">peaks</span><span class="p">)):</span>
+        <span class="n">peak_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+    
+    <span class="n">unmatched_peaks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">track_matches</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tracks</span><span class="p">]</span>
+
+    <span class="k">while</span><span class="p">(</span><span class="ow">not</span> <span class="n">peak_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">()):</span>
+        <span class="n">pk_ind</span> <span class="o">=</span> <span class="n">peak_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        
+        <span class="n">made_match</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">peak_costs</span><span class="p">[</span><span class="n">pk_ind</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">tk</span> <span class="o">=</span> <span class="n">heappop</span><span class="p">(</span><span class="n">peak_costs</span><span class="p">[</span><span class="n">pk_ind</span><span class="p">])</span>
+            <span class="c1"># if the track is unmatched</span>
+            <span class="k">if</span> <span class="n">track_matches</span><span class="p">[</span><span class="n">tk</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># update match</span>
+                <span class="n">track_matches</span><span class="p">[</span><span class="n">tk</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">MatchCost</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">pk_ind</span><span class="p">)</span>
+                <span class="n">made_match</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+            <span class="c1"># prior match is more costly, re-match</span>
+            <span class="k">elif</span> <span class="n">track_matches</span><span class="p">[</span><span class="n">tk</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">cost</span> <span class="o">&gt;</span> <span class="n">tk</span><span class="o">.</span><span class="n">cost</span><span class="p">:</span>
+                <span class="c1"># kick previous match back onto queue</span>
+                <span class="n">peak_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">track_matches</span><span class="p">[</span><span class="n">tk</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                <span class="c1"># update match</span>
+                <span class="n">track_matches</span><span class="p">[</span><span class="n">tk</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">MatchCost</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">cost</span><span class="p">,</span> <span class="n">pk_ind</span><span class="p">)</span>
+                <span class="n">made_match</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>
+        
+        <span class="c1"># if we ran out of candidates or no match was made, the peak is unmatched</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">made_match</span><span class="p">:</span>
+            <span class="n">unmatched_peaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pk_ind</span><span class="p">)</span>
+
+    <span class="n">unmatched_tracks</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># process matches, fixing gaps</span>
+    <span class="k">for</span> <span class="n">tk_ind</span><span class="p">,</span> <span class="n">tk_match</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">track_matches</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tk_match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">unmatched_tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tk_ind</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># update matched peak with track number</span>
+            <span class="n">pk</span> <span class="o">=</span> <span class="n">peaks</span><span class="p">[</span><span class="n">tk_match</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">pk</span><span class="o">.</span><span class="n">track</span> <span class="o">=</span> <span class="n">tk_ind</span>
+
+            <span class="n">tk</span> <span class="o">=</span> <span class="n">tracks</span><span class="p">[</span><span class="n">tk_ind</span><span class="p">]</span>
+            <span class="c1"># handle gap if any, with linear interpolation</span>
+            <span class="k">if</span> <span class="n">tk</span><span class="o">.</span><span class="n">asleep_for</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>                
+                <span class="n">interp_range</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">asleep_for</span> <span class="o">+</span> <span class="mi">1</span>                                              
+                <span class="n">tk</span><span class="o">.</span><span class="n">duration</span> <span class="o">+=</span> <span class="n">interp_range</span>
+                <span class="n">pk</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">duration</span>
+                <span class="n">frq_step</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">pk</span><span class="o">.</span><span class="n">frq</span>
+                <span class="n">amp_step</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">amp</span> <span class="o">-</span> <span class="n">pk</span><span class="o">.</span><span class="n">amp</span>
+                <span class="n">smr_step</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">smr</span> <span class="o">-</span> <span class="n">pk</span><span class="o">.</span><span class="n">smr</span>                
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">interp_range</span><span class="p">):</span> <span class="c1"># NOTE: we&#39;ll walk backward from frame_n</span>
+                    <span class="n">new_pk</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+                    <span class="n">mult</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="n">interp_range</span>
+                    <span class="n">new_pk</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="p">(</span><span class="n">frq_step</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">+</span> <span class="n">pk</span><span class="o">.</span><span class="n">frq</span>
+                    <span class="n">new_pk</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="p">(</span><span class="n">amp_step</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">+</span> <span class="n">pk</span><span class="o">.</span><span class="n">amp</span>
+                    <span class="n">new_pk</span><span class="o">.</span><span class="n">smr</span> <span class="o">=</span> <span class="p">(</span><span class="n">smr_step</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">+</span> <span class="n">pk</span><span class="o">.</span><span class="n">smr</span>
+                    <span class="n">samps_from_0_to_t</span> <span class="o">=</span> <span class="p">(</span><span class="n">interp_range</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">hop_size</span>
+                    <span class="n">i_samps_from_0</span> <span class="o">=</span> <span class="n">hop_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">interp_range</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span>                   
+                    <span class="n">new_pk</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="n">phase_interp_cubic</span><span class="p">(</span><span class="n">tk</span><span class="o">.</span><span class="n">frq</span><span class="p">,</span> <span class="n">pk</span><span class="o">.</span><span class="n">frq</span><span class="p">,</span> <span class="n">tk</span><span class="o">.</span><span class="n">pha</span><span class="p">,</span> <span class="n">pk</span><span class="o">.</span><span class="n">pha</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+                    <span class="n">new_pk</span><span class="o">.</span><span class="n">duration</span> <span class="o">-=</span> <span class="n">i</span>
+                    <span class="n">analysis_frames</span><span class="p">[</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_pk</span><span class="p">)</span>
+                <span class="n">tk</span><span class="o">.</span><span class="n">asleep_for</span> <span class="o">=</span> <span class="kc">None</span>                
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tk</span><span class="o">.</span><span class="n">duration</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">pk</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">duration</span>
+
+    <span class="c1"># instantiate new tracks for unmatched peaks</span>
+    <span class="k">for</span> <span class="n">pk_ind</span> <span class="ow">in</span> <span class="n">unmatched_peaks</span><span class="p">:</span>
+        <span class="n">peaks</span><span class="p">[</span><span class="n">pk_ind</span><span class="p">]</span><span class="o">.</span><span class="n">track</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span>
+        <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">peaks</span><span class="p">[</span><span class="n">pk_ind</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
+
+    <span class="c1"># sleep or update sleep for unmatched tracks</span>
+    <span class="k">for</span> <span class="n">tk_ind</span> <span class="ow">in</span> <span class="n">unmatched_tracks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tracks</span><span class="p">[</span><span class="n">tk_ind</span><span class="p">]</span><span class="o">.</span><span class="n">asleep_for</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tracks</span><span class="p">[</span><span class="n">tk_ind</span><span class="p">]</span><span class="o">.</span><span class="n">asleep_for</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tracks</span><span class="p">[</span><span class="n">tk_ind</span><span class="p">]</span><span class="o">.</span><span class="n">asleep_for</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="are_valid_candidates"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.are_valid_candidates">[docs]</a><span class="k">def</span> <span class="nf">are_valid_candidates</span><span class="p">(</span><span class="n">candidate1</span><span class="p">,</span> <span class="n">candidate2</span><span class="p">,</span> <span class="n">deviation</span><span class="p">):</span>
+    <span class="n">min_frq</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">candidate1</span><span class="o">.</span><span class="n">frq</span><span class="p">,</span> <span class="n">candidate2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">candidate1</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">candidate2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">min_frq</span> <span class="o">*</span> <span class="n">deviation</span></div>
+
+
+<div class="viewcode-block" id="peak_dist"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.peak_dist">[docs]</a><span class="k">def</span> <span class="nf">peak_dist</span><span class="p">(</span><span class="n">pk1</span><span class="p">,</span> <span class="n">pk2</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">pk1</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">pk2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pk1</span><span class="o">.</span><span class="n">smr</span> <span class="o">-</span> <span class="n">pk2</span><span class="o">.</span><span class="n">smr</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MatchCost"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.MatchCost">[docs]</a><span class="k">class</span> <span class="nc">MatchCost</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;to index: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2"> at cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">cost</span></div>
+
+
+<div class="viewcode-block" id="phase_interp"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.phase_interp">[docs]</a><span class="k">def</span> <span class="nf">phase_interp</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    returns the phase (-pi,pi] at time t</span>
+<span class="sd">    given that the freq linearly interpolates from</span>
+<span class="sd">    freq_0, with phase pha_0 at time 0 to freq_t at time t</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># assuming smooth linear interpolation the average frequency dictates phase rate estimate</span>
+    <span class="n">freq_est</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq_t</span> <span class="o">+</span> <span class="n">freq_0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">new_phase</span> <span class="o">=</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">freq_est</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">remainder</span><span class="p">(</span><span class="n">new_phase</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span> <span class="c1"># NOTE: IEEE remainder</span></div>
+
+
+<div class="viewcode-block" id="phase_interp_cubic"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.phase_interp_cubic">[docs]</a><span class="k">def</span> <span class="nf">phase_interp_cubic</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">pha_t</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    for cubic polynomial interpolation of phase</span>
+<span class="sd">    credit: McAulay &amp; Quatieri (1986)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">freq_to_radians_per_sample</span> <span class="o">=</span> <span class="n">tau</span> <span class="o">/</span> <span class="n">sample_rate</span>
+
+    <span class="n">alpha_beta_coeffs</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">samps_from_0_to_t</span>
+    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">alpha_beta_terms</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+    <span class="n">half_T</span> <span class="o">=</span> <span class="n">samps_from_0_to_t</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="n">w_0</span> <span class="o">=</span> <span class="n">freq_0</span> <span class="o">*</span> <span class="n">freq_to_radians_per_sample</span>
+    <span class="n">w_t</span> <span class="o">=</span> <span class="n">freq_t</span> <span class="o">*</span> <span class="n">freq_to_radians_per_sample</span>
+
+    <span class="n">M</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((((</span><span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">samps_from_0_to_t</span><span class="p">)</span> <span class="o">-</span> <span class="n">pha_t</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">half_T</span> <span class="o">*</span> <span class="p">(</span><span class="n">w_t</span> <span class="o">-</span> <span class="n">w_0</span><span class="p">)))</span> <span class="o">/</span> <span class="n">tau</span><span class="p">))</span>
+    <span class="n">alpha_beta_terms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">pha_t</span> <span class="o">-</span> <span class="n">pha_0</span> <span class="o">-</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">samps_from_0_to_t</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">M</span><span class="p">)</span>
+    <span class="n">alpha_beta_terms</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">w_t</span> <span class="o">-</span> <span class="n">w_0</span>
+    <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">matmul</span><span class="p">(</span><span class="n">alpha_beta_coeffs</span><span class="p">,</span> <span class="n">alpha_beta_terms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
+    
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Johnathan G Lyon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

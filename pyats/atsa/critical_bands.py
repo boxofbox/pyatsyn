@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
+
+# This source code is licensed under the BSD-style license found in the
+# LICENSE.rst file in the root directory of this source tree. 
+
+# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# All rights reserved.
+
+# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
+# Di Liscia, Pete Moss and Juan Pampin>
+
+
 """Critical Bands and Signal-to-Mask Ratio Evaluation
 
 This module is used to evaluate critical band masking for signal-to-mask ratio calculations
 
-
-pyats Copyright (c) <2023>, <Johnathan G Lyon>
-All rights reserved.
-
-Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
-Di Liscia, Pete Moss and Juan Pampin>
-
-This source code is licensed under the BSD-style license found in the
-LICENSE.rst file in the root directory of this source tree. 
-
 Attributes
 ----------
-ATS_CRITICAL_BAND_EDGES : ndarray
-    1D array containing 26 `float64` frequencies that distinguish the default 25 critical bands
+ATS_CRITICAL_BAND_EDGES : ndarray[float]
+    1D array containing 26 frequencies that distinguish the default 25 critical bands
 """
 
 from numpy import log10, array
@@ -36,19 +37,27 @@ def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50):
     """Function to evaluate signal-to-mask ratio for the given peaks
 
     This function evaluates masking values (SMR) for peaks in list `peaks`
-    The parameters will be use to calculate the triangle mask 
+    Iteratively the parameters will be use to generate a triangular mask 
+    with a primary vertex at the frequency of, and at delta_dB below the amplitude 
+    of the masker. 
+    
+    .. image:: _static/img/smr.png
+        :width: 350
+        :alt: graphic depiction of smr calculation
 
-    # TODO
-    [slope_l] are the slope of left side of the mask
-    in dBs/bark, <delta_db> is the dB treshold for
-    the masking curves (must be <= 0dB) 
+    All other peaks are evaluated based on the triangular
+    edges descending from the primary vertex according to slope_l for lower 
+    frequencies, and a calculated slope for higher frequencies. Maskee amplitudes
+    proportions above this edge are then assigned to the maskee peak's smr property.
+    By the end of the iteration, the largest smr seen as maskee is kept in the peak's
+    smr property.
 
     Parameters
     ----------
     peaks : Iterable[AtsPeaks]
         An iterable collection of AtsPeaks that will have their `smr` attributes updated
     slope_l : float, optional
-        A float to dictate the slope of the left side of the mask (default: -27.0)
+        A float (in dB/bark) to dictate the slope of the left side of the mask (default: -27.0)
     delta_db : float, optional
         A float (in dB) that sets the amplitude threshold for the masking curves
         Must be (<= 0dB) (default: -50)
@@ -86,11 +95,18 @@ def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50):
 def frq_to_bark(freq):
     """Function to convert frequency from Hz to bark scale
 
-    # TODO
+    This function will convert frequency from Hz to bark scale, a psychoacoustical scale used 
+    for subjective measurements of loudness.
 
     Parameters
     ----------
+    freq : float
+        A frequency (in Hz) to convert to bark scale
 
+    Returns
+    ----------
+    float
+        the frequency in bark scale 
 
     """
     if freq <= 0.0:
@@ -107,15 +123,29 @@ def frq_to_bark(freq):
 
 
 def find_band(freq):
-    """Function to ...
-
-    # TODO
+    """Function to retrieve lower band edge in :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`
 
     Parameters
     ----------
+    freq : float
+        A frequency (in Hz) to find the related band in :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` for
+    
+    Returns
+    ----------
+    int
+        index into :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` that marks the lower band edge for the given freq
 
+    Raises
+    ----------
+    LookupError
+        if the frequency given is outside the range of the lowest or highest edge in :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`
 
     """
+    if freq < ATS_CRITICAL_BAND_EDGES[0]:
+        raise LookupError("Frequency is below range of ATS_CRITICAL_BAND_EDGES")
+    if freq > ATS_CRITICAL_BAND_EDGES[-1]:
+        raise LookupError("Frequency is above range of ATS_CRITICAL_BAND_EDGES")
+
     for ind in range(len(ATS_CRITICAL_BAND_EDGES)-2,0,-1):
         if freq > ATS_CRITICAL_BAND_EDGES[ind]:
             return ind
@@ -123,17 +153,17 @@ def find_band(freq):
 
 
 def compute_slope_r(masker_amp_db, slope_l = -27.0):
-    """Function to ...
+    """Function to compute right slope of triangular mask
 
-    # TODO
+    Computes the right slope of mask, dependent on the level of the masker
 
     Parameters
     ----------
+    masker_amp_db : float
+        Amplitude (in dB) of the masker peak
 
+    slope_l : float, optional
+        slope (in dB / bark) of the lower frequency side of the masking triangle
 
-    """
-    """
-    computes the masker slope toward high frequencies
-    depends on the levle of the masker
     """
     return slope_l + (max(masker_amp_db - 40.0, 0.0) * 0.37)

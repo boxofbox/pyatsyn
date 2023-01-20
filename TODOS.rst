@@ -2,7 +2,6 @@
 
 * documentation
 ** USE https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
-*** critical bands
 *** peak detect
 *** peak tracking
 *** residual
@@ -12,13 +11,15 @@
 *** ats_io
 *** ats struct
 *** ats synth
-
 * update Readme about section
-* pytoml
+
+* generate html DOCs with sphinx
+* fix formatting
+* add any pictures or external links/references
 
 * remove this todo list
 
-* test pypi 
+* test pypi  https://packaging.python.org/en/latest/tutorials/packaging-projects/
 * deploy to pypi
 * deploy to github release
 * let people know

@@ -10,10 +10,15 @@ authors = [
 description = "python-based implementation of Analysis-Synthesis-Transformation (ATS) spectral music system"
 readme = "README.md"
 version = "1.0.0"
-keywords = ["?", "??"] ################ TODO https://packaging.python.org/en/latest/tutorials/packaging-projects/
+keywords = ["spectral", "audio", "dsp", "synthesis", "music", "sound", "analysis", "ats"]
 license = {text = "BSD-3-Clause"}
 classifiers = [
-    "Programming Language :: Python :: 3" ################## TODO https://packaging.python.org/en/latest/tutorials/packaging-projects/
+    "Programming Language :: Python :: 3",
+    "Development Status :: 5 - Production/Stable",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+    "Topic :: Multimedia :: Sound/Audio :: Sound Synthesis",
+    "License :: OSI Approved :: BSD License",
 ]
 requires-python = ">=3.6"
 dependencies = [

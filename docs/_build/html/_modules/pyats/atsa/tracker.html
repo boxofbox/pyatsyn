@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyats.atsa.tracker &mdash; pyats 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> pyats
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pyats</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyats</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyats.atsa.tracker</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyats.atsa.tracker</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># This source code is licensed under the BSD-style license found in the</span>
+<span class="c1"># LICENSE.rst file in the root directory of this source tree. </span>
+
+<span class="c1"># pyats Copyright (c) &lt;2023&gt;, &lt;Johnathan G Lyon&gt;</span>
+<span class="c1"># All rights reserved.</span>
+
+<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;, &lt;Oscar Pablo</span>
+<span class="c1"># Di Liscia, Pete Moss and Juan Pampin&gt;</span>
+
+
+<span class="sd">&quot;&quot;&quot;TODO Summary</span>
+
+<span class="sd">TODO About</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">absolute</span><span class="p">,</span> <span class="n">angle</span>
+<span class="kn">from</span> <span class="nn">numpy.fft</span> <span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">fftfreq</span>
+<span class="kn">import</span> <span class="nn">soundfile</span> <span class="k">as</span> <span class="nn">sf</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="kn">from</span> <span class="nn">pyats.ats_structure</span> <span class="kn">import</span> <span class="n">AtsSound</span>
+
+<span class="kn">from</span> <span class="nn">pyats.atsa.utils</span> <span class="kn">import</span> <span class="n">db_to_amp</span><span class="p">,</span> <span class="n">next_power_of_2</span><span class="p">,</span> <span class="n">compute_frames</span><span class="p">,</span> <span class="n">optimize_tracks</span>
+<span class="kn">from</span> <span class="nn">pyats.atsa.windows</span> <span class="kn">import</span> <span class="n">make_fft_window</span><span class="p">,</span> <span class="n">norm_window</span><span class="p">,</span> <span class="n">window_norm</span><span class="p">,</span> <span class="n">VALID_FFT_WINDOW_DEFINITIONS</span>
+<span class="kn">from</span> <span class="nn">pyats.atsa.peak_detect</span> <span class="kn">import</span> <span class="n">peak_detection</span>
+<span class="kn">from</span> <span class="nn">pyats.atsa.critical_bands</span> <span class="kn">import</span> <span class="n">evaluate_smr</span>
+<span class="kn">from</span> <span class="nn">pyats.atsa.peak_tracking</span> <span class="kn">import</span> <span class="n">update_track_averages</span><span class="p">,</span> <span class="n">peak_tracking</span>
+<span class="kn">from</span> <span class="nn">pyats.atsa.residual</span> <span class="kn">import</span> <span class="n">compute_residual</span><span class="p">,</span> <span class="n">residual_analysis</span>
+
+<div class="viewcode-block" id="tracker"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.tracker.tracker">[docs]</a><span class="k">def</span> <span class="nf">tracker</span> <span class="p">(</span>   <span class="n">in_file</span><span class="p">,</span> 
+                <span class="n">out_snd</span><span class="p">,</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="c1"># analysis start point (in seconds)</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># max duration to analyze (in seconds) or &#39;None&#39; if analyze to end</span>
+                <span class="n">lowest_frequency</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="c1"># must be &gt; 0</span>
+                <span class="n">highest_frequency</span> <span class="o">=</span> <span class="mf">20000.0</span><span class="p">,</span>
+                <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                <span class="n">window_cycles</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+                <span class="n">window_type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># defaults to &#39;blackman-harris-4-1&#39;</span>
+                <span class="n">hop_size</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span> <span class="c1"># in fraction of window size</span>
+                <span class="n">fft_size</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># None, or force an fft size</span>
+                <span class="n">amp_threshold</span> <span class="o">=</span> <span class="n">db_to_amp</span><span class="p">(</span><span class="o">-</span><span class="mi">60</span><span class="p">),</span>
+                <span class="n">track_length</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="n">min_gap_length</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="n">min_segment_length</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                <span class="n">last_peak_contribution</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>              
+                <span class="n">residual_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">optimize</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">optimize_amp_threshold</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># in amplitude</span>
+                <span class="n">force_M</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># None, or a forced window length in samples</span>
+                <span class="n">force_window</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># None, or a numpy.ndarray of floats</span>
+                <span class="n">window_alpha</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                <span class="n">window_beta</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                
+                <span class="p">):</span>
+    
+    <span class="c1"># read input audio file</span>
+    <span class="n">in_sound</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">in_sound</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Input audio file must be mono&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># get first and last sample indices</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">in_sound</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nd</span> <span class="o">=</span> <span class="n">st</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+    
+    <span class="c1"># calculate windowing parameters</span>
+    <span class="n">total_samps</span> <span class="o">=</span> <span class="n">nd</span> <span class="o">-</span> <span class="n">st</span>
+    <span class="n">analysis_duration</span> <span class="o">=</span> <span class="n">total_samps</span> <span class="o">/</span> <span class="n">sample_rate</span>
+    <span class="n">cycle_samps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mi">1</span> <span class="o">/</span> <span class="n">lowest_frequency</span><span class="p">)</span> <span class="o">*</span> <span class="n">window_cycles</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
+
+    <span class="n">M</span> <span class="o">=</span> <span class="n">force_M</span>
+    <span class="k">if</span> <span class="n">M</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># by default we want an odd length window centered at time 0.0</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="n">cycle_samps</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">M</span> <span class="o">=</span> <span class="n">cycle_samps</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">M</span> <span class="o">=</span> <span class="n">cycle_samps</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="n">fft_size</span>
+    <span class="k">if</span> <span class="n">N</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># default fft size is next power of 2</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">next_power_of_2</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+
+    <span class="c1"># instantiate window    </span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">force_window</span>
+    <span class="k">if</span> <span class="n">window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">window_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">window_type</span><span class="o">=</span><span class="s1">&#39;blackman-harris-4-1&#39;</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">make_fft_window</span><span class="p">(</span><span class="n">window_type</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">window_beta</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">window_alpha</span><span class="p">)</span>
+      
+    <span class="n">window</span> <span class="o">=</span> <span class="n">norm_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>    
+    <span class="n">hop</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">hop_size</span><span class="p">)</span>
+    <span class="c1"># central point of the window</span>
+    <span class="n">M_over_2</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="n">compute_frames</span><span class="p">(</span><span class="n">total_samps</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>    
+
+    <span class="c1"># magic number for fft frequencies (frequency resolution)</span>
+    <span class="n">fft_mag</span> <span class="o">=</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="n">N</span>
+
+    <span class="n">l_frq</span> <span class="o">=</span> <span class="n">lowest_frequency</span>
+    <span class="k">if</span> <span class="n">l_frq</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Lowest frequency must be greater than 0.0&#39;</span><span class="p">)</span>
+    
+    <span class="n">h_frq</span> <span class="o">=</span> <span class="n">highest_frequency</span>
+    <span class="k">if</span> <span class="n">h_frq</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Capping highest frequency to Nyquist Frequency&#39;</span><span class="p">)</span>
+        <span class="n">h_frq</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">h_frq</span> <span class="o">&lt;</span> <span class="n">l_frq</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Highest frequency must be greater than lowest frequency&#39;</span><span class="p">)</span>
+
+    <span class="c1"># lowest/highest bins to read</span>
+    <span class="n">lowest_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">l_frq</span> <span class="o">/</span> <span class="n">fft_mag</span><span class="p">)</span>
+    <span class="n">highest_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h_frq</span> <span class="o">/</span> <span class="n">fft_mag</span><span class="p">)</span>
+
+    <span class="c1"># used to store central points of the windows</span>
+    <span class="n">win_samps</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+    <span class="c1"># storage for lists of peaks</span>
+    <span class="n">analysis_frames</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frames</span><span class="p">)]</span>
+    <span class="c1"># set file pointer half a window from the first sample</span>
+    <span class="n">fil_ptr</span> <span class="o">=</span> <span class="n">st</span> <span class="o">-</span> <span class="n">M_over_2</span>
+    
+    <span class="c1"># guarantee that we have a valid minimum gap length</span>
+    <span class="k">if</span> <span class="n">min_gap_length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">min_gap_length</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">fft_mags</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;frames = </span><span class="si">{</span><span class="n">frames</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;M = </span><span class="si">{</span><span class="n">M</span><span class="si">}</span><span class="s2">; N = </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beginning FFT -&gt; peak tracking analysis...&quot;</span><span class="p">)</span>
+        <span class="n">report_every_x_percent</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">report_flag</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="n">frame_n</span> <span class="o">*</span> <span class="mf">100.0</span> <span class="o">/</span> <span class="n">frames</span>
+            <span class="k">if</span> <span class="n">done</span> <span class="o">&gt;</span> <span class="n">report_flag</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">done</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% complete (tracking)&quot;</span><span class="p">)</span>
+                <span class="n">report_flag</span> <span class="o">+=</span> <span class="n">report_every_x_percent</span>
+        
+        <span class="c1"># store in_sound sample at the middle of the window</span>
+        <span class="n">win_samps</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">fil_ptr</span> <span class="o">+</span> <span class="n">M_over_2</span>
+
+        <span class="c1">###################</span>
+        <span class="c1"># WINDOWING + FFT #</span>
+        <span class="c1">###################</span>
+
+        <span class="c1"># padding for window ranges that are out of the input file</span>
+        <span class="n">front_pad</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">back_pad</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">fil_ptr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">front_pad</span> <span class="o">=</span> <span class="o">-</span><span class="n">fil_ptr</span>
+        <span class="k">if</span> <span class="n">fil_ptr</span> <span class="o">+</span> <span class="n">M</span> <span class="o">&gt;=</span> <span class="n">in_sound</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">back_pad</span> <span class="o">=</span> <span class="n">fil_ptr</span> <span class="o">+</span> <span class="n">M</span> <span class="o">-</span> <span class="n">in_sound</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">front_pad</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">back_pad</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[:</span><span class="n">M</span><span class="p">]</span> <span class="o">=</span> <span class="n">window</span> <span class="o">*</span> <span class="n">in_sound</span><span class="p">[</span><span class="n">fil_ptr</span><span class="p">:</span><span class="n">fil_ptr</span><span class="o">+</span><span class="n">M</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">front_pad</span><span class="p">:</span><span class="n">M</span><span class="o">-</span><span class="n">back_pad</span><span class="p">]</span> <span class="o">=</span> <span class="n">window</span><span class="p">[</span><span class="n">front_pad</span><span class="p">:</span><span class="n">M</span><span class="o">-</span><span class="n">back_pad</span><span class="p">]</span> <span class="o">*</span> <span class="n">in_sound</span><span class="p">[</span><span class="n">fil_ptr</span><span class="o">+</span><span class="n">front_pad</span><span class="p">:</span><span class="n">fil_ptr</span><span class="o">+</span><span class="n">M</span><span class="o">-</span><span class="n">back_pad</span><span class="p">]</span>
+                                                      
+        <span class="c1"># shift window by half of M so that phases in `data` are relatively accurate to midpoints</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">roll</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">-</span><span class="n">M_over_2</span><span class="p">)</span>
+
+        <span class="c1"># update file pointer</span>
+        <span class="n">fil_ptr</span> <span class="o">+=</span> <span class="n">hop</span>
+
+        <span class="c1"># get the DFT</span>
+        <span class="n">fd</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        
+        <span class="c1">##################</span>
+        <span class="c1"># PEAK DETECTION #</span>
+        <span class="c1">##################</span>
+
+        <span class="n">fftfreqs</span> <span class="o">=</span> <span class="n">fftfreq</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">sample_rate</span><span class="p">)</span>                
+        
+        <span class="k">if</span> <span class="n">front_pad</span> <span class="ow">or</span> <span class="n">back_pad</span><span class="p">:</span>
+            <span class="c1"># apply correction for frames that hang off the edge of the input file, thus downscaling the actual amplitude            </span>
+            <span class="c1"># multiply by additional 2.0 to account for symmetric negative frequencies</span>
+            <span class="n">fft_mags</span> <span class="o">=</span> <span class="n">absolute</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">window_norm</span><span class="p">(</span><span class="n">window</span><span class="p">[</span><span class="n">front_pad</span><span class="p">:</span><span class="n">M</span><span class="o">-</span><span class="n">back_pad</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># multiply by additional 2.0 to account for symmetric negative frequencies</span>
+            <span class="n">fft_mags</span> <span class="o">=</span> <span class="n">absolute</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span>
+
+        <span class="n">fftphases</span> <span class="o">=</span> <span class="n">angle</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+
+        <span class="n">peaks</span> <span class="o">=</span> <span class="n">peak_detection</span><span class="p">(</span><span class="n">fftfreqs</span><span class="p">,</span> <span class="n">fft_mags</span><span class="p">,</span> <span class="n">fftphases</span><span class="p">,</span> <span class="n">lowest_bin</span><span class="p">,</span> <span class="n">highest_bin</span><span class="p">,</span> <span class="n">amp_threshold</span><span class="p">)</span>         
+
+        <span class="k">if</span> <span class="n">peaks</span><span class="p">:</span>
+            <span class="c1"># masking curve evaluation using a critical band based model</span>
+            <span class="n">evaluate_smr</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
+
+        <span class="c1">#################</span>
+        <span class="c1"># PEAK TRACKING #</span>
+        <span class="c1">#################</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">update_track_averages</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">track_length</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">last_peak_contribution</span><span class="p">)</span>
+            <span class="n">peak_tracking</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">hop</span><span class="p">,</span> <span class="n">frequency_deviation</span><span class="p">,</span> <span class="n">SMR_continuity</span><span class="p">,</span> <span class="n">min_gap_length</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># otherwise instantiate tracks with the current frame&#39;s peaks, if any</span>
+            <span class="k">for</span> <span class="n">pk_ind</span><span class="p">,</span> <span class="n">pk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">peaks</span><span class="p">):</span>
+                <span class="n">pk</span><span class="o">.</span><span class="n">track</span> <span class="o">=</span> <span class="n">pk_ind</span>
+            <span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="n">pk</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span> <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">]</span>
+
+        <span class="c1"># store peaks for this current frame</span>
+        <span class="n">analysis_frames</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">peaks</span>    
+
+    <span class="c1">########################</span>
+    <span class="c1"># INITIALIZE ATS SOUND #</span>
+    <span class="c1">########################</span>
+    <span class="n">pre_opt_track_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tracker found </span><span class="si">{</span><span class="n">pre_opt_track_len</span><span class="si">}</span><span class="s2"> partial(s)&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">optimize</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Optimizing...&quot;</span><span class="p">)</span>
+        <span class="n">tracks</span> <span class="o">=</span> <span class="n">optimize_tracks</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">min_segment_length</span><span class="p">,</span> <span class="n">optimize_amp_threshold</span><span class="p">,</span> <span class="n">highest_frequency</span><span class="p">,</span> <span class="n">lowest_frequency</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimization removed </span><span class="si">{</span><span class="n">pre_opt_track_len</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span><span class="si">}</span><span class="s2"> partial(s)&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initializing AtsSound object...&quot;</span><span class="p">)</span>
+    <span class="n">ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="n">out_snd</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">hop</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">),</span> <span class="n">frames</span><span class="p">,</span> <span class="n">analysis_duration</span><span class="p">,</span> <span class="n">has_phase</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">optimize</span><span class="p">:</span>
+        <span class="n">ats_snd</span><span class="o">.</span><span class="n">optimized</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">amp_max</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">frq_max</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">tk</span> <span class="ow">in</span> <span class="n">tracks</span><span class="p">:</span>
+            <span class="n">ats_snd</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">tk</span><span class="o">.</span><span class="n">track</span><span class="p">]</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">frq</span>
+            <span class="n">ats_snd</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">tk</span><span class="o">.</span><span class="n">track</span><span class="p">]</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">amp</span>
+            <span class="n">amp_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">amp_max</span><span class="p">,</span> <span class="n">tk</span><span class="o">.</span><span class="n">amp_max</span><span class="p">)</span>
+            <span class="n">frq_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">frq_max</span><span class="p">,</span> <span class="n">tk</span><span class="o">.</span><span class="n">frq_max</span><span class="p">)</span>
+        <span class="n">ats_snd</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="n">amp_max</span>
+        <span class="n">ats_snd</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="n">frq_max</span>
+
+    <span class="c1"># fill up with data</span>
+    <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
+        <span class="n">frame_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">win_samps</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">-</span> <span class="n">st</span><span class="p">)</span> <span class="o">/</span> <span class="n">sample_rate</span>
+        <span class="n">ats_snd</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">frame_time</span>
+        <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">analysis_frames</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]:</span>
+            <span class="n">ats_snd</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">pk</span><span class="o">.</span><span class="n">track</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">frq</span>
+            <span class="n">ats_snd</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">pk</span><span class="o">.</span><span class="n">track</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">amp</span>
+            <span class="n">ats_snd</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">pk</span><span class="o">.</span><span class="n">track</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">pk</span><span class="o">.</span><span class="n">pha</span>     
+
+    <span class="c1">#####################</span>
+    <span class="c1"># RESIDUAL ANALYSIS #</span>
+    <span class="c1">#####################</span>
+
+    <span class="k">if</span> <span class="n">residual_file</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Computing Residual...&quot;</span><span class="p">)</span>
+        <span class="n">residual</span> <span class="o">=</span> <span class="n">compute_residual</span><span class="p">(</span><span class="n">residual_file</span><span class="p">,</span> <span class="n">ats_snd</span><span class="p">,</span> <span class="n">in_sound</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">nd</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Analyzing Residual...&quot;</span><span class="p">)</span>
+        <span class="n">residual_analysis</span><span class="p">(</span><span class="n">residual</span><span class="p">,</span> <span class="n">ats_snd</span><span class="p">,</span> <span class="n">equalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>       
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tracking analysis complete&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ats_snd</span></div>
+
+
+<div class="viewcode-block" id="tracker_CLI"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.tracker.tracker_CLI">[docs]</a><span class="k">def</span> <span class="nf">tracker_CLI</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Generates an Analysis-Transformation-Synthesis (.ats) file from an audio file&quot;</span>
+        
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;audio_file_in&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to the audio file to analyze&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;ats_file_out&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;.ats file path to output to&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;verbose processing&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-r&quot;</span><span class="p">,</span><span class="s2">&quot;--residual_file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to the audio file used to store residual analysis. </span><span class="se">\</span>
+<span class="s2">                            NOTE: noise calculation will not be performed in .ats file without this&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;--start&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;timepoint (in s) in audiofile to begin analysis (default 0.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--duration&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;duration (in s) in audiofile from start to end analysis (default duration of file)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--low_freq&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;lowest frequency to analyze (must be &gt; 0) (default 20)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--hi_freq&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;highest frequency to analyze (default 20000)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--amp_threshold&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;lowest amplitude used for peak detection (default 0.001)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--freq_dev&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;frequency deviation; used to constrain peak tracking matches (default 0.1)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--SMR_continuity&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;percentage of SMR to use in cost calculations during peak tracking (default 0.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    
+    <span class="n">valid_fft_win_str</span> <span class="o">=</span> <span class="s2">&quot;[ &quot;</span> <span class="o">+</span> <span class="s1">&#39; | &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">VALID_FFT_WINDOW_DEFINITIONS</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; ]&quot;</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_type&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">ascii</span><span class="p">,</span> 
+        <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;type of window to use for FFT analysis (default: blackman-harris-4-1); Supported types: </span><span class="si">{</span><span class="n">valid_fft_win_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_alpha&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter used for tukey windows (default 0.5)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_beta&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter used for certain window types (default 1.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--hop_size&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;percentage of window overlap (default 0.25)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--fft_size&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;force an fft_size&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_cycles&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;lowest frequency to fit in analysis window; used to determine window size (default 4)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--force_M&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;forced window length in samples&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--track_length&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of frames used to smooth frequency trajectories (default 3)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--last_peak_contribution&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;additional bias for most recent value; used for smoothing trajectories (default 0.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--min_gap_length&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;tracked peak gaps longer than this (in frames) will not be interpolated (default 3)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--min_segment_length&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;minimize size (in frames) of a track segment, otherwise it is pruned (default 3)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--opt_amp_threshold&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;additional amplitude threshold used during optimization to prune tracks (default 0.001)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--no_optimize&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;skip pre-output optimization of .ats file&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">tracker</span><span class="p">(</span>    <span class="n">args</span><span class="o">.</span><span class="n">audio_file_in</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">ats_file_out</span><span class="p">,</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+                <span class="n">lowest_frequency</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">low_freq</span><span class="p">,</span>
+                <span class="n">highest_frequency</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">hi_freq</span><span class="p">,</span>
+                <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">freq_dev</span><span class="p">,</span>
+                <span class="n">window_cycles</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_cycles</span><span class="p">,</span>
+                <span class="n">window_type</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_type</span><span class="p">,</span>
+                <span class="n">hop_size</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">hop_size</span><span class="p">,</span>                
+                <span class="n">fft_size</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">fft_size</span><span class="p">,</span>
+                <span class="n">amp_threshold</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">amp_threshold</span><span class="p">,</span>
+                <span class="n">track_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">track_length</span><span class="p">,</span>
+                <span class="n">min_gap_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">min_gap_length</span><span class="p">,</span>
+                <span class="n">min_segment_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">min_segment_length</span><span class="p">,</span>
+                <span class="n">last_peak_contribution</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">last_peak_contribution</span><span class="p">,</span>
+                <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">SMR_continuity</span><span class="p">,</span>
+                <span class="n">optimize_amp_threshold</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">opt_amp_threshold</span><span class="p">,</span>
+                <span class="n">residual_file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">residual_file</span><span class="p">,</span>
+                <span class="n">optimize</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_optimize</span><span class="p">,</span>
+                <span class="n">force_M</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">force_M</span><span class="p">,</span>
+                <span class="n">window_alpha</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_alpha</span><span class="p">,</span>
+                <span class="n">window_beta</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_beta</span><span class="p">,</span>
+                <span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>  
+            <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Johnathan G Lyon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

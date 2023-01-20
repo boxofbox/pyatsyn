@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyats.atsa package &mdash; pyats 1.0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="pyats package" href="pyats.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pyats
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pyats</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pyats.html">pyats package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pyats.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyats.atsa package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.html#module-pyats.ats_io">pyats.ats_io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.html#module-pyats.ats_structure">pyats.ats_structure module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.html#module-pyats.ats_synth">pyats.ats_synth module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.html#module-pyats">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyats</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">pyats</a></li>
+          <li class="breadcrumb-item"><a href="pyats.html">pyats package</a></li>
+      <li class="breadcrumb-item active">pyats.atsa package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pyats.atsa.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pyats-atsa-package">
+<h1>pyats.atsa package<a class="headerlink" href="#pyats-atsa-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-pyats.atsa.critical_bands">
+<span id="pyats-atsa-critical-bands-module"></span><h2>pyats.atsa.critical_bands module<a class="headerlink" href="#module-pyats.atsa.critical_bands" title="Permalink to this heading"></a></h2>
+<p>Critical Bands and Signal-to-Mask Ratio Evaluation</p>
+<p>This module is used to evaluate critical band masking for signal-to-mask ratio calculations</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></span><a class="headerlink" href="#pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="Permalink to this definition"></a></dt>
+<dd><p>1D array containing 26 frequencies that distinguish the default 25 critical bands</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.critical_bands.compute_slope_r">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">compute_slope_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masker_amp_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-27.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/critical_bands.html#compute_slope_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.critical_bands.compute_slope_r" title="Permalink to this definition"></a></dt>
+<dd><p>Function to compute right slope of triangular mask</p>
+<p>Computes the right slope of mask, dependent on the level of the masker</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>masker_amp_db</strong> (<em>float</em>) – Amplitude (in dB) of the masker peak</p></li>
+<li><p><strong>slope_l</strong> (<em>float</em><em>, </em><em>optional</em>) – slope (in dB / bark) of the lower frequency side of the masking triangle</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.critical_bands.evaluate_smr">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">evaluate_smr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-27.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/critical_bands.html#evaluate_smr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.critical_bands.evaluate_smr" title="Permalink to this definition"></a></dt>
+<dd><p>Function to evaluate signal-to-mask ratio for the given peaks</p>
+<p>This function evaluates masking values (SMR) for peaks in list <cite>peaks</cite>
+Iteratively the parameters will be use to generate a triangular mask
+with a primary vertex at the frequency of, and at delta_dB below the amplitude
+of the masker.</p>
+<a class="reference internal image-reference" href="_images/smr.png"><img alt="graphic depiction of smr calculation" src="_images/smr.png" style="width: 350px;" /></a>
+<p>All other peaks are evaluated based on the triangular
+edges descending from the primary vertex according to slope_l for lower
+frequencies, and a calculated slope for higher frequencies. Maskee amplitudes
+proportions above this edge are then assigned to the maskee peak’s smr property.
+By the end of the iteration, the largest smr seen as maskee is kept in the peak’s
+smr property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>peaks</strong> (<em>Iterable</em><em>[</em><em>AtsPeaks</em><em>]</em>) – An iterable collection of AtsPeaks that will have their <cite>smr</cite> attributes updated</p></li>
+<li><p><strong>slope_l</strong> (<em>float</em><em>, </em><em>optional</em>) – A float (in dB/bark) to dictate the slope of the left side of the mask (default: -27.0)</p></li>
+<li><p><strong>delta_db</strong> (<em>float</em><em>, </em><em>optional</em>) – A float (in dB) that sets the amplitude threshold for the masking curves
+Must be (&lt;= 0dB) (default: -50)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>delta_db</cite> is not less than or equal to 0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.critical_bands.find_band">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">find_band</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/critical_bands.html#find_band"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.critical_bands.find_band" title="Permalink to this definition"></a></dt>
+<dd><p>Function to retrieve lower band edge in <a class="reference internal" href="#pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>freq</strong> (<em>float</em>) – A frequency (in Hz) to find the related band in <a class="reference internal" href="#pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> for</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>index into <a class="reference internal" href="#pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> that marks the lower band edge for the given freq</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>LookupError</strong> – if the frequency given is outside the range of the lowest or highest edge in <a class="reference internal" href="#pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.critical_bands.frq_to_bark">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">frq_to_bark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/critical_bands.html#frq_to_bark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.critical_bands.frq_to_bark" title="Permalink to this definition"></a></dt>
+<dd><p>Function to convert frequency from Hz to bark scale</p>
+<p>This function will convert frequency from Hz to bark scale, a psychoacoustical scale used
+for subjective measurements of loudness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>freq</strong> (<em>float</em>) – A frequency (in Hz) to convert to bark scale</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the frequency in bark scale</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyats.atsa.peak_detect">
+<span id="pyats-atsa-peak-detect-module"></span><h2>pyats.atsa.peak_detect module<a class="headerlink" href="#module-pyats.atsa.peak_detect" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_detect.parabolic_interp">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">parabolic_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_detect.html#parabolic_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_detect.parabolic_interp" title="Permalink to this definition"></a></dt>
+<dd><p>parabolic-interp &lt;alpha&gt; &lt;beta&gt; &lt;gamma&gt;
+does parabolic interpolation of 3 points
+returns the x offset and height
+of the interpolated peak</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_detect.peak_detection">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">peak_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftfreqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftmags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftphases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_bin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_bin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_detect.html#peak_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_detect.peak_detection" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_detect.phase_correct">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">phase_correct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_detect.html#phase_correct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_detect.phase_correct" title="Permalink to this definition"></a></dt>
+<dd><p>angular interpolation</p>
+</dd></dl>
+
+</section>
+<section id="module-pyats.atsa.peak_tracking">
+<span id="pyats-atsa-peak-tracking-module"></span><h2>pyats.atsa.peak_tracking module<a class="headerlink" href="#module-pyats.atsa.peak_tracking" title="Permalink to this heading"></a></h2>
+<p>TODO Summary</p>
+<p>TODO About</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyats.atsa.peak_tracking.MatchCost">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">MatchCost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_tracking.html#MatchCost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_tracking.MatchCost" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_tracking.are_valid_candidates">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">are_valid_candidates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deviation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_tracking.html#are_valid_candidates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_tracking.are_valid_candidates" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_tracking.find_track_in_peaks">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">find_track_in_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_tracking.html#find_track_in_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_tracking.find_track_in_peaks" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_tracking.peak_dist">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">peak_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pk1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_tracking.html#peak_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_tracking.peak_dist" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_tracking.peak_tracking">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">peak_tracking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.45</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_tracking.html#peak_tracking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_tracking.peak_tracking" title="Permalink to this definition"></a></dt>
+<dd><p>adaptation of the Gale-Shapley algorithm for stable matching of peaks_a and peaks_b
+for matched peaks, track numbers are updated
+tracker is gap-size aware, and will monitor ‘slept’ tracks within gap distance as candidates
+linear interpolation will be used to fill the gaps
+return value is None, function will update tracks, peaks, and analysis_frames directly</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_tracking.phase_interp">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">phase_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_tracking.html#phase_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_tracking.phase_interp" title="Permalink to this definition"></a></dt>
+<dd><p>returns the phase (-pi,pi] at time t
+given that the freq linearly interpolates from
+freq_0, with phase pha_0 at time 0 to freq_t at time t</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_tracking.phase_interp_cubic">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">phase_interp_cubic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_samps_from_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samps_from_0_to_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_tracking.html#phase_interp_cubic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_tracking.phase_interp_cubic" title="Permalink to this definition"></a></dt>
+<dd><p>for cubic polynomial interpolation of phase
+credit: McAulay &amp; Quatieri (1986)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.peak_tracking.update_track_averages">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">update_track_averages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_tracking.html#update_track_averages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_tracking.update_track_averages" title="Permalink to this definition"></a></dt>
+<dd><p>updates the list of current &lt;tracks&gt;
+we use &lt;track_length&gt; frames of memory to update average amp, frq, and smr of the tracks
+the function returns None, as the tracks are updated directly</p>
+</dd></dl>
+
+</section>
+<section id="module-pyats.atsa.residual">
+<span id="pyats-atsa-residual-module"></span><h2>pyats.atsa.residual module<a class="headerlink" href="#module-pyats.atsa.residual" title="Permalink to this heading"></a></h2>
+<p>TODO Summary</p>
+<p>TODO About</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.residual.band_to_energy">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">band_to_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_smr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/residual.html#band_to_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.residual.band_to_energy" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.residual.compute_residual">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">compute_residual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_sound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_residual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/residual.html#compute_residual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.residual.compute_residual" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the difference between the ats_snd synthesis and the original sound</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.residual.remove_bands">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">remove_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/residual.html#remove_bands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.residual.remove_bands" title="Permalink to this definition"></a></dt>
+<dd><p>remove bands from ats_snd that are below threshold (in dB)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.residual.residual_N">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/residual.html#residual_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.residual.residual_N" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.residual.residual_analysis">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/residual.html#residual_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.residual.residual_analysis" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.residual.residual_compute_band_energy">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_compute_band_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fft_mags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_limits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/residual.html#residual_compute_band_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.residual.residual_compute_band_energy" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.residual.residual_get_band_limits">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_get_band_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fft_mag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/residual.html#residual_get_band_limits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.residual.residual_get_band_limits" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-pyats.atsa.tracker">
+<span id="pyats-atsa-tracker-module"></span><h2>pyats.atsa.tracker module<a class="headerlink" href="#module-pyats.atsa.tracker" title="Permalink to this heading"></a></h2>
+<p>TODO Summary</p>
+<p>TODO About</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.tracker.tracker">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_peak_contribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/tracker.html#tracker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.tracker.tracker" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.tracker.tracker_CLI">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/tracker.html#tracker_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.tracker.tracker_CLI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-pyats.atsa.utils">
+<span id="pyats-atsa-utils-module"></span><h2>pyats.atsa.utils module<a class="headerlink" href="#module-pyats.atsa.utils" title="Permalink to this heading"></a></h2>
+<p>TODO Summary</p>
+<p>TODO About</p>
+<section id="attributes-todo">
+<h3>Attributes TODO<a class="headerlink" href="#attributes-todo" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>E!!!!GATS_CRITICAL_BAND_EDGES<span class="classifier">ndarray[float]</span></dt><dd><p>1D array containing 26 frequencies that distinguish the default 25 critical bands</p>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.utils.amp_to_db">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">amp_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/utils.html#amp_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.utils.amp_to_db" title="Permalink to this definition"></a></dt>
+<dd><p>convert amplitude to decibels</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.utils.amp_to_db_spl">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">amp_to_db_spl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/utils.html#amp_to_db_spl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.utils.amp_to_db_spl" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.utils.compute_frames">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">compute_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_samps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/utils.html#compute_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.utils.compute_frames" title="Permalink to this definition"></a></dt>
+<dd><p>computes the number of frames in the specified analysis
+we want to have an extra frame at the end to prevent chopping the ending</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.utils.db_to_amp">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">db_to_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/utils.html#db_to_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.utils.db_to_amp" title="Permalink to this definition"></a></dt>
+<dd><p>convert decibels to amplitude</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.utils.next_power_of_2">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">next_power_of_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/utils.html#next_power_of_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.utils.next_power_of_2" title="Permalink to this definition"></a></dt>
+<dd><p>return the closest power of 2 integer more than or equal to &lt;num&gt;</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.utils.optimize_tracks">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">optimize_tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/utils.html#optimize_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.utils.optimize_tracks" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-pyats.atsa.windows">
+<span id="pyats-atsa-windows-module"></span><h2>pyats.atsa.windows module<a class="headerlink" href="#module-pyats.atsa.windows" title="Permalink to this heading"></a></h2>
+<p>TODO Summary</p>
+<p>TODO About</p>
+<section id="id1">
+<h3>Attributes TODO<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>E!!!!GATS_CRITICAL_BAND_EDGES<span class="classifier">ndarray[float]</span></dt><dd><p>1D array containing 26 frequencies that distinguish the default 25 critical bands</p>
+</dd>
+</dl>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.windows.bes_i0">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">bes_i0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/windows.html#bes_i0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.windows.bes_i0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.windows.make_blackman_window">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">make_blackman_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/windows.html#make_blackman_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.windows.make_blackman_window" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.windows.make_fft_window">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">make_fft_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/windows.html#make_fft_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.windows.make_fft_window" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.windows.norm_window">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">norm_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/windows.html#norm_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.windows.norm_window" title="Permalink to this definition"></a></dt>
+<dd><p>returns a normalized window (i.e., integrates to 1.0)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyats.atsa.windows.window_norm">
+<span class="sig-prename descclassname"><span class="pre">pyats.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">window_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/windows.html#window_norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.windows.window_norm" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-pyats.atsa">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyats.atsa" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pyats.html" class="btn btn-neutral float-left" title="pyats package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Johnathan G Lyon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
