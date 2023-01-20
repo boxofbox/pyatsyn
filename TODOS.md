@@ -1,11 +1,28 @@
 1.0 TODO
+
 * add verbosity
-* rebuild requirements.txt
+
 * documentation
-* test & deploy package mode
-* clear tracker main
-* transfer features & bugs & questions to github
-* how do we tell setuptools we need libsndfile?
-* remove this todo list & deploy to pypi
+** USE https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
+*** critical bands
+*** peak detect
+*** peak tracking
+*** residual
+*** tracker
+*** utils
+*** windows
+*** ats_io
+*** ats struct
+*** ats synth
+
+* setup read the docs
+
+* license
+
+* remove this todo list
+* setup.py - requirements
+* test pypi 
+* update Readme
+* deploy to pypi
 * deploy to github release
 * let people know

@@ -1,11 +1,12 @@
-from numpy import zeros, multiply, roll, absolute, angle
+from numpy import zeros, roll, absolute, angle
 from numpy.fft import fft, fftfreq
 import soundfile as sf
+import argparse
 
 from pyats.ats_structure import AtsSound
 
 from pyats.atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
-from pyats.atsa.windows import make_fft_window, norm_window, window_norm
+from pyats.atsa.windows import make_fft_window, norm_window, window_norm, VALID_FFT_WINDOW_DEFINITIONS
 from pyats.atsa.peak_detect import peak_detection
 from pyats.atsa.critical_bands import evaluate_smr
 from pyats.atsa.peak_tracking import update_track_averages, peak_tracking
@@ -22,21 +23,20 @@ def tracker (   in_file,
                 window_type = None, # defaults to 'blackman-harris-4-1'
                 hop_size = 0.25, # in fraction of window size
                 fft_size = None, # None, or force an fft size
-                lowest_magnitude = db_to_amp(-60),
+                amp_threshold = db_to_amp(-60),
                 track_length = 3,
                 min_gap_length = 3,
                 min_segment_length = 3,
                 last_peak_contribution = 0.0,
-                SMR_continuity = 0.0,
-                SMR_threshold = None,
-                amp_threshold = None, # in dB
+                SMR_continuity = 0.0,              
                 residual_file = None,
                 optimize = True,
+                optimize_amp_threshold = None, # in amplitude
                 force_M = None, # None, or a forced window length in samples
                 force_window = None, # None, or a numpy.ndarray of floats
                 window_alpha = 0.5,
                 window_beta = 1.0,
-                verbose = True,                
+                verbose = False,                
                 ):
     
     # read input audio file
@@ -106,11 +106,6 @@ def tracker (   in_file,
     analysis_frames = [None for _ in range(frames)]
     # set file pointer half a window from the first sample
     fil_ptr = st - M_over_2
-
-    # minimum SMR
-    min_smr = SMR_threshold
-    if min_smr is None:
-        min_smr = 0.0
     
     # guarantee that we have a valid minimum gap length
     if min_gap_length < 1:
@@ -179,7 +174,7 @@ def tracker (   in_file,
 
         fftphases = angle(fd)
 
-        peaks = peak_detection(fftfreqs, fft_mags, fftphases, lowest_bin, highest_bin, lowest_magnitude)         
+        peaks = peak_detection(fftfreqs, fft_mags, fftphases, lowest_bin, highest_bin, amp_threshold)         
 
         if peaks:
             # masking curve evaluation using a critical band based model
@@ -206,7 +201,7 @@ def tracker (   in_file,
     ########################
 
     if optimize:
-        tracks = optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, highest_frequency, lowest_frequency)
+        tracks = optimize_tracks(tracks, analysis_frames, min_segment_length, optimize_amp_threshold, highest_frequency, lowest_frequency)
 
     ats_snd = AtsSound(out_snd, sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
 
@@ -242,23 +237,74 @@ def tracker (   in_file,
     return ats_snd
 
 
-if __name__ == '__main__':
-    from pyats.ats_io import ats_save, ats_load
-    filename = 'trumpetc3'
-    ats_save(   tracker('../sample_sounds/'+filename+'.wav',
-                        filename+'.ats', 
-                        verbose=False, 
-                        window_type=None,
-                        #duration=44100/44100,
-                        residual_file='/Users/jgl/Desktop/'+filename+'_residual.wav',
-                        ), 
-                '/Users/jgl/Desktop/'+filename+'.ats', 
-                save_phase=True, 
-                save_noise=True
-                )
-    ats_load(filename, '/Users/jgl/Desktop/'+filename+'.ats', optimize=True,            
-                min_gap_size = 1,
-                min_segment_length = 8,                     
-                amp_threshold = -20, 
-                highest_frequency = 10000,
-                lowest_frequency = 400)
+def tracker_CLI():
+    parser = argparse.ArgumentParser(
+        description = "Generates an Analysis-Transformation-Synthesis (.ats) file from an audio file"
+        
+    )
+    parser.add_argument("audio_file_in", help="path to the audio file to analyze")
+    parser.add_argument("ats_file_out", help=".ats file path to output to")
+
+    parser.add_argument("-v", "--verbose", help="verbose processing", action="store_true")
+    parser.add_argument("-r","--residual_file", help="path to the audio file used to store residual analysis. \
+                            NOTE: noise calculation will not be performed in .ats file without this", default=None)
+
+    parser.add_argument("-s", "--start", type=float, help="timepoint (in s) in audiofile to begin analysis (default 0.0)", default=0.0)
+    parser.add_argument("-d", "--duration", type=float, help="duration (in s) in audiofile from start to end analysis (default duration of file)", default=None)
+    parser.add_argument("--low_freq", type=float, help="lowest frequency to analyze (must be > 0) (default 20)", default=20)
+    parser.add_argument("--hi_freq", type=float, help="highest frequency to analyze (default 20000)", default=20000)
+    parser.add_argument("--amp_threshold", type=float, help="lowest amplitude used for peak detection (default 0.001)", default=0.001)
+    parser.add_argument("--freq_dev", type=float, help="frequency deviation; used to constrain peak tracking matches (default 0.1)", default=0.1)    
+    parser.add_argument("--SMR_continuity", type=float, help="percentage of SMR to use in cost calculations during peak tracking (default 0.0)", default=0.0)
+    
+    valid_fft_win_str = "[ " + ' | '.join(VALID_FFT_WINDOW_DEFINITIONS) + " ]"
+    parser.add_argument("--win_type", type=ascii, 
+        help=f"type of window to use for FFT analysis (default: blackman-harris-4-1); Supported types: {valid_fft_win_str}", default=None)
+
+    parser.add_argument("--win_alpha", type=float, help="parameter used for tukey windows (default 0.5)", default=0.5)
+    parser.add_argument("--win_beta", type=float, help="parameter used for certain window types (default 1.0)", default=1.0)
+    
+
+    parser.add_argument("--hop_size", type=float, help="percentage of window overlap (default 0.25)", default=0.25)
+    parser.add_argument("--fft_size", type=int, help="force an fft_size", default=None)
+    parser.add_argument("--win_cycles", type=float, help="lowest frequency to fit in analysis window; used to determine window size (default 4)", default=4)
+    parser.add_argument("--force_M", type=int, help="forced window length in samples", default=None)
+
+
+    parser.add_argument("--track_length", type=int, help="number of frames used to smooth frequency trajectories (default 3)", default=3)
+    parser.add_argument("--last_peak_contribution", type=float, help="additional bias for most recent value; used for smoothing trajectories (default 0.0)", default=0.0)
+
+    parser.add_argument("--min_gap_length", type=int, help="tracked peak gaps longer than this (in frames) will not be interpolated (default 3)", default=3)
+    parser.add_argument("--min_segment_length", type=int, help="minimize size (in frames) of a track segment, otherwise it is pruned (default 3)", default=3)
+    
+    parser.add_argument("--opt_amp_threshold", type=float, help="additional amplitude threshold used during optimization to prune tracks (default 0.001)", default=None)
+    parser.add_argument("--no_optimize", help="skip pre-output optimization of .ats file", action="store_true")
+    
+    args = parser.parse_args()
+
+    tracker(    args.audio_file_in,
+                args.ats_file_out,
+                start = args.start,
+                duration = args.duration,
+                lowest_frequency = args.low_freq,
+                highest_frequency = args.hi_freq,
+                frequency_deviation = args.freq_dev,
+                window_cycles = args.win_cycles,
+                window_type = args.win_type,
+                hop_size = args.hop_size,                
+                fft_size = args.fft_size,
+                amp_threshold = args.amp_threshold,
+                track_length = args.track_length,
+                min_gap_length = args.min_gap_length,
+                min_segment_length = args.min_segment_length,
+                last_peak_contribution = args.last_peak_contribution,
+                SMR_continuity = args.SMR_continuity,
+                optimize_amp_threshold = args.opt_amp_threshold,
+                residual_file = args.residual_file,
+                optimize = not args.no_optimize,
+                force_M = args.force_M,
+                window_alpha = args.win_alpha,
+                window_beta = args.win_beta,
+                verbose = args.verbose,  
+            )
+

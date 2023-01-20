@@ -98,7 +98,7 @@ class AtsSound:
     def optimize(   self, 
                     min_gap_size = None,
                     min_segment_length = None,                     
-                    amp_threshold = None, # in dB
+                    amp_threshold = None, # in amplitude
                     highest_frequency = None,
                     lowest_frequency = None):
 

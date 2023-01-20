@@ -1,21 +1,26 @@
-from numpy import zeros, matmul, arange, cos, linspace, cumsum, sin, pi, real, sqrt
+from numpy import zeros, matmul, arange, cos, linspace, cumsum, sin, pi, real
 from numpy.random import uniform
 from numpy.fft import fft, ifft
 import soundfile as sf
 from math import tau
+import argparse
 
 from pyats.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
 from pyats.atsa.utils import compute_frames
 
+from pyats.ats_io import ats_load
 
-def synth(ats_snd, out_size, normalize=False, compute_phase=True, 
-            export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None):
 
-    synthesized = zeros(out_size,"float64")
-    
+def synth(ats_snd, normalize=False, compute_phase=True, 
+            export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None, 
+            normalize_sine = False, normalize_noise = False):
+
     sample_rate = ats_snd.sampling_rate
+    out_size = int(ats_snd.dur * sample_rate)
     frame_size = ats_snd.frame_size
     frames = ats_snd.frames
+
+    synthesized = zeros(out_size,"float64")
 
     frame_size_range = frame_size
     
@@ -100,7 +105,12 @@ def synth(ats_snd, out_size, normalize=False, compute_phase=True,
             if fil_ptr >= out_size:
                 break
 
-            synthesized *= sine_pct
+            if normalize_sine:
+                gain = max(abs(synthesized))
+                if gain != 1.0 and gain > 0.0:
+                    synthesized /= gain
+
+        synthesized *= sine_pct
         
     has_noi = noise_pct > 0.0 and len(ats_snd.band_energy) > 0
 
@@ -185,11 +195,16 @@ def synth(ats_snd, out_size, normalize=False, compute_phase=True,
             if fil_ptr >= out_size:
                 break
 
+        if normalize_noise:
+            gain = max(abs(noise))
+            if gain != 1.0 and gain > 0.0:
+                noise /= gain
+
         synthesized += noise_pct * noise
     
     if normalize:
         gain = max(abs(synthesized))
-        if gain != 1.0 and gain > 0:
+        if gain != 1.0 and gain > 0.0:
             synthesized /= gain
 
     # export synthesized version to audio file
@@ -197,3 +212,27 @@ def synth(ats_snd, out_size, normalize=False, compute_phase=True,
         sf.write(export_file, synthesized, ats_snd.sampling_rate)
 
     return synthesized  
+
+def synth_CLI():
+    parser = argparse.ArgumentParser(
+        description = "Sine generator bank and band-limited noise synthesizer for .ats files"
+        
+    )
+    parser.add_argument("ats_file_in", help="the .ats file to synthesize")
+    parser.add_argument("audio_file_out", help="audio file path to synthesize to")
+    parser.add_argument("-n", "--normalize", help="normalize sound to ±1 before output", action="store_true")
+    parser.add_argument("--compute_phase", help="use phase information if available", action="store_true")
+    parser.add_argument("--sine", type=float, help="percentage of sine components to mix (default 1.0)", default=1.0)
+    parser.add_argument("--noise", type=float, help="percentage of noise components to mix (default 0.0)", default=0.0)
+    parser.add_argument("--normalize_sine", help="normalize sine components to ±1 before mixing", action="store_true")
+    parser.add_argument("--normalize_noise", help="normalize noise componenets to ±1 before mixing", action="store_true")
+    args = parser.parse_args()
+    synth(  ats_load(args.ats_file_in, args.ats_file_in), 
+            normalize = args.normalize,
+            compute_phase = args.compute_phase,
+            export_file = args.audio_file_out,
+            sine_pct = args.sine,
+            noise_pct = args.noise,
+            normalize_sine = args.normalize_sine,
+            normalize_noise = args.normalize_noise
+            )

@@ -55,11 +55,9 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length, amp_threshold, 
     if min_segment_length < 1:
         min_segment_length = ATS_MIN_SEGMENT_LENGTH
 
-    # NOTE: amp_threshold is expected in dB
+    # NOTE: amp_threshold is expected in amps
     if amp_threshold == None:
         amp_threshold = db_to_amp(ATS_AMP_THRESHOLD)
-    else:
-        amp_threshold = db_to_amp(amp_threshold)
     
     tracks_for_removal = set()
 

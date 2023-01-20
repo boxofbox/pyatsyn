@@ -1,4 +1,4 @@
-from numpy import zeros, cos, sin, log, exp, sqrt, absolute, ones, pi, mean
+from numpy import zeros, cos, sin, log, exp, sqrt, absolute, ones, pi
 from math import tau
 
 

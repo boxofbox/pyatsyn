@@ -1,7 +1,6 @@
 from numpy import zeros, mean, roll, arange, absolute, asarray
 from numpy.fft import fft
 import soundfile as sf
-from math import tau
 
 from pyats.ats_synth import synth
 
@@ -20,7 +19,7 @@ def compute_residual(   residual_file,
     Computes the difference between the ats_snd synthesis and the original sound
     """
 
-    synthesized = synth(ats_snd, end_sample - start_sample)
+    synthesized = synth(ats_snd)
     residual = in_sound[start_sample:end_sample] - synthesized
 
     # export residual to audio file
