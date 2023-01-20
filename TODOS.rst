@@ -13,11 +13,10 @@
 *** ats struct
 *** ats synth
 
-* update Readme
+* update Readme about section
+* pytoml
 
 * remove this todo list
-
-* update pyproject.toml
 
 * test pypi 
 * deploy to pypi

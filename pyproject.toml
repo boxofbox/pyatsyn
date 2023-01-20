@@ -8,7 +8,7 @@ authors = [
     {name = "Johnathan G. Lyon", email = "johnathanglyon@gmail.com"}
 ]
 description = "python-based implementation of Analysis-Synthesis-Transformation (ATS) spectral music system"
-readme = "README.rst"
+readme = "README.md"
 version = "1.0.0"
 keywords = ["?", "??"] ################ TODO https://packaging.python.org/en/latest/tutorials/packaging-projects/
 license = {text = "BSD-3-Clause"}
