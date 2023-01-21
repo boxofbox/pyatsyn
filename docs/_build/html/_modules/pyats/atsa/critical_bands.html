@@ -104,7 +104,7 @@
 <div class="viewcode-block" id="evaluate_smr"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.critical_bands.evaluate_smr">[docs]</a><span class="k">def</span> <span class="nf">evaluate_smr</span><span class="p">(</span><span class="n">peaks</span><span class="p">,</span> <span class="n">slope_l</span> <span class="o">=</span> <span class="o">-</span><span class="mf">27.0</span><span class="p">,</span> <span class="n">delta_db</span> <span class="o">=</span> <span class="o">-</span><span class="mi">50</span><span class="p">):</span>    
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to evaluate signal-to-mask ratio for the given peaks</span>
 
-<span class="sd">    This function evaluates masking values (SMR) for peaks in list `peaks`</span>
+<span class="sd">    This function evaluates masking values (SMR) for :obj:`~pyats.ats_structure.AtsPeak`s in list `peaks`</span>
 <span class="sd">    Iteratively the parameters will be use to generate a triangular mask </span>
 <span class="sd">    with a primary vertex at the frequency of, and at delta_dB below the amplitude </span>
 <span class="sd">    of the masker. </span>
@@ -122,7 +122,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    peaks : Iterable[AtsPeaks]</span>
+<span class="sd">    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
 <span class="sd">        An iterable collection of AtsPeaks that will have their `smr` attributes updated</span>
 <span class="sd">    slope_l : float, optional</span>
 <span class="sd">        A float (in dB/bark) to dictate the slope of the left side of the mask (default: -27.0)</span>
@@ -172,7 +172,7 @@
 <span class="sd">        A frequency (in Hz) to convert to bark scale</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
+<span class="sd">    -------</span>
 <span class="sd">    float</span>
 <span class="sd">        the frequency in bark scale </span>
 

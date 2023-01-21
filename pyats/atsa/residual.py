@@ -33,10 +33,30 @@ def compute_residual(   residual_file,
                                 end_sample,
                                 export_residual = True,
                                 ):
-    """
-    Computes the difference between the ats_snd synthesis and the original sound
-    """
+    """Function to computes the difference between the ats_snd synthesis and the original sound
 
+    TODO 
+
+    Parameters
+    ----------
+    residual_file : str
+        TODO
+    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+        TODO
+    in_sound : ndarray[float]
+        TODO
+    start_sample : int
+        TODO
+    end_sample : int
+        TODO
+    export_residual: bool, optional
+        TODO (default: True)
+
+    Returns
+    -------
+    residual : ndarray[float]
+        TODO
+    """ 
     synthesized = synth(ats_snd)
     residual = in_sound[start_sample:end_sample] - synthesized
 
@@ -56,7 +76,29 @@ def residual_analysis(  residual,
                         par_energy = False,
                         verbose = True,                                               
                         ):
-    
+    """Function to TODO
+
+    TODO 
+
+    Parameters
+    ----------
+    residual : ndarray[float]
+        TODO
+    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+        TODO
+    min_fft_size : int, optional
+        TODO (default: 4096)
+    equalize : bool, optional
+        TODO (default: False)
+    pad_factor : int, optional
+        TODO (default: 2)
+    band_edges : TODO
+        TODO (default: None)
+    par_energy : bool
+        TODO (default: False)
+    verbose : bool, optional
+        TODO (default: True)
+    """ 
     hop = ats_snd.frame_size
     M = ats_snd.window_size
     M_over_2 = (M - 1) // 2
@@ -148,6 +190,24 @@ def residual_analysis(  residual,
 
 
 def residual_N(M, min_fft_size, factor = 2):
+    """Function to TODO
+
+    TODO 
+
+    Parameters
+    ----------
+    M : int
+        TODO
+    min_fft_size : int
+        TODO
+    factor : int, optional
+        TODOe)
+
+    Returns
+    -------
+    int
+        TODO
+    """ 
     if M * factor > min_fft_size:
         return next_power_of_2(M * factor)
     else:
@@ -155,6 +215,22 @@ def residual_N(M, min_fft_size, factor = 2):
 
 
 def residual_get_band_limits(fft_mag, band_edges):
+    """Function to TODO
+
+    TODO 
+
+    Parameters
+    ----------
+    fft_mag : float
+        TODO
+    band_edges : TODO
+        TODO
+
+    Returns
+    -------
+    band_limits : TODO
+        TODO
+    """ 
     band_limits = zeros(len(band_edges),"int64")
     for ind, band in enumerate(band_edges):
         band_limits[ind] = band / fft_mag
@@ -162,6 +238,21 @@ def residual_get_band_limits(fft_mag, band_edges):
 
 
 def residual_compute_band_energy(fft_mags, band_limits, band_energy, frame_n):
+    """Function to TODO
+
+    TODO 
+
+    Parameters
+    ----------
+    fft_mags : ndarray[float]
+        TODO
+    band_limits : TODO
+        TODO
+    band_energy : TODO
+        TODO
+    frame_n : int
+        TODO
+    """ 
     for band in range(len(band_limits) - 1):
         low = band_limits[band]
         if low < 0:
@@ -173,7 +264,20 @@ def residual_compute_band_energy(fft_mags, band_limits, band_energy, frame_n):
         band_energy[band][frame_n] = sum(fft_mags[low:high]**2) / fft_mags.size
 
 
-def band_to_energy(ats_snd, band_edges, use_smr = False):    
+def band_to_energy(ats_snd, band_edges, use_smr = False):
+    """Function to TODO
+
+    TODO 
+
+    Parameters
+    ----------
+    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+        TODO
+    band_edges : TODO
+        TODO
+    use_smr : bool, optional
+        TODO (default: False)
+    """     
     bands = len(ats_snd.bands)
     partials = ats_snd.partials
     frames = ats_snd.frames
@@ -225,9 +329,17 @@ def band_to_energy(ats_snd, band_edges, use_smr = False):
             
             
 def remove_bands(ats_snd, threshold):
-    '''
-    remove bands from ats_snd that are below threshold (in dB)
-    '''
+    """Function TODO
+
+    TODO  remove bands from ats_snd that are below threshold (in dB)
+
+    Parameters
+    ----------
+    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+        TODO
+    threshold : float
+        TODO
+    """ 
     frames = ats_snd.frames
     threshold = db_to_amp(threshold)
     

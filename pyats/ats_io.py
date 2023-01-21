@@ -13,15 +13,6 @@
 """TODO Summary
 
 TODO About
-
-"""
-
-from struct import pack, unpack, calcsize
-from numpy import zeros, arange
-
-from pyats.ats_structure import AtsSound
-
-"""
 -ATS header consists of (all double floats):
 
 ATS_MAGIC_NUMBER
@@ -86,7 +77,24 @@ pha (par#n phase)
 noise (band#0 energy)
 ...
 noise (band#n energy)
+
+
+Attributes 
+----------
+ATS_MAGIC_NUMBER : float
+    TODO 123.0
+DOUBLE_SIZE : float
+    TODO calcsize('d')
+DOUBLE_BIG_ENDIAN
+    TODO
+DOUBLE_LIL_ENDIAN
+    TODO
 """
+
+from struct import pack, unpack, calcsize
+from numpy import zeros, arange
+
+from pyats.ats_structure import AtsSound
 
 ATS_MAGIC_NUMBER = 123.0
 DOUBLE_SIZE = calcsize('d')
@@ -94,7 +102,21 @@ DOUBLE_BIG_ENDIAN = '>d'
 DOUBLE_LIL_ENDIAN = '<d'
 
 def ats_save(sound, file, save_phase=True, save_noise=True):
+    """Function to TODO
 
+    TODO
+
+    Parameters
+    ----------
+    sound : :obj:`~pyats.ats_structure.AtsSound`
+        TODO
+    file : str
+        TODO
+    save_phase : bool, optional
+        TODO (default: True)
+    save_noise : bool, optional
+        TODO (default: True)
+    """
     has_pha = save_phase and len(sound.pha) > 0
     has_noi = save_noise and (len(sound.energy) > 0 or len(sound.band_energy) > 0)
 
@@ -135,11 +157,6 @@ def ats_save(sound, file, save_phase=True, save_noise=True):
                     fil.write(pack('d',sound.band_energy[band][frame_n]))                    
 
 
-def write_array_of_numbers_to_binary_doubles(file, arr):
-    for n in arr:
-        file.write(pack('d',n))
-
-
 def ats_load(   name, 
                 file, 
                 optimize=False, 
@@ -148,7 +165,36 @@ def ats_load(   name,
                 amp_threshold = None, 
                 highest_frequency = None,
                 lowest_frequency = None):
+    """Function to TODO
 
+    TODO
+
+    Parameters
+    ----------
+    name : str
+        TODO
+    file : str
+        TODO
+    optimize : bool, optional
+        TODO (default: True)
+    min_gap_size : int, optional
+        TODO (default: None)
+    amp_threshold : float, optional
+        TODO (default: None)
+    highest_frequency : float, optional
+        TODO (default: None)
+    lowest_frequency : float, optional
+        TODO
+    
+    Returns
+    -------
+    :obj:`~pyats.ats_structure.AtsSound`
+        TODO
+
+    Raises
+    ------
+    TODO
+    """
     with open(file, 'rb') as fil:
         
         # check ATS_MAGIC_NUMBER and set endian order

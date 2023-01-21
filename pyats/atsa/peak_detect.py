@@ -10,40 +10,61 @@
 # Di Liscia, Pete Moss and Juan Pampin>
 
 
-"""TODO Summary
+"""Single-Frame Peak Detection from FFT Data
 
-TODO About
+Functions to process FFT data and extract peaks
 
 """
-
 
 from numpy import pi
 from math import tau
 
 from pyats.ats_structure import AtsPeak
-
 from pyats.atsa.utils import amp_to_db, db_to_amp
 
 
 def peak_detection (fftfreqs, fftmags, fftphases, 
-                    lowest_bin=None, highest_bin=None, lowest_magnitude=None, norm=1.0):
-    
+                    lowest_bin=None, highest_bin=None, lowest_magnitude=None):
+    """Function to detect peaks from FFT data
+
+    TODO
+
+    Parameters
+    ----------
+    fftfreqs : ndarray[float64]
+        TODO
+    fftmags : ndarray[float64]
+        TODO
+    fftphases : ndarray[float64]
+        TODO
+    lowest_bin : int, optional
+        TODO (default: None)
+    highest_bin : int, optional
+        TODO (default: None)
+    lowest_magnitude : float, optional
+        TODO (default: None)
+
+    Returns
+    -------
+    list[:obj:`~pyats.ats_structure.AtsPeak`]
+        TODO
+    """
     peaks = []
 
     N = highest_bin
     if N is None:
-        N = fftfreqs.size
+        N = fftfreqs.size - 1
     
     first_bin = lowest_bin
     if first_bin is None or first_bin < 1:
         first_bin = 1
     
-    frqs = fftfreqs[first_bin-1:N]
-    mags = fftmags[first_bin-1:N]
-    phs = fftphases[first_bin-1:N]
+    frqs = fftfreqs[first_bin-1:N + 1]
+    mags = fftmags[first_bin-1:N + 1]
+    phs = fftphases[first_bin-1:N + 1]
     fq_scale = frqs[1] - frqs[0]
 
-    for k in range(1,N-first_bin-1):
+    for k in range(1, N - first_bin):
 
         left = mags[k-1]
         center = mags[k]
@@ -63,11 +84,28 @@ def peak_detection (fftfreqs, fftmags, fftphases,
 
 
 def parabolic_interp(alpha, beta, gamma):
-    """
-    parabolic-interp <alpha> <beta> <gamma>
+    """Function to TODO
+
+    TODO
     does parabolic interpolation of 3 points
     returns the x offset and height
-    of the interpolated peak    
+    of the interpolated peak  
+
+    Parameters
+    ----------
+    alpha : float
+        TODO
+    beta : float
+        TODO
+    gamma : float
+        TODO
+
+    Returns
+    -------
+    offset : float
+        TODO
+    height : float
+        TODO
     """
     dB_alpha = amp_to_db(alpha)
     dB_beta = amp_to_db(beta)
@@ -78,9 +116,25 @@ def parabolic_interp(alpha, beta, gamma):
     return offset, height
 
 def phase_correct(left, right, offset):
+    """Function to TODO
+
+    TODO
+    angular interpolation 
+
+    Parameters
+    ----------
+    left : float
+        TODO
+    right : float
+        TODO
+    offset : float
+        TODO
+
+    Returns
+    -------
+    float
+        TODO
     """
-    angular interpolation
-    """  
     if left - right > 1.5 * pi:
         return (left + (offset * (right - left + tau)))
     elif right - left > 1.5 * pi:

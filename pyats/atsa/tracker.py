@@ -38,7 +38,7 @@ def tracker (   in_file,
                 highest_frequency = 20000.0,
                 frequency_deviation = 0.1,
                 window_cycles = 4,
-                window_type = None, # defaults to 'blackman-harris-4-1'
+                window_type = 'blackman-harris-4-1',
                 hop_size = 0.25, # in fraction of window size
                 fft_size = None, # None, or force an fft size
                 amp_threshold = db_to_amp(-60),
@@ -55,8 +55,73 @@ def tracker (   in_file,
                 window_alpha = 0.5,
                 window_beta = 1.0,
                 verbose = False,                
-                ):
-    
+                ):    
+    """Function to TODO
+
+    TODO
+
+    Parameters
+    ----------
+    in_file : str
+        TODO
+    out_snd : str
+        TODO
+    start : float
+        TODO analysis start point (in s) (default: 0.0)
+    duration : float
+        TODO max duration to analyze (in seconds) or 'None' if analyze to end (default: None)
+    lowest_frequency
+        TODO  must be > 0 (default: 20)
+    highest_frequency : float
+        TODO  (default: 20000.0)
+    frequency_deviation : float
+        TODO (default: 0.1)
+    window_cycles : int
+        TODO (default: 4)
+    window_type : str
+        TODO (default: 'blackman-harris-4-1')
+    hop_size : float
+        TODO fraction of window size (default: 0.25)
+    fft_size : int
+        TODO None, or force an fft size (default: None)
+    amp_threshold : float
+        TODO (default: 0.001)
+    track_length : int
+        TODO (default: 3)
+    min_gap_length : int
+        TODO (default: 3)
+    min_segment_length : int
+        TODO (default: 3)
+    last_peak_contribution : float
+        TODO (default: 0.0)
+    SMR_continuity : float
+        TODO (default: 0.0)
+    residual_file : str
+        TODO (default: None)
+    optimize : bool
+        TODO (default: True)
+    optimize_amp_threshold : float
+        TODO in amplitude (default: None)
+    force_M : int
+        TODO None, or a forced window length in samples (default: None)
+    force_window : ndarray[float]
+        TODO None, or a numpy.ndarray of floats (default: None)
+    window_alpha : float
+        TODO (default: 0.5)
+    window_beta : float
+        TODO (default: 1.0)
+    verbose : bool
+        TODO (default: False)
+
+    Returns
+    -------
+    :obj:`~pyats.ats_structure.AtsSound`
+        TODO
+
+    Raises
+    ------
+    TODO
+    """
     # read input audio file
     in_sound, sample_rate = sf.read(in_file)
 
@@ -272,6 +337,11 @@ def tracker (   in_file,
 
 
 def tracker_CLI():
+    """Function to TODO
+
+    TODO
+
+    """
     parser = argparse.ArgumentParser(
         description = "Generates an Analysis-Transformation-Synthesis (.ats) file from an audio file"
         

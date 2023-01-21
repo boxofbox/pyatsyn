@@ -14,11 +14,6 @@
 
 TODO About
 
-Attributes TODO
-----------
-E!!!!GATS_CRITICAL_BAND_EDGES : ndarray[float]
-    1D array containing 26 frequencies that distinguish the default 25 critical bands
-
 """
 
 from numpy import zeros, matmul, arange, cos, linspace, cumsum, sin, pi, real
@@ -28,17 +23,47 @@ import soundfile as sf
 from math import tau
 import argparse
 
-
 from pyats.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
 from pyats.atsa.utils import compute_frames
-
 from pyats.ats_io import ats_load
 
 
 def synth(ats_snd, normalize=False, compute_phase=True, 
             export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None, 
-            normalize_sine = False, normalize_noise = False):
+            normalize_sine = False, normalize_noise = False):    
+    """Function to TODO
 
+    TODO
+
+        for cubic polynomial interpolation of phase
+        credit: McAulay & Quatieri (1986)
+
+    Parameters
+    ----------
+    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+        TODO
+    normalize : bool, optional
+        TODO (default: False)
+    compute_phase : bool, optional
+        TODO (default: True)
+    export_file : str
+        TODO (default: None)
+    sine_pct : float
+        TODO (default: 1.0)
+    noise_pct : float
+        TODO (default: 0.0)
+    noise_bands : TODO
+        TODO (default: None)
+    normalize_sine : bool
+        TODO (default: False)
+    normalize_noise : bool
+        TODO (default: False)
+
+    Returns
+    -------
+    ndarray[float]
+        TODO
+    """
     sample_rate = ats_snd.sampling_rate
     out_size = int(ats_snd.dur * sample_rate)
     frame_size = ats_snd.frame_size
@@ -235,7 +260,12 @@ def synth(ats_snd, normalize=False, compute_phase=True,
 
     return synthesized  
 
-def synth_CLI():
+def synth_CLI():    
+    """Function to TODO
+
+    TODO
+
+    """
     parser = argparse.ArgumentParser(
         description = "Sine generator bank and band-limited noise synthesizer for .ats files"
         

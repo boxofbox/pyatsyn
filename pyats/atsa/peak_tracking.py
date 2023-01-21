@@ -23,10 +23,25 @@ from numpy import zeros, matmul
 
 
 def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta = 0.0):
-    """
-    updates the list of current <tracks>
+    """Function to TODO
+
+    TODO updates the list of current <tracks>
     we use <track_length> frames of memory to update average amp, frq, and smr of the tracks
     the function returns None, as the tracks are updated directly
+
+    Parameters
+    ----------
+    tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
+        TODO
+    track_length : int
+        TODO
+    frame_n : int
+        TODO
+    analysis_frames : 
+        TODO
+    beta : float, optional
+        TODO (default: 0.0)
+
     """        
     frames = min(frame_n, track_length)
     first_frame = frame_n - frames
@@ -71,6 +86,22 @@ def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta =
 
 
 def find_track_in_peaks(track, peaks):
+    """Function to TODO
+
+    TODO 
+
+    Parameters
+    ----------
+    tracks : :obj:`~pyats.ats_structure.AtsPeak`
+        TODO
+    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
+        TODO
+
+    Returns
+    -------
+    :obj:`~pyats.ats_structure.AtsPeak`
+        TODO
+    """ 
     for pk in peaks:
         if track == pk.track:
             return pk
@@ -78,13 +109,36 @@ def find_track_in_peaks(track, peaks):
 
 
 def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size, frequency_deviation = 0.45, SMR_continuity = 0.0, min_gap_length = 1):
-    """
+    """Function to TODO
+
+    TODO 
     adaptation of the Gale-Shapley algorithm for stable matching of peaks_a and peaks_b
     for matched peaks, track numbers are updated
     tracker is gap-size aware, and will monitor 'slept' tracks within gap distance as candidates
     linear interpolation will be used to fill the gaps
     return value is None, function will update tracks, peaks, and analysis_frames directly
-    """    
+
+    Parameters
+    ----------
+    tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
+        TODO
+    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
+        TODO
+    frame_n : int
+        TODO
+    analysis_frames : 
+        TODO
+    sample_rate : int 
+        TODO
+    hop_size : int 
+        TODO
+    frequency_deviation : float, optional
+        TODO (default: 0.45)
+    SMR_continuity : float, optional
+        TODO (default: 0.0)
+    min_gap_length : int
+        TODO (default: 1)
+    """  
     # state for costs
     peak_costs = [[] for _ in peaks]
 
@@ -179,32 +233,73 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size
 
 
 def are_valid_candidates(candidate1, candidate2, deviation):
+    """Function to TODO
+
+    TODO
+
+    Parameters
+    ----------
+    candidate1 : :obj:`~pyats.ats_structure.AtsPeak`
+        TODO
+    candidate2 : :obj:`~pyats.ats_structure.AtsPeak`
+        TODO
+    deviation : float
+        TODO
+
+    Returns
+    -------
+    float
+        TODO
+    """ 
     min_frq = min(candidate1.frq, candidate2.frq)
     return abs(candidate1.frq - candidate2.frq) <= 0.5 * min_frq * deviation
 
 
 def peak_dist(pk1, pk2, alpha):
+    """Function to TODO
+
+    TODO 
+
+    Parameters
+    ----------
+    pk1 : :obj:`~pyats.ats_structure.AtsPeak`
+        TODO
+    pk1 : :obj:`~pyats.ats_structure.AtsPeak`
+        TODO
+    alpha : float
+        TODO
+
+    Returns
+    -------
+    float
+        TODO
+    """ 
     return (abs(pk1.frq - pk2.frq) + (alpha * abs(pk1.smr - pk2.smr))) / (alpha + 1.0)
 
 
-class MatchCost():
-    def __init__(self, cost, index):
-        self.cost = cost
-        self.index = index
-    
-    def __repr__(self):
-        return f"to index: {self.index} at cost: {self.cost}"
-    
-    def __lt__(self, other):
-        return self.cost < other.cost
-
-
 def phase_interp(freq_0, freq_t, pha_0, t):
-    '''
-    returns the phase (-pi,pi] at time t
+    """Function to TODO
+
+    TODO returns the phase (-pi,pi] at time t
     given that the freq linearly interpolates from
     freq_0, with phase pha_0 at time 0 to freq_t at time t
-    '''
+
+    Parameters
+    ----------
+    freq_0 : float
+        TODO
+    freq_t : float
+        TODO
+    pha_0 : float
+        TODO
+    t : float
+        TODO
+
+    Returns
+    -------
+    float
+        TODO
+    """
     # assuming smooth linear interpolation the average frequency dictates phase rate estimate
     freq_est = (freq_t + freq_0) / 2
     new_phase = pha_0 + (tau * freq_est * t)
@@ -212,10 +307,34 @@ def phase_interp(freq_0, freq_t, pha_0, t):
 
 
 def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sample_rate):
-    """
+    """Function to TODO
+
+    TODO 
     for cubic polynomial interpolation of phase
     credit: McAulay & Quatieri (1986)
-    """
+
+    Parameters
+    ----------
+    freq_0 : float
+        TODO
+    freq_t : float
+        TODO
+    pha_0 : float
+        TODO
+    pha_t : float
+        TODO
+    i_samps_from_0 : int
+        TODO
+    samps_from_0_to_t : int
+        TODO
+    sample_rate : int
+        TODO
+
+    Returns
+    -------
+    float
+        TODO
+    """ 
     freq_to_radians_per_sample = tau / sample_rate
 
     alpha_beta_coeffs = zeros([2,2], "float64")
@@ -235,4 +354,18 @@ def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_
     alpha_beta_terms[1] = w_t - w_0
     alpha, beta = matmul(alpha_beta_coeffs, alpha_beta_terms)
     return pha_0 + (w_0 * i_samps_from_0) + (alpha * (i_samps_from_0**2)) + (beta * i_samps_from_0**3)
+
+ 
+class MatchCost():
+    """TODO
+
+    """ 
+    def __init__(self, cost, index):
+        self.cost = cost
+        self.index = index
     
+    def __repr__(self):
+        return f"to index: {self.index} at cost: {self.cost}"
+    
+    def __lt__(self, other):
+        return self.cost < other.cost

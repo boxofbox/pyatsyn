@@ -91,10 +91,25 @@
 
 
 <div class="viewcode-block" id="update_track_averages"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.update_track_averages">[docs]</a><span class="k">def</span> <span class="nf">update_track_averages</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">track_length</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    updates the list of current &lt;tracks&gt;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO updates the list of current &lt;tracks&gt;</span>
 <span class="sd">    we use &lt;track_length&gt; frames of memory to update average amp, frq, and smr of the tracks</span>
 <span class="sd">    the function returns None, as the tracks are updated directly</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
+<span class="sd">        TODO</span>
+<span class="sd">    track_length : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    frame_n : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    analysis_frames : </span>
+<span class="sd">        TODO</span>
+<span class="sd">    beta : float, optional</span>
+<span class="sd">        TODO (default: 0.0)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>        
     <span class="n">frames</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">frame_n</span><span class="p">,</span> <span class="n">track_length</span><span class="p">)</span>
     <span class="n">first_frame</span> <span class="o">=</span> <span class="n">frame_n</span> <span class="o">-</span> <span class="n">frames</span>
@@ -139,6 +154,22 @@
 
 
 <div class="viewcode-block" id="find_track_in_peaks"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.find_track_in_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_track_in_peaks</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">peaks</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tracks : :obj:`~pyats.ats_structure.AtsPeak`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
+<span class="sd">        TODO</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`~pyats.ats_structure.AtsPeak`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">track</span> <span class="o">==</span> <span class="n">pk</span><span class="o">.</span><span class="n">track</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pk</span>
@@ -146,13 +177,36 @@
 
 
 <div class="viewcode-block" id="peak_tracking"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.peak_tracking">[docs]</a><span class="k">def</span> <span class="nf">peak_tracking</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">hop_size</span><span class="p">,</span> <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">min_gap_length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
 <span class="sd">    adaptation of the Gale-Shapley algorithm for stable matching of peaks_a and peaks_b</span>
 <span class="sd">    for matched peaks, track numbers are updated</span>
 <span class="sd">    tracker is gap-size aware, and will monitor &#39;slept&#39; tracks within gap distance as candidates</span>
 <span class="sd">    linear interpolation will be used to fill the gaps</span>
 <span class="sd">    return value is None, function will update tracks, peaks, and analysis_frames directly</span>
-<span class="sd">    &quot;&quot;&quot;</span>    
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
+<span class="sd">        TODO</span>
+<span class="sd">    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
+<span class="sd">        TODO</span>
+<span class="sd">    frame_n : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    analysis_frames : </span>
+<span class="sd">        TODO</span>
+<span class="sd">    sample_rate : int </span>
+<span class="sd">        TODO</span>
+<span class="sd">    hop_size : int </span>
+<span class="sd">        TODO</span>
+<span class="sd">    frequency_deviation : float, optional</span>
+<span class="sd">        TODO (default: 0.45)</span>
+<span class="sd">    SMR_continuity : float, optional</span>
+<span class="sd">        TODO (default: 0.0)</span>
+<span class="sd">    min_gap_length : int</span>
+<span class="sd">        TODO (default: 1)</span>
+<span class="sd">    &quot;&quot;&quot;</span>  
     <span class="c1"># state for costs</span>
     <span class="n">peak_costs</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">]</span>
 
@@ -247,32 +301,73 @@
 
 
 <div class="viewcode-block" id="are_valid_candidates"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.are_valid_candidates">[docs]</a><span class="k">def</span> <span class="nf">are_valid_candidates</span><span class="p">(</span><span class="n">candidate1</span><span class="p">,</span> <span class="n">candidate2</span><span class="p">,</span> <span class="n">deviation</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    candidate1 : :obj:`~pyats.ats_structure.AtsPeak`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    candidate2 : :obj:`~pyats.ats_structure.AtsPeak`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    deviation : float</span>
+<span class="sd">        TODO</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">min_frq</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">candidate1</span><span class="o">.</span><span class="n">frq</span><span class="p">,</span> <span class="n">candidate2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">candidate1</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">candidate2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">min_frq</span> <span class="o">*</span> <span class="n">deviation</span></div>
 
 
 <div class="viewcode-block" id="peak_dist"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.peak_dist">[docs]</a><span class="k">def</span> <span class="nf">peak_dist</span><span class="p">(</span><span class="n">pk1</span><span class="p">,</span> <span class="n">pk2</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pk1 : :obj:`~pyats.ats_structure.AtsPeak`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    pk1 : :obj:`~pyats.ats_structure.AtsPeak`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    alpha : float</span>
+<span class="sd">        TODO</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">return</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">pk1</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">pk2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pk1</span><span class="o">.</span><span class="n">smr</span> <span class="o">-</span> <span class="n">pk2</span><span class="o">.</span><span class="n">smr</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MatchCost"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.MatchCost">[docs]</a><span class="k">class</span> <span class="nc">MatchCost</span><span class="p">():</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
-    
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;to index: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2"> at cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span>
-    
-    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">cost</span></div>
-
-
 <div class="viewcode-block" id="phase_interp"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.phase_interp">[docs]</a><span class="k">def</span> <span class="nf">phase_interp</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    returns the phase (-pi,pi] at time t</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO returns the phase (-pi,pi] at time t</span>
 <span class="sd">    given that the freq linearly interpolates from</span>
 <span class="sd">    freq_0, with phase pha_0 at time 0 to freq_t at time t</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freq_0 : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    freq_t : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    pha_0 : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    t : float</span>
+<span class="sd">        TODO</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># assuming smooth linear interpolation the average frequency dictates phase rate estimate</span>
     <span class="n">freq_est</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq_t</span> <span class="o">+</span> <span class="n">freq_0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
     <span class="n">new_phase</span> <span class="o">=</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">freq_est</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
@@ -280,10 +375,34 @@
 
 
 <div class="viewcode-block" id="phase_interp_cubic"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.phase_interp_cubic">[docs]</a><span class="k">def</span> <span class="nf">phase_interp_cubic</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">pha_t</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
 <span class="sd">    for cubic polynomial interpolation of phase</span>
 <span class="sd">    credit: McAulay &amp; Quatieri (1986)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freq_0 : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    freq_t : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    pha_0 : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    pha_t : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    i_samps_from_0 : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    samps_from_0_to_t : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    sample_rate : int</span>
+<span class="sd">        TODO</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">freq_to_radians_per_sample</span> <span class="o">=</span> <span class="n">tau</span> <span class="o">/</span> <span class="n">sample_rate</span>
 
     <span class="n">alpha_beta_coeffs</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
@@ -303,7 +422,21 @@
     <span class="n">alpha_beta_terms</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">w_t</span> <span class="o">-</span> <span class="n">w_0</span>
     <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">matmul</span><span class="p">(</span><span class="n">alpha_beta_coeffs</span><span class="p">,</span> <span class="n">alpha_beta_terms</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
+
+ 
+<div class="viewcode-block" id="MatchCost"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.MatchCost">[docs]</a><span class="k">class</span> <span class="nc">MatchCost</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;TODO</span>
+
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
     
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;to index: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2"> at cost: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cost</span><span class="si">}</span><span class="s2">&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">cost</span></div>
 </pre></div>
 
            </div>

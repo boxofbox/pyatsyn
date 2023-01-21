@@ -17,7 +17,6 @@
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
-        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -50,9 +49,12 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pyats.ats_io">pyats.ats_io module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#without-phase-or-noise">1) without phase or noise:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#with-phase-but-not-noise">2) with phase but not noise:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#with-noise-but-not-phase">3) with noise but not phase:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#with-phase-and-noise">4) with phase and noise:</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyats.ats_io.ats_load"><code class="docutils literal notranslate"><span class="pre">ats_load()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyats.ats_io.ats_save"><code class="docutils literal notranslate"><span class="pre">ats_save()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pyats.ats_io.write_array_of_numbers_to_binary_doubles"><code class="docutils literal notranslate"><span class="pre">write_array_of_numbers_to_binary_doubles()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pyats.ats_structure">pyats.ats_structure module</a><ul>
@@ -61,10 +63,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pyats.ats_synth">pyats.ats_synth module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#attributes-todo">Attributes TODO</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyats.ats_synth.synth"><code class="docutils literal notranslate"><span class="pre">synth()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyats.ats_synth.synth_CLI"><code class="docutils literal notranslate"><span class="pre">synth_CLI()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pyats.ats_synth.uniform"><code class="docutils literal notranslate"><span class="pre">uniform()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pyats">Module contents</a></li>
@@ -148,7 +148,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pyats.atsa.html#module-pyats.atsa.utils">pyats.atsa.utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#attributes-todo">Attributes TODO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.utils.MAX_DB_SPL"><code class="docutils literal notranslate"><span class="pre">MAX_DB_SPL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.utils.ATS_MIN_SEGMENT_LENGTH"><code class="docutils literal notranslate"><span class="pre">ATS_MIN_SEGMENT_LENGTH</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.utils.ATS_AMP_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_AMP_THRESHOLD</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.utils.ATS_NOISE_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_NOISE_THRESHOLD</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.utils.amp_to_db"><code class="docutils literal notranslate"><span class="pre">amp_to_db()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.utils.amp_to_db_spl"><code class="docutils literal notranslate"><span class="pre">amp_to_db_spl()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.utils.compute_frames"><code class="docutils literal notranslate"><span class="pre">compute_frames()</span></code></a></li>
@@ -158,7 +161,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pyats.atsa.html#module-pyats.atsa.windows">pyats.atsa.windows module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#id1">Attributes TODO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF"><code class="docutils literal notranslate"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS"><code class="docutils literal notranslate"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.windows.bes_i0"><code class="docutils literal notranslate"><span class="pre">bes_i0()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.windows.make_blackman_window"><code class="docutils literal notranslate"><span class="pre">make_blackman_window()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="pyats.atsa.html#pyats.atsa.windows.make_fft_window"><code class="docutils literal notranslate"><span class="pre">make_fft_window()</span></code></a></li>
@@ -178,21 +183,144 @@
 <section id="module-pyats.ats_io">
 <span id="pyats-ats-io-module"></span><h2>pyats.ats_io module<a class="headerlink" href="#module-pyats.ats_io" title="Permalink to this heading"></a></h2>
 <p>TODO Summary</p>
-<p>TODO About</p>
+<p>TODO About
+-ATS header consists of (all double floats):</p>
+<p>ATS_MAGIC_NUMBER
+sampling-rate (samples/sec)
+frame-size (samples)
+window-size (samples)
+partials (number)
+frames (number)
+ampmax (max. amplitude)
+frqmax (max. frequecny)
+dur (duration)
+type (number, see below)</p>
+<p>-ATS frames can be of four different types:</p>
+<section id="without-phase-or-noise">
+<h3>1) without phase or noise:<a class="headerlink" href="#without-phase-or-noise" title="Permalink to this heading"></a></h3>
+<p>time (frame starting time)
+amp (par#0 amplitude)
+frq (par#0 frequency)
+…
+amp (par#n amplitude)
+frq (par#n frequency)</p>
+</section>
+<section id="with-phase-but-not-noise">
+<h3>2) with phase but not noise:<a class="headerlink" href="#with-phase-but-not-noise" title="Permalink to this heading"></a></h3>
+<p>time (frame starting time)
+amp (par#0 amplitude)
+frq (par#0 frequency)
+pha (par#0 phase)
+…
+amp (par#n amplitude)
+frq (par#n frequency)
+pha (par#n phase)</p>
+</section>
+<section id="with-noise-but-not-phase">
+<h3>3) with noise but not phase:<a class="headerlink" href="#with-noise-but-not-phase" title="Permalink to this heading"></a></h3>
+<p>time (frame starting time)
+amp (par#0 amplitude)
+frq (par#0 frequency)
+…
+amp (par#n amplitude)
+frq (par#n frequency)</p>
+<p>energy (band#0 energy)
+…
+energy (band#n energy)</p>
+</section>
+<section id="with-phase-and-noise">
+<h3>4) with phase and noise:<a class="headerlink" href="#with-phase-and-noise" title="Permalink to this heading"></a></h3>
+<p>time (frame starting time)
+amp (par#0 amplitude)
+frq (par#0 frequency)
+pha (par#0 phase)
+…
+amp (par#n amplitude)
+frq (par#n frequency)
+pha (par#n phase)</p>
+<p>noise (band#0 energy)
+…
+noise (band#n energy)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyats.ats_io.ATS_MAGIC_NUMBER">
+<span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">ATS_MAGIC_NUMBER</span></span><a class="headerlink" href="#pyats.ats_io.ATS_MAGIC_NUMBER" title="Permalink to this definition"></a></dt>
+<dd><p>TODO 123.0</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyats.ats_io.DOUBLE_SIZE">
+<span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">DOUBLE_SIZE</span></span><a class="headerlink" href="#pyats.ats_io.DOUBLE_SIZE" title="Permalink to this definition"></a></dt>
+<dd><p>TODO calcsize(‘d’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyats.ats_io.DOUBLE_BIG_ENDIAN">
+<span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">DOUBLE_BIG_ENDIAN</span></span><a class="headerlink" href="#pyats.ats_io.DOUBLE_BIG_ENDIAN" title="Permalink to this definition"></a></dt>
+<dd><p>TODO</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyats.ats_io.DOUBLE_LIL_ENDIAN">
+<span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">DOUBLE_LIL_ENDIAN</span></span><a class="headerlink" href="#pyats.ats_io.DOUBLE_LIL_ENDIAN" title="Permalink to this definition"></a></dt>
+<dd><p>TODO</p>
+</dd></dl>
+
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.ats_io.ats_load">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">ats_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_io.html#ats_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_io.ats_load" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Function to TODO</p>
+<p>TODO</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – TODO</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – TODO</p></li>
+<li><p><strong>optimize</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
+<li><p><strong>min_gap_size</strong> (<em>int</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
+<li><p><strong>amp_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
+<li><p><strong>highest_frequency</strong> (<em>float</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
+<li><p><strong>lowest_frequency</strong> (<em>float</em><em>, </em><em>optional</em>) – TODO</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>TODO</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TODO</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.ats_io.ats_save">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">ats_save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_io.html#ats_save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_io.ats_save" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pyats.ats_io.write_array_of_numbers_to_binary_doubles">
-<span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">write_array_of_numbers_to_binary_doubles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_io.html#write_array_of_numbers_to_binary_doubles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_io.write_array_of_numbers_to_binary_doubles" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Function to TODO</p>
+<p>TODO</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sound</strong> (<a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – TODO</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – TODO</p></li>
+<li><p><strong>save_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
+<li><p><strong>save_noise</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-pyats.ats_structure">
@@ -203,10 +331,12 @@
 <dt class="sig sig-object py" id="pyats.ats_structure.AtsPeak">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyats.ats_structure.</span></span><span class="sig-name descname"><span class="pre">AtsPeak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_spl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barkfrq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asleep_for</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_structure.html#AtsPeak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_structure.AtsPeak" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>TODO</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyats.ats_structure.AtsPeak.clone">
 <span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_structure.html#AtsPeak.clone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_structure.AtsPeak.clone" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>TODO</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -214,20 +344,22 @@
 <dt class="sig sig-object py" id="pyats.ats_structure.AtsSound">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyats.ats_structure.</span></span><span class="sig-name descname"><span class="pre">AtsSound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_structure.html#AtsSound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_structure.AtsSound" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>main data abstraction
+<p>TODO
+main data abstraction
 amp, frq, and pha contain sinusoidal modeling information as arrays of
 arrays of data arranged by partial par-energy and band-energy hold
 noise modeling information (experimental format)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyats.ats_structure.AtsSound.clone">
 <span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_structure.html#AtsSound.clone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_structure.AtsSound.clone" title="Permalink to this definition"></a></dt>
-<dd><p>returns a deep copy of the AtsSound</p>
+<dd><p>TODO</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyats.ats_structure.AtsSound.optimize">
 <span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_gap_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_structure.html#AtsSound.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_structure.AtsSound.optimize" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>TODO</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -236,114 +368,43 @@ noise modeling information (experimental format)</p>
 <span id="pyats-ats-synth-module"></span><h2>pyats.ats_synth module<a class="headerlink" href="#module-pyats.ats_synth" title="Permalink to this heading"></a></h2>
 <p>TODO Summary</p>
 <p>TODO About</p>
-<section id="attributes-todo">
-<h3>Attributes TODO<a class="headerlink" href="#attributes-todo" title="Permalink to this heading"></a></h3>
-<dl class="simple">
-<dt>E!!!!GATS_CRITICAL_BAND_EDGES<span class="classifier">ndarray[float]</span></dt><dd><p>1D array containing 26 frequencies that distinguish the default 25 critical bands</p>
-</dd>
-</dl>
-</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.ats_synth.synth">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_synth.</span></span><span class="sig-name descname"><span class="pre">synth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sine_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_sine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_synth.html#synth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_synth.synth" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Function to TODO</p>
+<p>TODO</p>
+<blockquote>
+<div><p>for cubic polynomial interpolation of phase
+credit: McAulay &amp; Quatieri (1986)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – TODO</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: False)</p></li>
+<li><p><strong>compute_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
+<li><p><strong>export_file</strong> (<em>str</em>) – TODO (default: None)</p></li>
+<li><p><strong>sine_pct</strong> (<em>float</em>) – TODO (default: 1.0)</p></li>
+<li><p><strong>noise_pct</strong> (<em>float</em>) – TODO (default: 0.0)</p></li>
+<li><p><strong>noise_bands</strong> (<em>TODO</em>) – TODO (default: None)</p></li>
+<li><p><strong>normalize_sine</strong> (<em>bool</em>) – TODO (default: False)</p></li>
+<li><p><strong>normalize_noise</strong> (<em>bool</em>) – TODO (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>TODO</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.ats_synth.synth_CLI">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_synth.</span></span><span class="sig-name descname"><span class="pre">synth_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_synth.html#synth_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_synth.synth_CLI" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pyats.ats_synth.uniform">
-<span class="sig-prename descclassname"><span class="pre">pyats.ats_synth.</span></span><span class="sig-name descname"><span class="pre">uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyats.ats_synth.uniform" title="Permalink to this definition"></a></dt>
-<dd><p>Draw samples from a uniform distribution.</p>
-<p>Samples are uniformly distributed over the half-open interval
-<code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high)</span></code> (includes low, but excludes high).  In other words,
-any value within the given interval is equally likely to be drawn
-by <cite>uniform</cite>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>New code should use the <cite>~numpy.random.Generator.uniform</cite>
-method of a <cite>~numpy.random.Generator</cite> instance instead;
-please see the <span class="xref std std-ref">random-quick-start</span>.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<em>float</em><em> or </em><em>array_like</em><em> of </em><em>floats</em><em>, </em><em>optional</em>) – Lower boundary of the output interval.  All values generated will be
-greater than or equal to low.  The default value is 0.</p></li>
-<li><p><strong>high</strong> (<em>float</em><em> or </em><em>array_like</em><em> of </em><em>floats</em>) – Upper boundary of the output interval.  All values generated will be
-less than or equal to high.  The high limit may be included in the
-returned array of floats due to floating-point rounding in the
-equation <code class="docutils literal notranslate"><span class="pre">low</span> <span class="pre">+</span> <span class="pre">(high-low)</span> <span class="pre">*</span> <span class="pre">random_sample()</span></code>.  The default value
-is 1.0.</p></li>
-<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple</em><em> of </em><em>ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code> are both scalars.
-Otherwise, <code class="docutils literal notranslate"><span class="pre">np.broadcast(low,</span> <span class="pre">high).size</span></code> samples are drawn.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized uniform distribution.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray or scalar</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">randint</span></code></dt><dd><p>Discrete uniform distribution, yielding integers.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_integers</span></code></dt><dd><p>Discrete uniform distribution over the closed interval <code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high]</span></code>.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random_sample</span></code></dt><dd><p>Floats uniformly distributed over <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random</span></code></dt><dd><p>Alias for <cite>random_sample</cite>.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">rand</span></code></dt><dd><p>Convenience function that accepts dimensions as input, e.g., <code class="docutils literal notranslate"><span class="pre">rand(2,2)</span></code> would generate a 2-by-2 array of floats, uniformly distributed over <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">random.Generator.uniform</span></code></dt><dd><p>which should be used for new code.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Notes</p>
-<p>The probability density function of the uniform distribution is</p>
-<div class="math notranslate nohighlight">
-\[p(x) = \frac{1}{b - a}\]</div>
-<p>anywhere within the interval <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b)</span></code>, and zero elsewhere.</p>
-<p>When <code class="docutils literal notranslate"><span class="pre">high</span></code> == <code class="docutils literal notranslate"><span class="pre">low</span></code>, values of <code class="docutils literal notranslate"><span class="pre">low</span></code> will be returned.
-If <code class="docutils literal notranslate"><span class="pre">high</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">low</span></code>, the results are officially undefined
-and may eventually raise an error, i.e. do not rely on this
-function to behave when passed arguments satisfying that
-inequality condition. The <code class="docutils literal notranslate"><span class="pre">high</span></code> limit may be included in the
-returned array of floats due to floating-point rounding in the
-equation <code class="docutils literal notranslate"><span class="pre">low</span> <span class="pre">+</span> <span class="pre">(high-low)</span> <span class="pre">*</span> <span class="pre">random_sample()</span></code>. For example:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="mf">0.99999999</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
-<span class="go">5.0</span>
-</pre></div>
-</div>
-<p class="rubric">Examples</p>
-<p>Draw samples from the distribution:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>All values are within the given interval:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">s</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">s</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>Display the histogram of the samples, along with the
-probability density function:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">count</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">ignored</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">bins</span><span class="p">),</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
+<dd><p>Function to TODO</p>
+<p>TODO</p>
 </dd></dl>
 
 </section>

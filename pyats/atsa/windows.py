@@ -13,29 +13,28 @@
 """TODO Summary
 
 TODO About
+All data coming form Harris' famous paper:
+"On the Use Of windows For Harmonic Analysis 
+With The Discrete Fourier Transform"
+Proceedings of the IEEE, Vol. 66, No. 1 (pg. 51 to 84)
+January 1978
+and
+Albert H. Nuttall, "Some Windows with Very Good Sidelobe Behaviour", 
+IEEE Transactions of Acoustics, Speech, and Signal Processing, Vol. ASSP-29,
+No. 1, February 1981, pp 84-91
 
-Attributes TODO
+Attributes 
 ----------
-E!!!!GATS_CRITICAL_BAND_EDGES : ndarray[float]
-    1D array containing 26 frequencies that distinguish the default 25 critical bands
-
+VALID_FFT_WINDOW_DEFINITIONS : list[str]
+    TODO
+ATS_BLACKMAN_WINDOW_COEFF : ndarray[float]
+    TODO 2D
+ATS_BLACKMAN_WINDOW_COEFF_LABELS : dict[str : list[float]]
+    TODO
 """
 
 from numpy import zeros, cos, sin, log, exp, sqrt, absolute, ones, pi
 from math import tau
-
-
-"""
-All data coming form Harris' famous paper:
-"On the Use Of windows For Harmonic Analysis 
- With The Discrete Fourier Transform"
-Proceedings of the IEEE, Vol. 66, No. 1 (pg. 51 to 84)
-January 1978
-    and
-Albert H. Nuttall, "Some Windows with Very Good Sidelobe Behaviour", 
-IEEE Transactions of Acoustics, Speech, and Signal Processing, Vol. ASSP-29,
-No. 1, February 1981, pp 84-91
-"""
 
 VALID_FFT_WINDOW_DEFINITIONS = [
     'blackman-exact',
@@ -67,7 +66,6 @@ VALID_FFT_WINDOW_DEFINITIONS = [
     'hann-poisson',
 ]  
 
-
 # Window coefficients (a0, a1, a2, a3)
 ATS_BLACKMAN_WINDOW_COEFF = zeros([6,4], dtype='float64')
 ATS_BLACKMAN_WINDOW_COEFF[0] = [0.42659, -0.49656, 0.07685, 0]      # Exact Blackman (-51 dB)
@@ -87,6 +85,22 @@ ATS_BLACKMAN_WINDOW_COEFF_LABELS = {
     }
 
 def make_blackman_window(window_type, size):
+    """Function to TODO
+
+    TODO
+
+    Parameters
+    ----------
+    window_type : str
+        TODO
+    size : int
+        TODO
+
+    Returns
+    -------
+    ndarray[float]
+        TODO
+    """
     if window_type not in ATS_BLACKMAN_WINDOW_COEFF_LABELS.keys():
         raise Exception('Specified Blackman Window Type not Defined')
 
@@ -107,6 +121,30 @@ def make_blackman_window(window_type, size):
  
 
 def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
+    """Function to TODO
+
+    TODO
+
+    Parameters
+    ----------
+    window_type : str
+        TODO
+    size : int
+        TODO
+    beta : float, optional
+        TODO (float: 1.0)
+    alpha : float, optional
+        TODO (float: 0.5)
+
+    Returns
+    -------
+    ndarray[float]
+        TODO
+
+    Raises
+    ------
+    TODO
+    """
     if (window_type.startswith('blackman')):
         return make_blackman_window(window_type, size)
 
@@ -196,16 +234,42 @@ def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
     else:
         raise Exception('Specified Window Type not Defined')
 
-# Returns the norm of the window
+
 def window_norm (window):
+    """Function to TODO
+
+    TODO # Returns the norm of the window
+
+    Parameters
+    ----------
+    window : ndarray[float]
+        TODO    
+
+    Returns
+    -------
+    float
+        TODO
+    """
     norm_factor = absolute(window).sum()
     if norm_factor == 0.0:
         raise Exception('Cannot normalize window with absolute sum of 0.0')
     return 1.0 / norm_factor
-    
+
+
 def norm_window(window):
-    """
-    returns a normalized window (i.e., integrates to 1.0)
+    """Function to TODO
+
+    TODO returns a normalized window (i.e., integrates to 1.0)
+
+    Parameters
+    ----------
+    window : ndarray[float]
+        TODO
+
+    Returns
+    -------
+    ndarray[float]
+        TODO
     """
     window_sum = sum(window)
     if window_sum == 0.0:
@@ -215,9 +279,21 @@ def norm_window(window):
     return window
 
 
-# Modified Bessel Function of the First Kind
-# from "Numerical Recipes in C"
 def bes_i0 (x):
+    """Function to TODO
+
+    TODO Modified Bessel Function of the First Kind from "Numerical Recipes in C"
+
+    Parameters
+    ----------
+    x : float
+        TODO
+
+    Returns
+    -------
+    float
+        TODO
+    """
     if (abs(x) < 3.75):
         y = pow( (x / 3.75), 2)
         return (1.0 + (y * (3.5156229 + (y * (3.0899414 + \

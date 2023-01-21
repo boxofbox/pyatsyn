@@ -16,14 +16,15 @@ TODO About
 
 """
 
-
 from numpy import zeros, inf, copy, mean, any, arange
 
 from pyats.atsa.utils import ATS_MIN_SEGMENT_LENGTH
 from pyats.atsa.peak_tracking import phase_interp
 
 class AtsPeak:
+    """TODO
 
+    """
     def __init__ (self, amp=0.0, frq=0.0, pha=0.0, smr=0.0, track=0, db_spl=0.0, 
                   barkfrq=0.0, slope_r=0.0, asleep_for=None, duration=1):
         self.amp = amp
@@ -41,14 +42,20 @@ class AtsPeak:
         self.frq_min = inf
 
     def clone (self):
+        """TODO
+
+        """
         return AtsPeak(self.amp,self.frq,self.pha,self.smr,self.track,self.db_spl,
                         self.barkfrq,self.slope_r,self.asleep_for, self.duration)
 
     def __repr__(self):
+        """TODO
+
+        """
         return f"PK: f_{self.frq} at mag_{self.amp} + {self.pha}"
 
 class AtsSound:
-    """
+    """TODO
     main data abstraction
     amp, frq, and pha contain sinusoidal modeling information as arrays of
     arrays of data arranged by partial par-energy and band-energy hold
@@ -56,6 +63,9 @@ class AtsSound:
     """    
     def __init__ (self, name, sampling_rate, frame_size, window_size, 
                   partials, frames, dur, has_phase=True):
+        """TODO
+
+        """
         self.name = name
         self.sampling_rate = sampling_rate
         self.frame_size = frame_size
@@ -82,6 +92,9 @@ class AtsSound:
 
     
     def clone(self):
+        """TODO
+
+        """
         """
         returns a deep copy of the AtsSound
         """
@@ -120,6 +133,9 @@ class AtsSound:
                     amp_threshold = None, # in amplitude
                     highest_frequency = None,
                     lowest_frequency = None):
+        """TODO
+
+        """
 
         has_pha = True
         if self.pha is None:

@@ -82,31 +82,56 @@
 
 <span class="sd">TODO About</span>
 
-<span class="sd">Attributes TODO</span>
-<span class="sd">----------</span>
-<span class="sd">E!!!!GATS_CRITICAL_BAND_EDGES : ndarray[float]</span>
-<span class="sd">    1D array containing 26 frequencies that distinguish the default 25 critical bands</span>
-
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">matmul</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">linspace</span><span class="p">,</span> <span class="n">cumsum</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">real</span>
 <span class="kn">from</span> <span class="nn">numpy.fft</span> <span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">ifft</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">uniform</span>
 <span class="kn">import</span> <span class="nn">soundfile</span> <span class="k">as</span> <span class="nn">sf</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">tau</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">numpy.random</span>
-<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">uniform</span>
 
 <span class="kn">from</span> <span class="nn">pyats.atsa.critical_bands</span> <span class="kn">import</span> <span class="n">ATS_CRITICAL_BAND_EDGES</span>
 <span class="kn">from</span> <span class="nn">pyats.atsa.utils</span> <span class="kn">import</span> <span class="n">compute_frames</span>
-
 <span class="kn">from</span> <span class="nn">pyats.ats_io</span> <span class="kn">import</span> <span class="n">ats_load</span>
 
 
 <div class="viewcode-block" id="synth"><a class="viewcode-back" href="../../pyats.html#pyats.ats_synth.synth">[docs]</a><span class="k">def</span> <span class="nf">synth</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compute_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
             <span class="n">export_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sine_pct</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">noise_pct</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">noise_bands</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-            <span class="n">normalize_sine</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">normalize_noise</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">normalize_sine</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">normalize_noise</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>    
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
 
+<span class="sd">    TODO</span>
+
+<span class="sd">        for cubic polynomial interpolation of phase</span>
+<span class="sd">        credit: McAulay &amp; Quatieri (1986)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ats_snd : :obj:`~pyats.ats_structure.AtsSound`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    normalize : bool, optional</span>
+<span class="sd">        TODO (default: False)</span>
+<span class="sd">    compute_phase : bool, optional</span>
+<span class="sd">        TODO (default: True)</span>
+<span class="sd">    export_file : str</span>
+<span class="sd">        TODO (default: None)</span>
+<span class="sd">    sine_pct : float</span>
+<span class="sd">        TODO (default: 1.0)</span>
+<span class="sd">    noise_pct : float</span>
+<span class="sd">        TODO (default: 0.0)</span>
+<span class="sd">    noise_bands : TODO</span>
+<span class="sd">        TODO (default: None)</span>
+<span class="sd">    normalize_sine : bool</span>
+<span class="sd">        TODO (default: False)</span>
+<span class="sd">    normalize_noise : bool</span>
+<span class="sd">        TODO (default: False)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray[float]</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">sampling_rate</span>
     <span class="n">out_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ats_snd</span><span class="o">.</span><span class="n">dur</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
     <span class="n">frame_size</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frame_size</span>
@@ -217,7 +242,7 @@
         <span class="n">noise_M_over_2</span> <span class="o">=</span> <span class="n">sample_rate</span> <span class="o">//</span> <span class="mi">2</span>
         <span class="n">noise_frames</span> <span class="o">=</span> <span class="n">compute_frames</span><span class="p">(</span><span class="n">out_size</span><span class="p">,</span> <span class="n">noise_hop</span><span class="p">)</span>
         
-        <span class="n">white_noise</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">noise_frames</span> <span class="o">*</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="n">overlap</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">white_noise</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">noise_frames</span> <span class="o">*</span> <span class="n">sample_rate</span> <span class="o">/</span> <span class="n">overlap</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">banded_noise</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">ats_snd</span><span class="o">.</span><span class="n">bands</span><span class="p">),</span> <span class="n">out_size</span><span class="p">])</span>
 
         <span class="c1"># indices for refolding a symmetric fft after clearing freq bins</span>
@@ -303,7 +328,12 @@
 
     <span class="k">return</span> <span class="n">synthesized</span>  </div>
 
-<div class="viewcode-block" id="synth_CLI"><a class="viewcode-back" href="../../pyats.html#pyats.ats_synth.synth_CLI">[docs]</a><span class="k">def</span> <span class="nf">synth_CLI</span><span class="p">():</span>
+<div class="viewcode-block" id="synth_CLI"><a class="viewcode-back" href="../../pyats.html#pyats.ats_synth.synth_CLI">[docs]</a><span class="k">def</span> <span class="nf">synth_CLI</span><span class="p">():</span>    
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
         <span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Sine generator bank and band-limited noise synthesizer for .ats files&quot;</span>
         

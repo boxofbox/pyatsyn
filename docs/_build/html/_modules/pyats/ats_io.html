@@ -81,15 +81,6 @@
 <span class="sd">&quot;&quot;&quot;TODO Summary</span>
 
 <span class="sd">TODO About</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span><span class="p">,</span> <span class="n">unpack</span><span class="p">,</span> <span class="n">calcsize</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">arange</span>
-
-<span class="kn">from</span> <span class="nn">pyats.ats_structure</span> <span class="kn">import</span> <span class="n">AtsSound</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">-ATS header consists of (all double floats):</span>
 
 <span class="sd">ATS_MAGIC_NUMBER</span>
@@ -154,7 +145,24 @@
 <span class="sd">noise (band#0 energy)</span>
 <span class="sd">...</span>
 <span class="sd">noise (band#n energy)</span>
+
+
+<span class="sd">Attributes </span>
+<span class="sd">----------</span>
+<span class="sd">ATS_MAGIC_NUMBER : float</span>
+<span class="sd">    TODO 123.0</span>
+<span class="sd">DOUBLE_SIZE : float</span>
+<span class="sd">    TODO calcsize(&#39;d&#39;)</span>
+<span class="sd">DOUBLE_BIG_ENDIAN</span>
+<span class="sd">    TODO</span>
+<span class="sd">DOUBLE_LIL_ENDIAN</span>
+<span class="sd">    TODO</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">struct</span> <span class="kn">import</span> <span class="n">pack</span><span class="p">,</span> <span class="n">unpack</span><span class="p">,</span> <span class="n">calcsize</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">arange</span>
+
+<span class="kn">from</span> <span class="nn">pyats.ats_structure</span> <span class="kn">import</span> <span class="n">AtsSound</span>
 
 <span class="n">ATS_MAGIC_NUMBER</span> <span class="o">=</span> <span class="mf">123.0</span>
 <span class="n">DOUBLE_SIZE</span> <span class="o">=</span> <span class="n">calcsize</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">)</span>
@@ -162,7 +170,21 @@
 <span class="n">DOUBLE_LIL_ENDIAN</span> <span class="o">=</span> <span class="s1">&#39;&lt;d&#39;</span>
 
 <div class="viewcode-block" id="ats_save"><a class="viewcode-back" href="../../pyats.html#pyats.ats_io.ats_save">[docs]</a><span class="k">def</span> <span class="nf">ats_save</span><span class="p">(</span><span class="n">sound</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">save_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
 
+<span class="sd">    TODO</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sound : :obj:`~pyats.ats_structure.AtsSound`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    file : str</span>
+<span class="sd">        TODO</span>
+<span class="sd">    save_phase : bool, optional</span>
+<span class="sd">        TODO (default: True)</span>
+<span class="sd">    save_noise : bool, optional</span>
+<span class="sd">        TODO (default: True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">has_pha</span> <span class="o">=</span> <span class="n">save_phase</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">sound</span><span class="o">.</span><span class="n">pha</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="n">has_noi</span> <span class="o">=</span> <span class="n">save_noise</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sound</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">sound</span><span class="o">.</span><span class="n">band_energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 
@@ -203,11 +225,6 @@
                     <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]))</span>                    </div>
 
 
-<div class="viewcode-block" id="write_array_of_numbers_to_binary_doubles"><a class="viewcode-back" href="../../pyats.html#pyats.ats_io.write_array_of_numbers_to_binary_doubles">[docs]</a><span class="k">def</span> <span class="nf">write_array_of_numbers_to_binary_doubles</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">:</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">n</span><span class="p">))</span></div>
-
-
 <div class="viewcode-block" id="ats_load"><a class="viewcode-back" href="../../pyats.html#pyats.ats_io.ats_load">[docs]</a><span class="k">def</span> <span class="nf">ats_load</span><span class="p">(</span>   <span class="n">name</span><span class="p">,</span> 
                 <span class="n">file</span><span class="p">,</span> 
                 <span class="n">optimize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
@@ -216,7 +233,36 @@
                 <span class="n">amp_threshold</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
                 <span class="n">highest_frequency</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">lowest_frequency</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
 
+<span class="sd">    TODO</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        TODO</span>
+<span class="sd">    file : str</span>
+<span class="sd">        TODO</span>
+<span class="sd">    optimize : bool, optional</span>
+<span class="sd">        TODO (default: True)</span>
+<span class="sd">    min_gap_size : int, optional</span>
+<span class="sd">        TODO (default: None)</span>
+<span class="sd">    amp_threshold : float, optional</span>
+<span class="sd">        TODO (default: None)</span>
+<span class="sd">    highest_frequency : float, optional</span>
+<span class="sd">        TODO (default: None)</span>
+<span class="sd">    lowest_frequency : float, optional</span>
+<span class="sd">        TODO</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`~pyats.ats_structure.AtsSound`</span>
+<span class="sd">        TODO</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
         
         <span class="c1"># check ATS_MAGIC_NUMBER and set endian order</span>

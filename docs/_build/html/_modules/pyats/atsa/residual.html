@@ -101,10 +101,30 @@
                                 <span class="n">end_sample</span><span class="p">,</span>
                                 <span class="n">export_residual</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                                 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the difference between the ats_snd synthesis and the original sound</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to computes the difference between the ats_snd synthesis and the original sound</span>
 
+<span class="sd">    TODO </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    residual_file : str</span>
+<span class="sd">        TODO</span>
+<span class="sd">    ats_snd : :obj:`~pyats.ats_structure.AtsSound`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    in_sound : ndarray[float]</span>
+<span class="sd">        TODO</span>
+<span class="sd">    start_sample : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    end_sample : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    export_residual: bool, optional</span>
+<span class="sd">        TODO (default: True)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    residual : ndarray[float]</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">synthesized</span> <span class="o">=</span> <span class="n">synth</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">)</span>
     <span class="n">residual</span> <span class="o">=</span> <span class="n">in_sound</span><span class="p">[</span><span class="n">start_sample</span><span class="p">:</span><span class="n">end_sample</span><span class="p">]</span> <span class="o">-</span> <span class="n">synthesized</span>
 
@@ -124,7 +144,29 @@
                         <span class="n">par_energy</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                         <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>                                               
                         <span class="p">):</span>
-    
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    residual : ndarray[float]</span>
+<span class="sd">        TODO</span>
+<span class="sd">    ats_snd : :obj:`~pyats.ats_structure.AtsSound`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    min_fft_size : int, optional</span>
+<span class="sd">        TODO (default: 4096)</span>
+<span class="sd">    equalize : bool, optional</span>
+<span class="sd">        TODO (default: False)</span>
+<span class="sd">    pad_factor : int, optional</span>
+<span class="sd">        TODO (default: 2)</span>
+<span class="sd">    band_edges : TODO</span>
+<span class="sd">        TODO (default: None)</span>
+<span class="sd">    par_energy : bool</span>
+<span class="sd">        TODO (default: False)</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        TODO (default: True)</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">hop</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frame_size</span>
     <span class="n">M</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">window_size</span>
     <span class="n">M_over_2</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
@@ -216,6 +258,24 @@
 
 
 <div class="viewcode-block" id="residual_N"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.residual.residual_N">[docs]</a><span class="k">def</span> <span class="nf">residual_N</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">min_fft_size</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    min_fft_size : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    factor : int, optional</span>
+<span class="sd">        TODOe)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">if</span> <span class="n">M</span> <span class="o">*</span> <span class="n">factor</span> <span class="o">&gt;</span> <span class="n">min_fft_size</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">next_power_of_2</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -223,6 +283,22 @@
 
 
 <div class="viewcode-block" id="residual_get_band_limits"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.residual.residual_get_band_limits">[docs]</a><span class="k">def</span> <span class="nf">residual_get_band_limits</span><span class="p">(</span><span class="n">fft_mag</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fft_mag : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    band_edges : TODO</span>
+<span class="sd">        TODO</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    band_limits : TODO</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">band_limits</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">band_edges</span><span class="p">),</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">band_edges</span><span class="p">):</span>
         <span class="n">band_limits</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">band</span> <span class="o">/</span> <span class="n">fft_mag</span>
@@ -230,6 +306,21 @@
 
 
 <div class="viewcode-block" id="residual_compute_band_energy"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.residual.residual_compute_band_energy">[docs]</a><span class="k">def</span> <span class="nf">residual_compute_band_energy</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">,</span> <span class="n">band_limits</span><span class="p">,</span> <span class="n">band_energy</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fft_mags : ndarray[float]</span>
+<span class="sd">        TODO</span>
+<span class="sd">    band_limits : TODO</span>
+<span class="sd">        TODO</span>
+<span class="sd">    band_energy : TODO</span>
+<span class="sd">        TODO</span>
+<span class="sd">    frame_n : int</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">band_limits</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">low</span> <span class="o">=</span> <span class="n">band_limits</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">low</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -241,7 +332,20 @@
         <span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">[</span><span class="n">low</span><span class="p">:</span><span class="n">high</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">fft_mags</span><span class="o">.</span><span class="n">size</span></div>
 
 
-<div class="viewcode-block" id="band_to_energy"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.residual.band_to_energy">[docs]</a><span class="k">def</span> <span class="nf">band_to_energy</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">,</span> <span class="n">use_smr</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>    
+<div class="viewcode-block" id="band_to_energy"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.residual.band_to_energy">[docs]</a><span class="k">def</span> <span class="nf">band_to_energy</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">,</span> <span class="n">use_smr</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+
+<span class="sd">    TODO </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ats_snd : :obj:`~pyats.ats_structure.AtsSound`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    band_edges : TODO</span>
+<span class="sd">        TODO</span>
+<span class="sd">    use_smr : bool, optional</span>
+<span class="sd">        TODO (default: False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
     <span class="n">bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_snd</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span>
     <span class="n">partials</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">partials</span>
     <span class="n">frames</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frames</span>
@@ -293,9 +397,17 @@
             
             
 <div class="viewcode-block" id="remove_bands"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.residual.remove_bands">[docs]</a><span class="k">def</span> <span class="nf">remove_bands</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    remove bands from ats_snd that are below threshold (in dB)</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function TODO</span>
+
+<span class="sd">    TODO  remove bands from ats_snd that are below threshold (in dB)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ats_snd : :obj:`~pyats.ats_structure.AtsSound`</span>
+<span class="sd">        TODO</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">        TODO</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">frames</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frames</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="n">db_to_amp</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
     
