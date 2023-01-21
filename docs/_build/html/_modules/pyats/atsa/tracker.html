@@ -36,9 +36,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pyats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyats.html">pyats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyats.html#pyats-atsa">pyats.atsa</a></li>
 </ul>
 
         </div>
@@ -74,13 +75,35 @@
 <span class="c1"># pyats Copyright (c) &lt;2023&gt;, &lt;Johnathan G Lyon&gt;</span>
 <span class="c1"># All rights reserved.</span>
 
-<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;, &lt;Oscar Pablo</span>
-<span class="c1"># Di Liscia, Pete Moss and Juan Pampin&gt;</span>
+<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
+<span class="c1"># &lt;Oscar Pablo Di Liscia, Pete Moss and Juan Pampin&gt;</span>
 
 
-<span class="sd">&quot;&quot;&quot;TODO Summary</span>
+<span class="sd">&quot;&quot;&quot; Main ATS Analysis Function</span>
 
-<span class="sd">TODO About</span>
+<span class="sd">The analysis tracker is responsible for driving the analysis of an audio file </span>
+<span class="sd">into the .ats format. The system uses a Short Time Fourier Transform (STFT) as</span>
+<span class="sd">is core analysis tool. Sound is analyzed using overlapping time windows and by</span>
+<span class="sd">taking the STFT on each window. </span>
+
+<span class="sd">After converting to polar coordinates, a peak detection algorithm (:obj:`~pyats.atsa.peak_detection`)</span>
+<span class="sd">determines relevant spectral peaks in the data. At this point, pyschoacoustics </span>
+<span class="sd">are considered in the form of masking curve evaluation and computation of the </span>
+<span class="sd">Signal-to-Mask ratio (SMR) for each candidate peak. SMR data is store together with </span>
+<span class="sd">a corrected frequency, magnitude and phase.</span>
+
+<span class="sd">The next step involves frame-to-frame tracking of peaks (:obj:`~pyats.atsa.peak_tracking`) to connect peaks that</span>
+<span class="sd">follow a similar spectral trajectory using both frequency and SMR data. The system </span>
+<span class="sd">uses a stable matching algorithm to pair candidate peaks, and is capable of interpolating</span>
+<span class="sd">gaps in the tracks.</span>
+
+<span class="sd">Once valid tracks are assembled, the results can be modeled with sinusoids (:obj:`~pyats.atsa_synth`) and subtracted </span>
+<span class="sd">from the origin source sound to compute a residual. NOTE: This part of the ATS system is currently under</span>
+<span class="sd">active research. For now, the residual analysis (:obj:`~pyats.atsa.residual`) is modeled using a </span>
+<span class="sd">25 time-varying critical noise band energy model (consistent with the critical bands used during SMR evaluation). </span>
+<span class="sd">These noise bands can then be resynthesized using 25 correspoding banks of time-enveloped, band-limited noise.</span>
+
+<span class="sd">Analysis is finally stored and abstracted as an :obj:`~pyats.ats_structure.AtsSound` object.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -92,13 +115,13 @@
 <span class="kn">from</span> <span class="nn">pyats.ats_structure</span> <span class="kn">import</span> <span class="n">AtsSound</span>
 
 <span class="kn">from</span> <span class="nn">pyats.atsa.utils</span> <span class="kn">import</span> <span class="n">db_to_amp</span><span class="p">,</span> <span class="n">next_power_of_2</span><span class="p">,</span> <span class="n">compute_frames</span><span class="p">,</span> <span class="n">optimize_tracks</span>
-<span class="kn">from</span> <span class="nn">pyats.atsa.windows</span> <span class="kn">import</span> <span class="n">make_fft_window</span><span class="p">,</span> <span class="n">norm_window</span><span class="p">,</span> <span class="n">window_norm</span><span class="p">,</span> <span class="n">VALID_FFT_WINDOW_DEFINITIONS</span>
+<span class="kn">from</span> <span class="nn">pyats.atsa.windows</span> <span class="kn">import</span> <span class="n">make_fft_window</span><span class="p">,</span> <span class="n">normalize_window</span><span class="p">,</span> <span class="n">window_norm</span><span class="p">,</span> <span class="n">VALID_FFT_WINDOW_DEFINITIONS</span>
 <span class="kn">from</span> <span class="nn">pyats.atsa.peak_detect</span> <span class="kn">import</span> <span class="n">peak_detection</span>
 <span class="kn">from</span> <span class="nn">pyats.atsa.critical_bands</span> <span class="kn">import</span> <span class="n">evaluate_smr</span>
 <span class="kn">from</span> <span class="nn">pyats.atsa.peak_tracking</span> <span class="kn">import</span> <span class="n">update_track_averages</span><span class="p">,</span> <span class="n">peak_tracking</span>
 <span class="kn">from</span> <span class="nn">pyats.atsa.residual</span> <span class="kn">import</span> <span class="n">compute_residual</span><span class="p">,</span> <span class="n">residual_analysis</span>
 
-<div class="viewcode-block" id="tracker"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.tracker.tracker">[docs]</a><span class="k">def</span> <span class="nf">tracker</span> <span class="p">(</span>   <span class="n">in_file</span><span class="p">,</span> 
+<div class="viewcode-block" id="tracker"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.tracker.tracker">[docs]</a><span class="k">def</span> <span class="nf">tracker</span> <span class="p">(</span>   <span class="n">in_file</span><span class="p">,</span> 
                 <span class="n">out_snd</span><span class="p">,</span>
                 <span class="n">start</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="c1"># analysis start point (in seconds)</span>
                 <span class="n">duration</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># max duration to analyze (in seconds) or &#39;None&#39; if analyze to end</span>
@@ -157,7 +180,7 @@
 <span class="sd">    min_gap_length : int</span>
 <span class="sd">        tracked partial gaps longer than this (in frames) will not be interpolated (default: 3)</span>
 <span class="sd">    min_segment_length : int</span>
-<span class="sd">        minimize size (in frames) of a track segment, otherwise it is pruned (default: 3)</span>
+<span class="sd">        minimal size (in frames) of a track segment, otherwise it is pruned (default: 3)</span>
 <span class="sd">    last_peak_contribution : float</span>
 <span class="sd">        additional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)</span>
 <span class="sd">    SMR_continuity : float</span>
@@ -231,7 +254,7 @@
             <span class="n">window_type</span><span class="o">=</span><span class="s1">&#39;blackman-harris-4-1&#39;</span>
         <span class="n">window</span> <span class="o">=</span> <span class="n">make_fft_window</span><span class="p">(</span><span class="n">window_type</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">window_beta</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">window_alpha</span><span class="p">)</span>
       
-    <span class="n">window</span> <span class="o">=</span> <span class="n">norm_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>    
+    <span class="n">window</span> <span class="o">=</span> <span class="n">normalize_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>    
     <span class="n">hop</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">hop_size</span><span class="p">)</span>
     <span class="c1"># central point of the window</span>
     <span class="n">M_over_2</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
@@ -408,7 +431,7 @@
     <span class="k">return</span> <span class="n">ats_snd</span></div>
 
 
-<div class="viewcode-block" id="tracker_CLI"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.tracker.tracker_CLI">[docs]</a><span class="k">def</span> <span class="nf">tracker_CLI</span><span class="p">():</span>
+<div class="viewcode-block" id="tracker_CLI"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.tracker.tracker_CLI">[docs]</a><span class="k">def</span> <span class="nf">tracker_CLI</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Command line wrapper for :obj:`~pyats.atsa.tracker.tracker`</span>
 
 <span class="sd">    Example</span>

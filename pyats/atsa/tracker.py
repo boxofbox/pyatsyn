@@ -10,9 +10,31 @@
 # <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
-"""TODO Summary
+""" Main ATS Analysis Function
 
-TODO About
+The analysis tracker is responsible for driving the analysis of an audio file 
+into the .ats format. The system uses a Short Time Fourier Transform (STFT) as
+is core analysis tool. Sound is analyzed using overlapping time windows and by
+taking the STFT on each window. 
+
+After converting to polar coordinates, a peak detection algorithm (:obj:`~pyats.atsa.peak_detection`)
+determines relevant spectral peaks in the data. At this point, pyschoacoustics 
+are considered in the form of masking curve evaluation and computation of the 
+Signal-to-Mask ratio (SMR) for each candidate peak. SMR data is store together with 
+a corrected frequency, magnitude and phase.
+
+The next step involves frame-to-frame tracking of peaks (:obj:`~pyats.atsa.peak_tracking`) to connect peaks that
+follow a similar spectral trajectory using both frequency and SMR data. The system 
+uses a stable matching algorithm to pair candidate peaks, and is capable of interpolating
+gaps in the tracks.
+
+Once valid tracks are assembled, the results can be modeled with sinusoids (:obj:`~pyats.atsa_synth`) and subtracted 
+from the origin source sound to compute a residual. NOTE: This part of the ATS system is currently under
+active research. For now, the residual analysis (:obj:`~pyats.atsa.residual`) is modeled using a 
+25 time-varying critical noise band energy model (consistent with the critical bands used during SMR evaluation). 
+These noise bands can then be resynthesized using 25 correspoding banks of time-enveloped, band-limited noise.
+
+Analysis is finally stored and abstracted as an :obj:`~pyats.ats_structure.AtsSound` object.
 
 """
 
@@ -24,7 +46,7 @@ import argparse
 from pyats.ats_structure import AtsSound
 
 from pyats.atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
-from pyats.atsa.windows import make_fft_window, norm_window, window_norm, VALID_FFT_WINDOW_DEFINITIONS
+from pyats.atsa.windows import make_fft_window, normalize_window, window_norm, VALID_FFT_WINDOW_DEFINITIONS
 from pyats.atsa.peak_detect import peak_detection
 from pyats.atsa.critical_bands import evaluate_smr
 from pyats.atsa.peak_tracking import update_track_averages, peak_tracking
@@ -89,7 +111,7 @@ def tracker (   in_file,
     min_gap_length : int
         tracked partial gaps longer than this (in frames) will not be interpolated (default: 3)
     min_segment_length : int
-        minimize size (in frames) of a track segment, otherwise it is pruned (default: 3)
+        minimal size (in frames) of a track segment, otherwise it is pruned (default: 3)
     last_peak_contribution : float
         additional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)
     SMR_continuity : float
@@ -163,7 +185,7 @@ def tracker (   in_file,
             window_type='blackman-harris-4-1'
         window = make_fft_window(window_type, M, beta=window_beta, alpha=window_alpha)
       
-    window = norm_window(window)    
+    window = normalize_window(window)    
     hop = int(M * hop_size)
     # central point of the window
     M_over_2 = (M - 1) // 2

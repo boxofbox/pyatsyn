@@ -1,18 +1,7 @@
-pyats package
+pyats
 =============
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   pyats.atsa
-
-Submodules
-----------
-
-pyats.ats\_io module
+ats\_io
 --------------------
 
 .. automodule:: pyats.ats_io
@@ -20,7 +9,7 @@ pyats.ats\_io module
    :undoc-members:
    :show-inheritance:
 
-pyats.ats\_structure module
+ats\_structure
 ---------------------------
 
 .. automodule:: pyats.ats_structure
@@ -28,7 +17,7 @@ pyats.ats\_structure module
    :undoc-members:
    :show-inheritance:
 
-pyats.ats\_synth module
+ats\_synth
 -----------------------
 
 .. automodule:: pyats.ats_synth
@@ -36,10 +25,61 @@ pyats.ats\_synth module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
+pyats.atsa
+==================
 
-.. automodule:: pyats
+critical\_bands
+---------------------------------
+
+.. automodule:: pyats.atsa.critical_bands
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+peak\_detect
+------------------------------
+
+.. automodule:: pyats.atsa.peak_detect
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+peak\_tracking
+--------------------------------
+
+.. automodule:: pyats.atsa.peak_tracking
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+residual
+--------------------------
+
+.. automodule:: pyats.atsa.residual
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tracker
+-------------------------
+
+.. automodule:: pyats.atsa.tracker
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+utils
+-----------------------
+
+.. automodule:: pyats.atsa.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+windows
+-------------------------
+
+.. automodule:: pyats.atsa.windows
    :members:
    :undoc-members:
    :show-inheritance:

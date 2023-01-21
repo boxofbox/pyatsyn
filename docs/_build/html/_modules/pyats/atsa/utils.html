@@ -36,9 +36,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pyats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyats.html">pyats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyats.html#pyats-atsa">pyats.atsa</a></li>
 </ul>
 
         </div>
@@ -74,24 +75,22 @@
 <span class="c1"># pyats Copyright (c) &lt;2023&gt;, &lt;Johnathan G Lyon&gt;</span>
 <span class="c1"># All rights reserved.</span>
 
-<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;, &lt;Oscar Pablo</span>
-<span class="c1"># Di Liscia, Pete Moss and Juan Pampin&gt;</span>
+<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
+<span class="c1"># &lt;Oscar Pablo Di Liscia, Pete Moss and Juan Pampin&gt;</span>
 
 
-<span class="sd">&quot;&quot;&quot;TODO Summary</span>
-
-<span class="sd">TODO About</span>
+<span class="sd">&quot;&quot;&quot;Utility Functions for ATS Analysis</span>
 
 <span class="sd">Attributes</span>
 <span class="sd">----------</span>
 <span class="sd">MAX_DB_SPL : float</span>
-<span class="sd">    TODO</span>
+<span class="sd">    maximum DB_SPL level; used for converting amplitude units</span>
 <span class="sd">ATS_MIN_SEGMENT_LENGTH : int</span>
-<span class="sd">    TODO</span>
+<span class="sd">    default minimum segment length</span>
 <span class="sd">ATS_AMP_THRESHOLD : float</span>
-<span class="sd">    TODO</span>
+<span class="sd">    default amp threshold</span>
 <span class="sd">ATS_NOISE_THRESHOLD : float</span>
-<span class="sd">    TODO</span>
+<span class="sd">    default noise threshold</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">inf</span><span class="p">,</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">log2</span><span class="p">,</span> <span class="n">log10</span>
@@ -110,128 +109,125 @@
 <span class="c1"># UTILITY FUNCTIONS</span>
 <span class="c1">###################</span>
 
-<div class="viewcode-block" id="db_to_amp"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.utils.db_to_amp">[docs]</a><span class="k">def</span> <span class="nf">db_to_amp</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO</span>
-<span class="sd">    convert decibels to amplitude</span>
+<div class="viewcode-block" id="db_to_amp"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.utils.db_to_amp">[docs]</a><span class="k">def</span> <span class="nf">db_to_amp</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to convert decibels to amplitude: :math:`10^{dB / 20.0}`</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    db : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a decibel value</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the converted amplitude value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">db</span> <span class="o">==</span> <span class="o">-</span><span class="n">inf</span><span class="p">):</span>
         <span class="k">return</span> <span class="mf">0.0</span>
     <span class="k">return</span> <span class="nb">pow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="p">(</span><span class="n">db</span> <span class="o">/</span> <span class="mf">20.0</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="amp_to_db"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.utils.amp_to_db">[docs]</a><span class="k">def</span> <span class="nf">amp_to_db</span><span class="p">(</span><span class="n">amp</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO</span>
-<span class="sd">    convert amplitude to decibels</span>
+<div class="viewcode-block" id="amp_to_db"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.utils.amp_to_db">[docs]</a><span class="k">def</span> <span class="nf">amp_to_db</span><span class="p">(</span><span class="n">amp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to convert amplitude to decibels: :math:`20 * \\log_{10}{amp}`</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    amp : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        an amplitude value</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the converted decibel value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">log10</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="amp_to_db_spl"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.utils.amp_to_db_spl">[docs]</a><span class="k">def</span> <span class="nf">amp_to_db_spl</span><span class="p">(</span><span class="n">amp</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO</span>
+<div class="viewcode-block" id="amp_to_db_spl"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.utils.amp_to_db_spl">[docs]</a><span class="k">def</span> <span class="nf">amp_to_db_spl</span><span class="p">(</span><span class="n">amp</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to convert amplitude to decibel sound pressure level (dB SPL)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    amp : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        an amplitude value</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the converted dB SPL value</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">MAX_DB_SPL</span> <span class="o">+</span> <span class="n">amp_to_db</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="next_power_of_2"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.utils.next_power_of_2">[docs]</a><span class="k">def</span> <span class="nf">next_power_of_2</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO return the closest power of 2 integer more than or equal to &lt;num&gt;</span>
+<div class="viewcode-block" id="next_power_of_2"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.utils.next_power_of_2">[docs]</a><span class="k">def</span> <span class="nf">next_power_of_2</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to return the closest power of 2 integer more than or equal to an input</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    num : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a positive integer</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the closest power of 2 integer more than or equal to `num`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">ceil</span><span class="p">(</span><span class="n">log2</span><span class="p">(</span><span class="n">num</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="compute_frames"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.utils.compute_frames">[docs]</a><span class="k">def</span> <span class="nf">compute_frames</span><span class="p">(</span><span class="n">total_samps</span><span class="p">,</span> <span class="n">hop</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="compute_frames"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.utils.compute_frames">[docs]</a><span class="k">def</span> <span class="nf">compute_frames</span><span class="p">(</span><span class="n">total_samps</span><span class="p">,</span> <span class="n">hop</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute the number frames to use in the specified analysis.</span>
 
-<span class="sd">    TODO</span>
-<span class="sd">    computes the number of frames in the specified analysis</span>
-<span class="sd">    we want to have an extra frame at the end to prevent chopping the ending</span>
+<span class="sd">    Calculates an extra frame to prevent attenuation during windowing at the tail and to allow </span>
+<span class="sd">    for interpolation at the end of the soundfile.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    total_samps : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        number of samples in analyzed sound duration</span>
 <span class="sd">    hop : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        interframe distance in samples</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        number of frames to use for STFT analysis</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">(</span><span class="n">total_samps</span> <span class="o">/</span> <span class="n">hop</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span></div>
         
 
-<div class="viewcode-block" id="optimize_tracks"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.utils.optimize_tracks">[docs]</a><span class="k">def</span> <span class="nf">optimize_tracks</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">min_segment_length</span><span class="p">,</span> 
+<div class="viewcode-block" id="optimize_tracks"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.utils.optimize_tracks">[docs]</a><span class="k">def</span> <span class="nf">optimize_tracks</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">min_segment_length</span><span class="p">,</span> 
                         <span class="n">amp_threshold</span><span class="p">,</span> <span class="n">highest_frequency</span><span class="p">,</span> <span class="n">lowest_frequency</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to run optimization routines on the established tracks.</span>
 
-<span class="sd">    TODO</span>
+<span class="sd">    The optimizations performed are:</span>
+<span class="sd">        * trim short partials</span>
+<span class="sd">        * calculate and store maximum and average frq and amp</span>
+<span class="sd">        * prune tracks below amplitude threshold</span>
+<span class="sd">        * prune tracks outside frequency constraints</span>
+<span class="sd">        * sort and renumber tracks and peaks in analysis_frames according to average frq    </span>
+
+<span class="sd">    NOTE: directly updates analysis_frames, pruning peaks corresponding to pruned tracks.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    tracks : Iterable[:obj:`~pyats.ats_structure.AtsSound`]</span>
-<span class="sd">        TODO</span>
-<span class="sd">    analysis_frames : TODO</span>
-<span class="sd">        TODO</span>
+<span class="sd">        collection of established tracks</span>
+<span class="sd">    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]</span>
+<span class="sd">        a collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time</span>
 <span class="sd">    min_segment_length : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        minimal size (in frames) of a valid track segment, otherwise it is pruned</span>
 <span class="sd">    amp_threshold : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        amplitude threshold used to prune tracks. If None, will default to :obj:`~pyats.atsa.utils.ATS_AMP_THRESHOLD` converted to amplitude.</span>
 <span class="sd">    highest_frequency : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        upper frequency threshold, tracks with maxima above this will be pruned</span>
 <span class="sd">    lowest_frequency : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        lower frequency threshold, tracks with minima below this will be pruned</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    TODO</span>
+<span class="sd">    tracks : Iterable[:obj:`pyats.ats_structure.AtsPeak`]</span>
+<span class="sd">        the optimized subset of input tracks</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">min_segment_length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">min_segment_length</span> <span class="o">=</span> <span class="n">ATS_MIN_SEGMENT_LENGTH</span>

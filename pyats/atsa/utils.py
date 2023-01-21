@@ -10,20 +10,18 @@
 # <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
-"""TODO Summary
-
-TODO About
+"""Utility Functions for ATS Analysis
 
 Attributes
 ----------
 MAX_DB_SPL : float
-    TODO
+    maximum DB_SPL level; used for converting amplitude units
 ATS_MIN_SEGMENT_LENGTH : int
-    TODO
+    default minimum segment length
 ATS_AMP_THRESHOLD : float
-    TODO
+    default amp threshold
 ATS_NOISE_THRESHOLD : float
-    TODO
+    default noise threshold
 """
 
 from numpy import inf, ceil, log2, log10
@@ -43,20 +41,17 @@ ATS_NOISE_THRESHOLD = -120
 ###################
 
 def db_to_amp(db):
-    """Function to TODO
-
-    TODO
-    convert decibels to amplitude
+    """Function to convert decibels to amplitude: :math:`10^{dB / 20.0}`
 
     Parameters
     ----------
     db : float
-        TODO
+        a decibel value
 
     Returns
     -------
     float
-        TODO
+        the converted amplitude value
     """
     if (db == -inf):
         return 0.0
@@ -64,106 +59,106 @@ def db_to_amp(db):
 
 
 def amp_to_db(amp):
-    """Function to TODO
-
-    TODO
-    convert amplitude to decibels
+    """Function to convert amplitude to decibels: :math:`20 * \\log_{10}{amp}`
 
     Parameters
     ----------
     amp : float
-        TODO
+        an amplitude value
 
     Returns
     -------
     float
-        TODO
+        the converted decibel value
     """
     return 20 * log10(amp)
 
 
 def amp_to_db_spl(amp):
-    """Function to TODO
-
-    TODO
+    """Function to convert amplitude to decibel sound pressure level (dB SPL)
 
     Parameters
     ----------
     amp : float
-        TODO
+        an amplitude value
 
     Returns
     -------
     float
-        TODO
+        the converted dB SPL value
     """
     return MAX_DB_SPL + amp_to_db(amp)
 
 
 def next_power_of_2(num):
-    """Function to TODO
-
-    TODO return the closest power of 2 integer more than or equal to <num>
+    """Function to return the closest power of 2 integer more than or equal to an input
 
     Parameters
     ----------
     num : int
-        TODO
+        a positive integer
 
     Returns
     -------
     int
-        TODO
+        the closest power of 2 integer more than or equal to `num`
     """
     return int(2**ceil(log2(num)))
 
 
 def compute_frames(total_samps, hop):
-    """Function to TODO
+    """Function to compute the number frames to use in the specified analysis.
 
-    TODO
-    computes the number of frames in the specified analysis
-    we want to have an extra frame at the end to prevent chopping the ending
+    Calculates an extra frame to prevent attenuation during windowing at the tail and to allow 
+    for interpolation at the end of the soundfile.
 
     Parameters
     ----------
     total_samps : int
-        TODO
+        number of samples in analyzed sound duration
     hop : int
-        TODO
+        interframe distance in samples
 
     Returns
     -------
     int
-        TODO
+        number of frames to use for STFT analysis
     """
     return int(ceil(total_samps / hop)) + 1
         
 
 def optimize_tracks(tracks, analysis_frames, min_segment_length, 
                         amp_threshold, highest_frequency, lowest_frequency):
-    """Function to TODO
+    """Function to run optimization routines on the established tracks.
 
-    TODO
+    The optimizations performed are:
+        * trim short partials
+        * calculate and store maximum and average frq and amp
+        * prune tracks below amplitude threshold
+        * prune tracks outside frequency constraints
+        * sort and renumber tracks and peaks in analysis_frames according to average frq    
+
+    NOTE: directly updates analysis_frames, pruning peaks corresponding to pruned tracks.
 
     Parameters
     ----------
     tracks : Iterable[:obj:`~pyats.ats_structure.AtsSound`]
-        TODO
-    analysis_frames : TODO
-        TODO
+        collection of established tracks
+    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]
+        a collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time
     min_segment_length : int
-        TODO
+        minimal size (in frames) of a valid track segment, otherwise it is pruned
     amp_threshold : float
-        TODO
+        amplitude threshold used to prune tracks. If None, will default to :obj:`~pyats.atsa.utils.ATS_AMP_THRESHOLD` converted to amplitude.
     highest_frequency : float
-        TODO
+        upper frequency threshold, tracks with maxima above this will be pruned
     lowest_frequency : float
-        TODO
+        lower frequency threshold, tracks with minima below this will be pruned
 
     Returns
     -------
-    TODO
+    tracks : Iterable[:obj:`pyats.ats_structure.AtsPeak`]
+        the optimized subset of input tracks
     """
     if min_segment_length < 1:
         min_segment_length = ATS_MIN_SEGMENT_LENGTH

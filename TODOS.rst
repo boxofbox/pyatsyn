@@ -1,19 +1,11 @@
 1.0.0 TODO
 
-* documentation
-** USE https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html
-*** peak tracking
 *** residual
-*** tracker
-*** utils
-*** windows
 *** ats struct
-
+*** index page
+* generate html & pdf docs
 * update Readme about section
 
-* generate html DOCs with sphinx
-* fix formatting
-* add any pictures or external links/references
 
 * re-run some test cases
 

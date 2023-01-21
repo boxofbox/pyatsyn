@@ -36,9 +36,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pyats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyats.html">pyats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyats.html#pyats-atsa">pyats.atsa</a></li>
 </ul>
 
         </div>
@@ -74,13 +75,37 @@
 <span class="c1"># pyats Copyright (c) &lt;2023&gt;, &lt;Johnathan G Lyon&gt;</span>
 <span class="c1"># All rights reserved.</span>
 
-<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;, &lt;Oscar Pablo</span>
-<span class="c1"># Di Liscia, Pete Moss and Juan Pampin&gt;</span>
+<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
+<span class="c1"># &lt;Oscar Pablo Di Liscia, Pete Moss and Juan Pampin&gt;</span>
 
 
-<span class="sd">&quot;&quot;&quot;TODO Summary</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Peak Tracking algorithms to assemble spectral trajectories</span>
 
-<span class="sd">TODO About</span>
+<span class="sd">Peaks issued by the peak detection algorithm need to be connected and </span>
+<span class="sd">translated into spectral trajectories. This process involves the evaluation </span>
+<span class="sd">of the possible candidates to continue trajectories on a frame-by-frame basis. </span>
+
+<span class="sd">This is done using tracks that keep information of recent average values for each </span>
+<span class="sd">of the trajectory parameters. The length of the tracks is adjustable and has to </span>
+<span class="sd">be tuned depending on the characteristics of the analyzed sound. </span>
+
+<span class="sd">A Gale-Shapley stable matching algorithm is used to determine the best candidate pair using a the cost criteria:</span>
+
+<span class="sd">    :math:`cost = \\frac{|P_{freq} - T_{freq}| + \\alpha * |P_{smr} - T_{smr}|}{1 + \\alpha}`</span>
+<span class="sd">    </span>
+<span class="sd">where :math:`P_{freq}` is the candidate peak frequency, and :math:`P_{smr}` its SMR, :math:`T_{freq}` </span>
+<span class="sd">is the track frequency, and :math:`T_{smr}` its SMR, both averaged over the track length (typically 3 frames). </span>
+<span class="sd">:math:`\\alpha` is a coefficient controlling how much the SMR deviation affects the cost. </span>
+
+<span class="sd">The use of the SMR continuation as a parameter for the peak tracking process is based upon </span>
+<span class="sd">psychoacoustic temporal masking phenomena. Conceptually, we assume that masking profiles of </span>
+<span class="sd">stable sinusoidal trajectories can only evolve at slow rate (no sudden changes). This is true for </span>
+<span class="sd">analysis performed with hop sizes between 10 and 50 milliseconds, which is comparable to the </span>
+<span class="sd">average duration of pre- and post-making effects.</span>
+
+<span class="sd">New tracks get created from orphan peaks (the ones that were not incorporated to any existing tracks), </span>
+<span class="sd">and tracks which couldn&#39;t find continuing peaks are set to sleep.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -90,26 +115,26 @@
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">matmul</span>
 
 
-<div class="viewcode-block" id="update_track_averages"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.update_track_averages">[docs]</a><span class="k">def</span> <span class="nf">update_track_averages</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">track_length</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="update_track_averages"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.peak_tracking.update_track_averages">[docs]</a><span class="k">def</span> <span class="nf">update_track_averages</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">track_length</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to update running averages of recent peaks</span>
 
-<span class="sd">    TODO updates the list of current &lt;tracks&gt;</span>
-<span class="sd">    we use &lt;track_length&gt; frames of memory to update average amp, frq, and smr of the tracks</span>
-<span class="sd">    the function returns None, as the tracks are updated directly</span>
+<span class="sd">    Using the list of current tracks, we use `track_length` frames to look back and update, </span>
+<span class="sd">    the average amp, frq, and smr values for the tracks. </span>
+<span class="sd">    </span>
+<span class="sd">    NOTE: Tracks are updated directly without return value.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        iterable of tracks to update</span>
 <span class="sd">    track_length : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        how far back in time (in frames) to start average calculations</span>
 <span class="sd">    frame_n : int</span>
-<span class="sd">        TODO</span>
-<span class="sd">    analysis_frames : </span>
-<span class="sd">        TODO</span>
+<span class="sd">        the current frame</span>
+<span class="sd">    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]</span>
+<span class="sd">        a running collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time</span>
 <span class="sd">    beta : float, optional</span>
-<span class="sd">        TODO (default: 0.0)</span>
-
+<span class="sd">        TOadditional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)</span>
 <span class="sd">    &quot;&quot;&quot;</span>        
     <span class="n">frames</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">frame_n</span><span class="p">,</span> <span class="n">track_length</span><span class="p">)</span>
     <span class="n">first_frame</span> <span class="o">=</span> <span class="n">frame_n</span> <span class="o">-</span> <span class="n">frames</span>
@@ -153,22 +178,21 @@
             <span class="n">tk</span><span class="o">.</span><span class="n">smr</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">smr_acc</span> <span class="o">/</span> <span class="n">s</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">last_smr</span><span class="p">)</span>    </div>
 
 
-<div class="viewcode-block" id="find_track_in_peaks"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.find_track_in_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_track_in_peaks</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">peaks</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO </span>
+<div class="viewcode-block" id="find_track_in_peaks"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.peak_tracking.find_track_in_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_track_in_peaks</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">peaks</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to search a the first peak found tagged a given track ind</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    tracks : :obj:`~pyats.ats_structure.AtsPeak`</span>
-<span class="sd">        TODO</span>
+<span class="sd">    track : int</span>
+<span class="sd">        the track index to search for</span>
 <span class="sd">    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a collection of :obj:`~pyats.ats_structure.AtsPeak` to search in</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :obj:`~pyats.ats_structure.AtsPeak`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the first :obj:`~pyats.ats_structure.AtsPeak` found in `peaks` that has a .track attribute matching `track`.</span>
+<span class="sd">        If no matches are found, None is returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">track</span> <span class="o">==</span> <span class="n">pk</span><span class="o">.</span><span class="n">track</span><span class="p">:</span>
@@ -176,36 +200,37 @@
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="peak_tracking"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.peak_tracking">[docs]</a><span class="k">def</span> <span class="nf">peak_tracking</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">hop_size</span><span class="p">,</span> <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">min_gap_length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="peak_tracking"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.peak_tracking.peak_tracking">[docs]</a><span class="k">def</span> <span class="nf">peak_tracking</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">hop_size</span><span class="p">,</span> <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">min_gap_length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Core function to coordinate peak tracking</span>
 
-<span class="sd">    TODO </span>
-<span class="sd">    adaptation of the Gale-Shapley algorithm for stable matching of peaks_a and peaks_b</span>
-<span class="sd">    for matched peaks, track numbers are updated</span>
-<span class="sd">    tracker is gap-size aware, and will monitor &#39;slept&#39; tracks within gap distance as candidates</span>
-<span class="sd">    linear interpolation will be used to fill the gaps</span>
-<span class="sd">    return value is None, function will update tracks, peaks, and analysis_frames directly</span>
+<span class="sd">    This function coordinates the matching of new peaks with existing tracks using </span>
+<span class="sd">    an adaptation of the Gale-Shapley algorithm for stable matching. The algorithm is </span>
+<span class="sd">    gap-size aware and will monitor &#39;slept&#39; tracks within the minimum gap distance as </span>
+<span class="sd">    candidates. Linear interpolation is used to fill the gaps for frequency and amplitude,</span>
+<span class="sd">    and a cubic polynomial interpolation for phase.</span>
+<span class="sd">    </span>
+<span class="sd">    NOTE: Tracks, peaks, and analysis_frames are updated directly.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        collection of established tracks</span>
 <span class="sd">    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        collection of candidate peaks to match</span>
 <span class="sd">    frame_n : int</span>
-<span class="sd">        TODO</span>
-<span class="sd">    analysis_frames : </span>
-<span class="sd">        TODO</span>
+<span class="sd">        the current frame</span>
+<span class="sd">    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]</span>
+<span class="sd">        a running collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time</span>
 <span class="sd">    sample_rate : int </span>
-<span class="sd">        TODO</span>
+<span class="sd">        the sampling rate (in samples / s)</span>
 <span class="sd">    hop_size : int </span>
-<span class="sd">        TODO</span>
+<span class="sd">        the inter-frame distance (in samples)</span>
 <span class="sd">    frequency_deviation : float, optional</span>
-<span class="sd">        TODO (default: 0.45)</span>
+<span class="sd">        maximum relative frequency deviation used to constrain peak tracking matches (default: 0.45)</span>
 <span class="sd">    SMR_continuity : float, optional</span>
-<span class="sd">        TODO (default: 0.0)</span>
+<span class="sd">        percentage of SMR to use in cost calculations during peak tracking (default: 0.0)</span>
 <span class="sd">    min_gap_length : int</span>
-<span class="sd">        TODO (default: 1)</span>
+<span class="sd">        tracked partial gaps longer than this (in frames) will not be interpolated (default: 1)</span>
 <span class="sd">    &quot;&quot;&quot;</span>  
     <span class="c1"># state for costs</span>
     <span class="n">peak_costs</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">peaks</span><span class="p">]</span>
@@ -300,73 +325,81 @@
             <span class="n">tracks</span><span class="p">[</span><span class="n">tk_ind</span><span class="p">]</span><span class="o">.</span><span class="n">asleep_for</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="are_valid_candidates"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.are_valid_candidates">[docs]</a><span class="k">def</span> <span class="nf">are_valid_candidates</span><span class="p">(</span><span class="n">candidate1</span><span class="p">,</span> <span class="n">candidate2</span><span class="p">,</span> <span class="n">deviation</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="are_valid_candidates"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.peak_tracking.are_valid_candidates">[docs]</a><span class="k">def</span> <span class="nf">are_valid_candidates</span><span class="p">(</span><span class="n">candidate1</span><span class="p">,</span> <span class="n">candidate2</span><span class="p">,</span> <span class="n">deviation</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to determine if the distance between two peaks are within the relative deviation constraint</span>
 
-<span class="sd">    TODO</span>
+<span class="sd">    Peaks are valid candidates for pair if their absolute distance is smaller than the frequency deviation </span>
+<span class="sd">    multiplied by the lower of the candidate&#39;s frequencies.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    candidate1 : :obj:`~pyats.ats_structure.AtsPeak`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a candidate peak</span>
 <span class="sd">    candidate2 : :obj:`~pyats.ats_structure.AtsPeak`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a candidate peak</span>
 <span class="sd">    deviation : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        relative frequency deviation</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if the candidates are within constrained range, False otherwise.</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">min_frq</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">candidate1</span><span class="o">.</span><span class="n">frq</span><span class="p">,</span> <span class="n">candidate2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">candidate1</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">candidate2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">min_frq</span> <span class="o">*</span> <span class="n">deviation</span></div>
 
 
-<div class="viewcode-block" id="peak_dist"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.peak_dist">[docs]</a><span class="k">def</span> <span class="nf">peak_dist</span><span class="p">(</span><span class="n">pk1</span><span class="p">,</span> <span class="n">pk2</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="peak_dist"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.peak_tracking.peak_dist">[docs]</a><span class="k">def</span> <span class="nf">peak_dist</span><span class="p">(</span><span class="n">pk1</span><span class="p">,</span> <span class="n">pk2</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to calculate peak frequency distance</span>
 
-<span class="sd">    TODO </span>
+<span class="sd">    This function is used to calculate the cost for the peak matching algorithm </span>
+<span class="sd">    and allows for psychoacoustic biasing of the calculation:</span>
+
+<span class="sd">        :math:`dist = \\frac{|P1_{freq} - P2_{freq}| + \\alpha * |P1_{smr} - P2_{smr}|}{1 + \\alpha}`</span>
+
+<span class="sd">    where :math:`P\#_{freq}` is the peak&#39;s frequency, and :math:`P\#_{smr}` its SMR.  </span>
+<span class="sd">    :math:`\\alpha` is a coefficient controlling how much the SMR deviation affects the distance.   </span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    pk1 : :obj:`~pyats.ats_structure.AtsPeak`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a candidate peak</span>
 <span class="sd">    pk1 : :obj:`~pyats.ats_structure.AtsPeak`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a candidate peak</span>
 <span class="sd">    alpha : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        percent of SMR to use to bias the result</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the frequency distance (in Hz) between the peaks</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">return</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">pk1</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">pk2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pk1</span><span class="o">.</span><span class="n">smr</span> <span class="o">-</span> <span class="n">pk2</span><span class="o">.</span><span class="n">smr</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="phase_interp"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.phase_interp">[docs]</a><span class="k">def</span> <span class="nf">phase_interp</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="phase_interp"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.peak_tracking.phase_interp">[docs]</a><span class="k">def</span> <span class="nf">phase_interp</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute linear phase interpolation</span>
 
-<span class="sd">    TODO returns the phase (-pi,pi] at time t</span>
-<span class="sd">    given that the freq linearly interpolates from</span>
-<span class="sd">    freq_0, with phase pha_0 at time 0 to freq_t at time t</span>
+<span class="sd">    NOTE: currently not used in peak tracking, but supplied for legacy purposes</span>
+
+<span class="sd">    Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate </span>
+<span class="sd">    from the relative time 0 to time t.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    freq_0 : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        initial frequency (in Hz)</span>
 <span class="sd">    freq_t : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        frequency at time t (in Hz)</span>
 <span class="sd">    pha_0 : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        initial phase (in radians)</span>
 <span class="sd">    t : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        time (in s) from freq_0</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the phase (in radians) at relative time t</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># assuming smooth linear interpolation the average frequency dictates phase rate estimate</span>
     <span class="n">freq_est</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq_t</span> <span class="o">+</span> <span class="n">freq_0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
@@ -374,34 +407,42 @@
     <span class="k">return</span> <span class="n">remainder</span><span class="p">(</span><span class="n">new_phase</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span> <span class="c1"># NOTE: IEEE remainder</span></div>
 
 
-<div class="viewcode-block" id="phase_interp_cubic"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.phase_interp_cubic">[docs]</a><span class="k">def</span> <span class="nf">phase_interp_cubic</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">pha_t</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="phase_interp_cubic"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.peak_tracking.phase_interp_cubic">[docs]</a><span class="k">def</span> <span class="nf">phase_interp_cubic</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">pha_t</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to interpolate phase using cubic polynomial interpolation</span>
 
-<span class="sd">    TODO </span>
-<span class="sd">    for cubic polynomial interpolation of phase</span>
-<span class="sd">    credit: McAulay &amp; Quatieri (1986)</span>
+<span class="sd">    Uses cubic interpolation to determine and intermediate phase within the curve linking </span>
+<span class="sd">    a particular frequency and phase at relative time 0, to a frequency and phase at time t. </span>
+
+<span class="sd">    The basis for this method is credited to:</span>
+
+<span class="sd">        MR. McAulay and T. Quatieri, &quot;Speech analysis/Synthesis based on a </span>
+<span class="sd">        sinusoidal representation,&quot; in IEEE Transactions on Acoustics, </span>
+<span class="sd">        Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754, </span>
+<span class="sd">        August 1986</span>
+<span class="sd">        </span>
+<span class="sd">        `doi: 10.1109/TASSP.1986.1164910 &lt;https://doi.org/10.1109/TASSP.1986.1164910&gt;`_.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    freq_0 : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        initial frequency (in Hz)</span>
 <span class="sd">    freq_t : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        frequency at time t (in Hz)</span>
 <span class="sd">    pha_0 : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        initial phase (in radians)</span>
 <span class="sd">    pha_t : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        phase at time t (in radians)</span>
 <span class="sd">    i_samps_from_0 : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        relative sample index `i` to interpolate at</span>
 <span class="sd">    samps_from_0_to_t : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        distance (in samples) from 0 to t</span>
 <span class="sd">    sample_rate : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        sampling rate (in samps/s)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the modeled phase (in radians) at sample `i`</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">freq_to_radians_per_sample</span> <span class="o">=</span> <span class="n">tau</span> <span class="o">/</span> <span class="n">sample_rate</span>
 
@@ -424,9 +465,15 @@
     <span class="k">return</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
 
  
-<div class="viewcode-block" id="MatchCost"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.peak_tracking.MatchCost">[docs]</a><span class="k">class</span> <span class="nc">MatchCost</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;TODO</span>
+<div class="viewcode-block" id="MatchCost"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.peak_tracking.MatchCost">[docs]</a><span class="k">class</span> <span class="nc">MatchCost</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to abstract cost for comparisons</span>
 
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cost : float</span>
+<span class="sd">        the calculated cost to `index`</span>
+<span class="sd">    index : int</span>
+<span class="sd">        the index that indicates the track the cost was calculated against</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cost</span> <span class="o">=</span> <span class="n">cost</span>

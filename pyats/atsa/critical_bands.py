@@ -66,7 +66,6 @@ def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50):
     ------
     ValueError
         If `delta_db` is not less than or equal to 0.
-
     """
     if delta_db > 0:
         raise ValueError("delta_db must be <= 0")

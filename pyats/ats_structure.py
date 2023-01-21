@@ -10,7 +10,7 @@
 # <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
-"""TODO Summary
+"""Data Abstraction for ATS
 
 TODO About
 
@@ -23,6 +23,9 @@ from pyats.atsa.peak_tracking import phase_interp
 
 class AtsPeak:
     """TODO
+    Attributes
+    ----------
+    TODO
 
     """
     def __init__ (self, amp=0.0, frq=0.0, pha=0.0, smr=0.0, track=0, db_spl=0.0, 
@@ -42,16 +45,17 @@ class AtsPeak:
         self.frq_min = inf
 
     def clone (self):
-        """TODO
+        """Function to return a copy of an :obj:`~pyats.ats_structure.AtsSound`
 
+        Returns
+        -------
+        :obj:`~pyats.ats_structure.AtsPeak`
+            a copy of the calling :obj:`~pyats.ats_structure.AtsPeak` object
         """
         return AtsPeak(self.amp,self.frq,self.pha,self.smr,self.track,self.db_spl,
                         self.barkfrq,self.slope_r,self.asleep_for, self.duration)
 
     def __repr__(self):
-        """TODO
-
-        """
         return f"PK: f_{self.frq} at mag_{self.amp} + {self.pha}"
 
 class AtsSound:
@@ -60,6 +64,11 @@ class AtsSound:
     amp, frq, and pha contain sinusoidal modeling information as arrays of
     arrays of data arranged by partial par-energy and band-energy hold
     noise modeling information (experimental format)
+
+    Attributes
+    ----------
+    TODO
+
     """    
     def __init__ (self, name, sampling_rate, frame_size, window_size, 
                   partials, frames, dur, has_phase=True):
@@ -92,11 +101,12 @@ class AtsSound:
 
     
     def clone(self):
-        """TODO
+        """Function to return a deep copy of an :obj:`~pyats.ats_structure.AtsSound`
 
-        """
-        """
-        returns a deep copy of the AtsSound
+        Returns
+        -------
+        :obj:`~pyats.ats_structure.AtsSound`
+            a deep copy of the calling :obj:`~pyats.ats_structure.AtsSound` object
         """
         has_pha = True
         if self.pha is None:
@@ -133,10 +143,34 @@ class AtsSound:
                     amp_threshold = None, # in amplitude
                     highest_frequency = None,
                     lowest_frequency = None):
-        """TODO
+        """Function to run optimization routines on the frames of partial data stored in the object.
 
+        The optimizations performed are:
+            * fill gaps of min_gap_size or shorter
+            * trim short partials
+            * calculate and store maximum and average frq and amp
+            * prune partials below amplitude threshold
+            * prune partials outside frequency constraints
+            * re-order partials according to average frq  
+
+        Parameters
+        ----------
+        min_gap_size : int, optional
+            partial gaps longer than this (in frames) will not be interpolated and filled in.
+            If None, this sub-optimization will be skipped.  (default: None)
+        min_segment_length : int, optional
+            minimal size (in frames) of a valid partial segment, otherwise it is pruned. 
+            If None, this sub-optimization will be skipped. (default: None)
+        amp_threshold : float, optional
+            amplitude threshold used to prune partials. 
+            If None, this sub-optimization will be skipped. (default: None)
+        highest_frequency : float
+            upper frequency threshold, tracks with maxima above this will be pruned. 
+            If None, this sub-optimization will be skipped. (default: None)
+        lowest_frequency : float
+            lower frequency threshold, tracks with minima below this will be pruned. 
+            If None, this sub-optimization will be skipped. (default: None)
         """
-
         has_pha = True
         if self.pha is None:
             has_pha = False
@@ -199,8 +233,7 @@ class AtsSound:
 
                 if n_segments == 0:
                     keep_partials = keep_partials - {partial}
-                    
-        
+                            
         # process amp and/or frequency thresholds
         if amp_threshold is not None:
             for partial in range(self.partials):

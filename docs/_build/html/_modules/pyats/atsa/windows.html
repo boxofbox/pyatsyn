@@ -36,9 +36,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pyats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyats.html">pyats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyats.html#pyats-atsa">pyats.atsa</a></li>
 </ul>
 
         </div>
@@ -74,31 +75,54 @@
 <span class="c1"># pyats Copyright (c) &lt;2023&gt;, &lt;Johnathan G Lyon&gt;</span>
 <span class="c1"># All rights reserved.</span>
 
-<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;, &lt;Oscar Pablo</span>
-<span class="c1"># Di Liscia, Pete Moss and Juan Pampin&gt;</span>
+<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
+<span class="c1"># &lt;Oscar Pablo Di Liscia, Pete Moss and Juan Pampin&gt;</span>
 
 
-<span class="sd">&quot;&quot;&quot;TODO Summary</span>
+<span class="sd">&quot;&quot;&quot;Functions to Generate FFT Windows</span>
 
-<span class="sd">TODO About</span>
-<span class="sd">All data coming form Harris&#39; famous paper:</span>
-<span class="sd">&quot;On the Use Of windows For Harmonic Analysis </span>
-<span class="sd">With The Discrete Fourier Transform&quot;</span>
-<span class="sd">Proceedings of the IEEE, Vol. 66, No. 1 (pg. 51 to 84)</span>
-<span class="sd">January 1978</span>
-<span class="sd">and</span>
-<span class="sd">Albert H. Nuttall, &quot;Some Windows with Very Good Sidelobe Behaviour&quot;, </span>
-<span class="sd">IEEE Transactions of Acoustics, Speech, and Signal Processing, Vol. ASSP-29,</span>
-<span class="sd">No. 1, February 1981, pp 84-91</span>
+<span class="sd">A collection of window utilies to generate several useful window types: </span>
+
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| blackman-exact      | kaiser              | cauchy              |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| blackman            | gaussian            | connes              |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| blackman-harris-3-1 | poisson             | exponential         |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| blackman-harris-3-2 | cauchy              | bartlett            |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| blackman-harris-4-1 | connes              | riemann             |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| blackman-harris-4-2 | welch               | tukey               |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| rectangular         | kaiser              | hamming             |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| parzen              | gaussian            | hann                |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+<span class="sd">| welch               | poisson             | hann-poisson        |</span>
+<span class="sd">+---------------------+---------------------+---------------------+</span>
+
+<span class="sd">Most equations are adapted from the following two papers:</span>
+
+<span class="sd">F. J. Harris, &quot;On the use of windows for harmonic analysis with the </span>
+<span class="sd">discrete Fourier transform,&quot; in Proceedings of the IEEE, vol. 66, </span>
+<span class="sd">no. 1, pp. 51-83, Jan. 1978.</span>
+
+<span class="sd">    `doi: 10.1109/PROC.1978.10837 &lt;https://doi.org/10.1109/PROC.1978.10837&gt;`_.</span>
+
+<span class="sd">A. Nuttall, &quot;Some windows with very good sidelobe behavior,&quot; in IEEE </span>
+<span class="sd">Transactions on Acoustics, Speech, and Signal Processing, vol. 29, </span>
+<span class="sd">no. 1, pp. 84-91, February 1981</span>
+
+<span class="sd">    `doi: 10.1109/TASSP.1981.1163506 &lt;https://doi.org/10.1109/TASSP.1981.1163506&gt;`_.</span>
 
 <span class="sd">Attributes </span>
 <span class="sd">----------</span>
 <span class="sd">VALID_FFT_WINDOW_DEFINITIONS : list[str]</span>
-<span class="sd">    TODO</span>
-<span class="sd">ATS_BLACKMAN_WINDOW_COEFF : ndarray[float]</span>
-<span class="sd">    TODO 2D</span>
+<span class="sd">    a list of supported window types</span>
 <span class="sd">ATS_BLACKMAN_WINDOW_COEFF_LABELS : dict[str : list[float]]</span>
-<span class="sd">    TODO</span>
+<span class="sd">    A dictionary to match blackman window type strings to their coefficients</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">absolute</span><span class="p">,</span> <span class="n">ones</span><span class="p">,</span> <span class="n">pi</span>
@@ -134,40 +158,32 @@
     <span class="s1">&#39;hann-poisson&#39;</span><span class="p">,</span>
 <span class="p">]</span>  
 
-<span class="c1"># Window coefficients (a0, a1, a2, a3)</span>
-<span class="n">ATS_BLACKMAN_WINDOW_COEFF</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
-<span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.42659</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.49656</span><span class="p">,</span> <span class="mf">0.07685</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>      <span class="c1"># Exact Blackman (-51 dB)</span>
-<span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.42</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>            <span class="c1"># Blackman (rounded coeffs) (-58 dB)</span>
-<span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.42323</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.49755</span><span class="p">,</span> <span class="mf">0.07922</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>       <span class="c1"># 3-term Blackman-Harris 1 (-67 dB)</span>
-<span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.44959</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.49364</span><span class="p">,</span> <span class="mf">0.05677</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>       <span class="c1"># 3-term Blackman-Harris 2 (-61 dB)</span>
-<span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.35875</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.48829</span><span class="p">,</span> <span class="mf">0.14128</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01168</span><span class="p">]</span>   <span class="c1"># 4-term Blackman-Harris 1 (-92 dB)</span>
-<span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.40217</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.49703</span><span class="p">,</span> <span class="mf">0.09392</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00183</span><span class="p">]</span>  <span class="c1"># 4-term Blackman-Harris 2 (-71 dB)</span>
 
+<span class="c1"># Window coefficients (a0, a1, a2, a3)</span>
 <span class="n">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;blackman-exact&#39;</span><span class="p">:</span> <span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-    <span class="s1">&#39;blackman&#39;</span><span class="p">:</span> <span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-    <span class="s1">&#39;blackman-harris-3-1&#39;</span><span class="p">:</span> <span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-    <span class="s1">&#39;blackman-harris-3-2&#39;</span><span class="p">:</span> <span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
-    <span class="s1">&#39;blackman-harris-4-1&#39;</span><span class="p">:</span> <span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
-    <span class="s1">&#39;blackman-harris-4-2&#39;</span><span class="p">:</span> <span class="n">ATS_BLACKMAN_WINDOW_COEFF</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+    <span class="s1">&#39;blackman-exact&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.42659</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.49656</span><span class="p">,</span> <span class="mf">0.07685</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>              <span class="c1"># Exact Blackman (-51 dB)</span>
+    <span class="s1">&#39;blackman&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.42</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>                              <span class="c1"># Blackman (rounded coeffs) (-58 dB)</span>
+    <span class="s1">&#39;blackman-harris-3-1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.42323</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.49755</span><span class="p">,</span> <span class="mf">0.07922</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>         <span class="c1"># 3-term Blackman-Harris 1 (-67 dB)</span>
+    <span class="s1">&#39;blackman-harris-3-2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.44959</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.49364</span><span class="p">,</span> <span class="mf">0.05677</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>         <span class="c1"># 3-term Blackman-Harris 2 (-61 dB)</span>
+    <span class="s1">&#39;blackman-harris-4-1&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.35875</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.48829</span><span class="p">,</span> <span class="mf">0.14128</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.01168</span><span class="p">],</span>  <span class="c1"># 4-term Blackman-Harris 1 (-92 dB)</span>
+    <span class="s1">&#39;blackman-harris-4-2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.40217</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.49703</span><span class="p">,</span> <span class="mf">0.09392</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00183</span><span class="p">]</span>   <span class="c1"># 4-term Blackman-Harris 2 (-71 dB)</span>
     <span class="p">}</span>
 
-<div class="viewcode-block" id="make_blackman_window"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.windows.make_blackman_window">[docs]</a><span class="k">def</span> <span class="nf">make_blackman_window</span><span class="p">(</span><span class="n">window_type</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
 
-<span class="sd">    TODO</span>
+<div class="viewcode-block" id="make_blackman_window"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.windows.make_blackman_window">[docs]</a><span class="k">def</span> <span class="nf">make_blackman_window</span><span class="p">(</span><span class="n">window_type</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper function to build Blackman windows</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    window_type : str</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the type of blackman window (supported types are defined in :obj:`~pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS)`</span>
 <span class="sd">    size : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the size of the window to generate</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    ndarray[float]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a 1D array of floats representing the window</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">window_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified Blackman Window Type not Defined&#39;</span><span class="p">)</span>
@@ -188,30 +204,29 @@
     <span class="k">return</span> <span class="n">win</span></div>
  
 
-<div class="viewcode-block" id="make_fft_window"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.windows.make_fft_window">[docs]</a><span class="k">def</span> <span class="nf">make_fft_window</span><span class="p">(</span><span class="n">window_type</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO</span>
+<div class="viewcode-block" id="make_fft_window"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.windows.make_fft_window">[docs]</a><span class="k">def</span> <span class="nf">make_fft_window</span><span class="p">(</span><span class="n">window_type</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to build the specified window</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    window_type : str</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the type of window (supported types are defined in :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`)</span>
 <span class="sd">    size : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the size of the window to generate</span>
 <span class="sd">    beta : float, optional</span>
-<span class="sd">        TODO (float: 1.0)</span>
+<span class="sd">        parameter used in certain window calculations (float: 1.0)</span>
 <span class="sd">    alpha : float, optional</span>
-<span class="sd">        TODO (float: 0.5)</span>
+<span class="sd">        parameter used in tukey window calculation (float: 0.5)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    ndarray[float]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a 1D array of floats representing the window</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
-<span class="sd">    TODO</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if `window_type` is not one of the supported window types in :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">window_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;blackman&#39;</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">make_blackman_window</span><span class="p">(</span><span class="n">window_type</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
@@ -300,13 +315,13 @@
             <span class="n">angle</span> <span class="o">+=</span> <span class="n">freq</span>           
         <span class="k">return</span> <span class="n">window</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Specified Window Type not Defined&#39;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Specified Window Type not Defined&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="window_norm"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.windows.window_norm">[docs]</a><span class="k">def</span> <span class="nf">window_norm</span> <span class="p">(</span><span class="n">window</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="window_norm"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.windows.window_norm">[docs]</a><span class="k">def</span> <span class="nf">window_norm</span> <span class="p">(</span><span class="n">window</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute the norm of a window</span>
 
-<span class="sd">    TODO # Returns the norm of the window</span>
+<span class="sd">    :math:`norm = \\frac{1}{\\sum | x |}` where :math:`x` are the window samples</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -316,7 +331,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the norm of the window</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">norm_factor</span> <span class="o">=</span> <span class="n">absolute</span><span class="p">(</span><span class="n">window</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">norm_factor</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
@@ -324,43 +339,42 @@
     <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">norm_factor</span></div>
 
 
-<div class="viewcode-block" id="norm_window"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.windows.norm_window">[docs]</a><span class="k">def</span> <span class="nf">norm_window</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<div class="viewcode-block" id="normalize_window"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.windows.normalize_window">[docs]</a><span class="k">def</span> <span class="nf">normalize_window</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to normalize a window</span>
 
-<span class="sd">    TODO returns a normalized window (i.e., integrates to 1.0)</span>
+<span class="sd">    Normalization here means that the window will integrate to 1.0 (i.e., total area of 1)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    window : ndarray[float]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the window to normalize</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    ndarray[float]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a normalized version of the input window</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out_window</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
     <span class="n">window_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">window_sum</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="n">window_sum</span> <span class="o">+=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+        <span class="n">out_window</span> <span class="o">=</span> <span class="n">window</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">window</span> <span class="o">/=</span> <span class="n">window_sum</span>
-    <span class="k">return</span> <span class="n">window</span></div>
+        <span class="n">out_window</span> <span class="o">=</span> <span class="n">window</span> <span class="o">/</span> <span class="n">window_sum</span>
+    <span class="k">return</span> <span class="n">out_window</span></div>
 
 
-<div class="viewcode-block" id="bes_i0"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.windows.bes_i0">[docs]</a><span class="k">def</span> <span class="nf">bes_i0</span> <span class="p">(</span><span class="n">x</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO Modified Bessel Function of the First Kind from &quot;Numerical Recipes in C&quot;</span>
+<div class="viewcode-block" id="bes_i0"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.windows.bes_i0">[docs]</a><span class="k">def</span> <span class="nf">bes_i0</span> <span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modified Bessel Function of the First Kind from &quot;Numerical Recipes in C&quot;</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        Bessel function input</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        Bessel function output</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">3.75</span><span class="p">):</span>
         <span class="n">y</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mf">3.75</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>

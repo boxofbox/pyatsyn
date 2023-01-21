@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyats.atsa package &mdash; pyats 1.0.0 documentation</title>
+  <title>pyats.atsa &mdash; pyats 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="pyats package" href="pyats.html" /> 
+    <link rel="prev" title="pyats CORE" href="pyats.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,17 +40,142 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pyats</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="pyats.html">pyats package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="pyats.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">pyats.atsa package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="pyats.html">pyats CORE</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">pyats.atsa</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyats.atsa.critical_bands">critical_bands module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.critical_bands.compute_slope_r"><code class="docutils literal notranslate"><span class="pre">compute_slope_r()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.critical_bands.evaluate_smr"><code class="docutils literal notranslate"><span class="pre">evaluate_smr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.critical_bands.find_band"><code class="docutils literal notranslate"><span class="pre">find_band()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.critical_bands.frq_to_bark"><code class="docutils literal notranslate"><span class="pre">frq_to_bark()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="pyats.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyats.html#module-pyats.ats_io">pyats.ats_io module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyats.html#module-pyats.ats_structure">pyats.ats_structure module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyats.html#module-pyats.ats_synth">pyats.ats_synth module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pyats.html#module-pyats">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyats.atsa.peak_detect">peak_detect module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_detect.parabolic_interp"><code class="docutils literal notranslate"><span class="pre">parabolic_interp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_detect.peak_detection"><code class="docutils literal notranslate"><span class="pre">peak_detection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_detect.phase_correct"><code class="docutils literal notranslate"><span class="pre">phase_correct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyats.atsa.peak_tracking">peak_tracking module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_tracking.MatchCost"><code class="docutils literal notranslate"><span class="pre">MatchCost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_tracking.are_valid_candidates"><code class="docutils literal notranslate"><span class="pre">are_valid_candidates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_tracking.find_track_in_peaks"><code class="docutils literal notranslate"><span class="pre">find_track_in_peaks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_tracking.peak_dist"><code class="docutils literal notranslate"><span class="pre">peak_dist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_tracking.peak_tracking"><code class="docutils literal notranslate"><span class="pre">peak_tracking()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_tracking.phase_interp"><code class="docutils literal notranslate"><span class="pre">phase_interp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_tracking.phase_interp_cubic"><code class="docutils literal notranslate"><span class="pre">phase_interp_cubic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.peak_tracking.update_track_averages"><code class="docutils literal notranslate"><span class="pre">update_track_averages()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyats.atsa.residual">residual module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.residual.band_to_energy"><code class="docutils literal notranslate"><span class="pre">band_to_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.residual.compute_residual"><code class="docutils literal notranslate"><span class="pre">compute_residual()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.residual.remove_bands"><code class="docutils literal notranslate"><span class="pre">remove_bands()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.residual.residual_N"><code class="docutils literal notranslate"><span class="pre">residual_N()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.residual.residual_analysis"><code class="docutils literal notranslate"><span class="pre">residual_analysis()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.residual.residual_compute_band_energy"><code class="docutils literal notranslate"><span class="pre">residual_compute_band_energy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.residual.residual_get_band_limits"><code class="docutils literal notranslate"><span class="pre">residual_get_band_limits()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyats.atsa.tracker">tracker module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.tracker.tracker"><code class="docutils literal notranslate"><span class="pre">tracker()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.tracker.tracker_CLI"><code class="docutils literal notranslate"><span class="pre">tracker_CLI()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyats.atsa.utils">utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.MAX_DB_SPL"><code class="docutils literal notranslate"><span class="pre">MAX_DB_SPL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.ATS_MIN_SEGMENT_LENGTH"><code class="docutils literal notranslate"><span class="pre">ATS_MIN_SEGMENT_LENGTH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.ATS_AMP_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_AMP_THRESHOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.ATS_NOISE_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_NOISE_THRESHOLD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.amp_to_db"><code class="docutils literal notranslate"><span class="pre">amp_to_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.amp_to_db_spl"><code class="docutils literal notranslate"><span class="pre">amp_to_db_spl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.compute_frames"><code class="docutils literal notranslate"><span class="pre">compute_frames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.db_to_amp"><code class="docutils literal notranslate"><span class="pre">db_to_amp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.next_power_of_2"><code class="docutils literal notranslate"><span class="pre">next_power_of_2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.utils.optimize_tracks"><code class="docutils literal notranslate"><span class="pre">optimize_tracks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-pyats.atsa.windows">windows module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF"><code class="docutils literal notranslate"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS"><code class="docutils literal notranslate"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.windows.bes_i0"><code class="docutils literal notranslate"><span class="pre">bes_i0()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.windows.make_blackman_window"><code class="docutils literal notranslate"><span class="pre">make_blackman_window()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.windows.make_fft_window"><code class="docutils literal notranslate"><span class="pre">make_fft_window()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.windows.norm_window"><code class="docutils literal notranslate"><span class="pre">norm_window()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.atsa.windows.window_norm"><code class="docutils literal notranslate"><span class="pre">window_norm()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyats.html#module-pyats.ats_io">ats_io module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyats.html#module-pyats.ats_structure">ats_structure module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyats.html#module-pyats.ats_synth">ats_synth module</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pyats.atsa</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyats.atsa.critical_bands">critical_bands module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.critical_bands.compute_slope_r"><code class="docutils literal notranslate"><span class="pre">compute_slope_r()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.critical_bands.evaluate_smr"><code class="docutils literal notranslate"><span class="pre">evaluate_smr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.critical_bands.find_band"><code class="docutils literal notranslate"><span class="pre">find_band()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.critical_bands.frq_to_bark"><code class="docutils literal notranslate"><span class="pre">frq_to_bark()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyats.atsa.peak_detect">peak_detect module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_detect.parabolic_interp"><code class="docutils literal notranslate"><span class="pre">parabolic_interp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_detect.peak_detection"><code class="docutils literal notranslate"><span class="pre">peak_detection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_detect.phase_correct"><code class="docutils literal notranslate"><span class="pre">phase_correct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyats.atsa.peak_tracking">peak_tracking module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_tracking.MatchCost"><code class="docutils literal notranslate"><span class="pre">MatchCost</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_tracking.are_valid_candidates"><code class="docutils literal notranslate"><span class="pre">are_valid_candidates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_tracking.find_track_in_peaks"><code class="docutils literal notranslate"><span class="pre">find_track_in_peaks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_tracking.peak_dist"><code class="docutils literal notranslate"><span class="pre">peak_dist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_tracking.peak_tracking"><code class="docutils literal notranslate"><span class="pre">peak_tracking()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_tracking.phase_interp"><code class="docutils literal notranslate"><span class="pre">phase_interp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_tracking.phase_interp_cubic"><code class="docutils literal notranslate"><span class="pre">phase_interp_cubic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.peak_tracking.update_track_averages"><code class="docutils literal notranslate"><span class="pre">update_track_averages()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyats.atsa.residual">residual module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.residual.band_to_energy"><code class="docutils literal notranslate"><span class="pre">band_to_energy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.residual.compute_residual"><code class="docutils literal notranslate"><span class="pre">compute_residual()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.residual.remove_bands"><code class="docutils literal notranslate"><span class="pre">remove_bands()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.residual.residual_N"><code class="docutils literal notranslate"><span class="pre">residual_N()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.residual.residual_analysis"><code class="docutils literal notranslate"><span class="pre">residual_analysis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.residual.residual_compute_band_energy"><code class="docutils literal notranslate"><span class="pre">residual_compute_band_energy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.residual.residual_get_band_limits"><code class="docutils literal notranslate"><span class="pre">residual_get_band_limits()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyats.atsa.tracker">tracker module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.tracker.tracker"><code class="docutils literal notranslate"><span class="pre">tracker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.tracker.tracker_CLI"><code class="docutils literal notranslate"><span class="pre">tracker_CLI()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyats.atsa.utils">utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.MAX_DB_SPL"><code class="docutils literal notranslate"><span class="pre">MAX_DB_SPL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.ATS_MIN_SEGMENT_LENGTH"><code class="docutils literal notranslate"><span class="pre">ATS_MIN_SEGMENT_LENGTH</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.ATS_AMP_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_AMP_THRESHOLD</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.ATS_NOISE_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_NOISE_THRESHOLD</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.amp_to_db"><code class="docutils literal notranslate"><span class="pre">amp_to_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.amp_to_db_spl"><code class="docutils literal notranslate"><span class="pre">amp_to_db_spl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.compute_frames"><code class="docutils literal notranslate"><span class="pre">compute_frames()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.db_to_amp"><code class="docutils literal notranslate"><span class="pre">db_to_amp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.next_power_of_2"><code class="docutils literal notranslate"><span class="pre">next_power_of_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.utils.optimize_tracks"><code class="docutils literal notranslate"><span class="pre">optimize_tracks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyats.atsa.windows">windows module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF"><code class="docutils literal notranslate"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS"><code class="docutils literal notranslate"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.windows.bes_i0"><code class="docutils literal notranslate"><span class="pre">bes_i0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.windows.make_blackman_window"><code class="docutils literal notranslate"><span class="pre">make_blackman_window()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.windows.make_fft_window"><code class="docutils literal notranslate"><span class="pre">make_fft_window()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.windows.norm_window"><code class="docutils literal notranslate"><span class="pre">norm_window()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyats.atsa.windows.window_norm"><code class="docutils literal notranslate"><span class="pre">window_norm()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -71,9 +196,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">pyats</a></li>
-          <li class="breadcrumb-item"><a href="pyats.html">pyats package</a></li>
-      <li class="breadcrumb-item active">pyats.atsa package</li>
+          <li class="breadcrumb-item"><a href="pyats.html">pyats CORE</a></li>
+      <li class="breadcrumb-item active">pyats.atsa</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/pyats.atsa.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -83,13 +207,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pyats-atsa-package">
-<h1>pyats.atsa package<a class="headerlink" href="#pyats-atsa-package" title="Permalink to this heading"></a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
-</section>
+  <section id="pyats-atsa">
+<h1>pyats.atsa<a class="headerlink" href="#pyats-atsa" title="Permalink to this heading"></a></h1>
 <section id="module-pyats.atsa.critical_bands">
-<span id="pyats-atsa-critical-bands-module"></span><h2>pyats.atsa.critical_bands module<a class="headerlink" href="#module-pyats.atsa.critical_bands" title="Permalink to this heading"></a></h2>
+<span id="critical-bands-module"></span><h2>critical_bands module<a class="headerlink" href="#module-pyats.atsa.critical_bands" title="Permalink to this heading"></a></h2>
 <p>Critical Bands and Signal-to-Mask Ratio Evaluation</p>
 <p>This module is used to evaluate critical band masking for signal-to-mask ratio calculations</p>
 <dl class="py attribute">
@@ -189,7 +310,7 @@ for subjective measurements of loudness.</p>
 
 </section>
 <section id="module-pyats.atsa.peak_detect">
-<span id="pyats-atsa-peak-detect-module"></span><h2>pyats.atsa.peak_detect module<a class="headerlink" href="#module-pyats.atsa.peak_detect" title="Permalink to this heading"></a></h2>
+<span id="peak-detect-module"></span><h2>peak_detect module<a class="headerlink" href="#module-pyats.atsa.peak_detect" title="Permalink to this heading"></a></h2>
 <p>Single-Frame Peak Detection from FFT Data</p>
 <p>Functions to process FFT data and extract peaks</p>
 <dl class="py function">
@@ -269,7 +390,7 @@ is used to provide a more precise estimation of amplitude, phase, and frequency.
 
 </section>
 <section id="module-pyats.atsa.peak_tracking">
-<span id="pyats-atsa-peak-tracking-module"></span><h2>pyats.atsa.peak_tracking module<a class="headerlink" href="#module-pyats.atsa.peak_tracking" title="Permalink to this heading"></a></h2>
+<span id="peak-tracking-module"></span><h2>peak_tracking module<a class="headerlink" href="#module-pyats.atsa.peak_tracking" title="Permalink to this heading"></a></h2>
 <p>TODO Summary</p>
 <p>TODO About</p>
 <dl class="py class">
@@ -446,7 +567,7 @@ the function returns None, as the tracks are updated directly</p>
 
 </section>
 <section id="module-pyats.atsa.residual">
-<span id="pyats-atsa-residual-module"></span><h2>pyats.atsa.residual module<a class="headerlink" href="#module-pyats.atsa.residual" title="Permalink to this heading"></a></h2>
+<span id="residual-module"></span><h2>residual module<a class="headerlink" href="#module-pyats.atsa.residual" title="Permalink to this heading"></a></h2>
 <p>TODO Summary</p>
 <p>TODO About</p>
 <dl class="py function">
@@ -588,9 +709,27 @@ the function returns None, as the tracks are updated directly</p>
 
 </section>
 <section id="module-pyats.atsa.tracker">
-<span id="pyats-atsa-tracker-module"></span><h2>pyats.atsa.tracker module<a class="headerlink" href="#module-pyats.atsa.tracker" title="Permalink to this heading"></a></h2>
-<p>TODO Summary</p>
-<p>TODO About</p>
+<span id="tracker-module"></span><h2>tracker module<a class="headerlink" href="#module-pyats.atsa.tracker" title="Permalink to this heading"></a></h2>
+<p>Main ATS Analysis Function</p>
+<p>The analysis tracker is responsible for driving the analysis of an audio file
+into the .ats format. The system uses a Short Time Fourier Transform (STFT) as
+is core analysis tool. Sound is analyzed using overlapping time windows and by
+taking the STFT on each window.</p>
+<p>After converting to polar coordinates, a peak detection algorithm (<code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_detection</span></code>)
+determines relevant spectral peaks in the data. At this point, pyschoacoustics
+are considered in the form of masking curve evaluation and computation of the
+Signal-to-Mask ratio (SMR) for each candidate peak. SMR data is store together with
+a corrected frequency, magnitude and phase.</p>
+<p>The next step involves frame-to-frame tracking of peaks (<a class="reference internal" href="#module-pyats.atsa.peak_tracking" title="pyats.atsa.peak_tracking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_tracking</span></code></a>) to connect peaks that
+follow a similar spectral trajectory using both frequency and SMR data. The system
+uses a stable matching algorithm to pair candidate peaks, and is capable of interpolating
+gaps in the tracks.</p>
+<p>Once valid tracks are assembled, the results can be modeled with sinusoids (<code class="xref py py-obj docutils literal notranslate"><span class="pre">atsa_synth</span></code>) and subtracted
+from the origin source sound to compute a residual. NOTE: This part of the ATS system is currently under
+active research. For now, the residual analysis (<a class="reference internal" href="#module-pyats.atsa.residual" title="pyats.atsa.residual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual</span></code></a>) is modeled using a
+25 time-varying critical noise band energy model (consistent with the critical bands used during SMR evaluation).
+These noise bands can then be resynthesized using 25 correspoding banks of time-enveloped, band-limited noise.</p>
+<p>Analysis is finally stored and abstracted as an <a class="reference internal" href="pyats.html#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> object.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.atsa.tracker.tracker">
 <span class="sig-prename descclassname"><span class="pre">pyats.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blackman-harris-4-1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_peak_contribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/tracker.html#tracker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.tracker.tracker" title="Permalink to this definition"></a></dt>
@@ -663,7 +802,7 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 
 </section>
 <section id="module-pyats.atsa.utils">
-<span id="pyats-atsa-utils-module"></span><h2>pyats.atsa.utils module<a class="headerlink" href="#module-pyats.atsa.utils" title="Permalink to this heading"></a></h2>
+<span id="utils-module"></span><h2>utils module<a class="headerlink" href="#module-pyats.atsa.utils" title="Permalink to this heading"></a></h2>
 <p>TODO Summary</p>
 <p>TODO About</p>
 <dl class="py attribute">
@@ -831,7 +970,7 @@ convert decibels to amplitude</p>
 
 </section>
 <section id="module-pyats.atsa.windows">
-<span id="pyats-atsa-windows-module"></span><h2>pyats.atsa.windows module<a class="headerlink" href="#module-pyats.atsa.windows" title="Permalink to this heading"></a></h2>
+<span id="windows-module"></span><h2>windows module<a class="headerlink" href="#module-pyats.atsa.windows" title="Permalink to this heading"></a></h2>
 <p>TODO Summary</p>
 <p>TODO About
 All data coming form Harris’ famous paper:
@@ -978,16 +1117,13 @@ No. 1, February 1981, pp 84-91</p>
 </dd></dl>
 
 </section>
-<section id="module-pyats.atsa">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pyats.atsa" title="Permalink to this heading"></a></h2>
-</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pyats.html" class="btn btn-neutral float-left" title="pyats package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyats.html" class="btn btn-neutral float-left" title="pyats CORE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

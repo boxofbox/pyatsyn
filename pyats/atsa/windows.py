@@ -10,27 +10,50 @@
 # <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
-"""TODO Summary
+"""Functions to Generate FFT Windows
 
-TODO About
-All data coming form Harris' famous paper:
-"On the Use Of windows For Harmonic Analysis 
-With The Discrete Fourier Transform"
-Proceedings of the IEEE, Vol. 66, No. 1 (pg. 51 to 84)
-January 1978
-and
-Albert H. Nuttall, "Some Windows with Very Good Sidelobe Behaviour", 
-IEEE Transactions of Acoustics, Speech, and Signal Processing, Vol. ASSP-29,
-No. 1, February 1981, pp 84-91
+A collection of window utilies to generate several useful window types: 
+
++---------------------+---------------------+---------------------+
+| blackman-exact      | kaiser              | cauchy              |
++---------------------+---------------------+---------------------+
+| blackman            | gaussian            | connes              |
++---------------------+---------------------+---------------------+
+| blackman-harris-3-1 | poisson             | exponential         |
++---------------------+---------------------+---------------------+
+| blackman-harris-3-2 | cauchy              | bartlett            |
++---------------------+---------------------+---------------------+
+| blackman-harris-4-1 | connes              | riemann             |
++---------------------+---------------------+---------------------+
+| blackman-harris-4-2 | welch               | tukey               |
++---------------------+---------------------+---------------------+
+| rectangular         | kaiser              | hamming             |
++---------------------+---------------------+---------------------+
+| parzen              | gaussian            | hann                |
++---------------------+---------------------+---------------------+
+| welch               | poisson             | hann-poisson        |
++---------------------+---------------------+---------------------+
+
+Most equations are adapted from the following two papers:
+
+F. J. Harris, "On the use of windows for harmonic analysis with the 
+discrete Fourier transform," in Proceedings of the IEEE, vol. 66, 
+no. 1, pp. 51-83, Jan. 1978.
+
+    `doi: 10.1109/PROC.1978.10837 <https://doi.org/10.1109/PROC.1978.10837>`_.
+
+A. Nuttall, "Some windows with very good sidelobe behavior," in IEEE 
+Transactions on Acoustics, Speech, and Signal Processing, vol. 29, 
+no. 1, pp. 84-91, February 1981
+
+    `doi: 10.1109/TASSP.1981.1163506 <https://doi.org/10.1109/TASSP.1981.1163506>`_.
 
 Attributes 
 ----------
 VALID_FFT_WINDOW_DEFINITIONS : list[str]
-    TODO
-ATS_BLACKMAN_WINDOW_COEFF : ndarray[float]
-    TODO 2D
+    a list of supported window types
 ATS_BLACKMAN_WINDOW_COEFF_LABELS : dict[str : list[float]]
-    TODO
+    A dictionary to match blackman window type strings to their coefficients
 """
 
 from numpy import zeros, cos, sin, log, exp, sqrt, absolute, ones, pi
@@ -66,40 +89,32 @@ VALID_FFT_WINDOW_DEFINITIONS = [
     'hann-poisson',
 ]  
 
-# Window coefficients (a0, a1, a2, a3)
-ATS_BLACKMAN_WINDOW_COEFF = zeros([6,4], dtype='float64')
-ATS_BLACKMAN_WINDOW_COEFF[0] = [0.42659, -0.49656, 0.07685, 0]      # Exact Blackman (-51 dB)
-ATS_BLACKMAN_WINDOW_COEFF[1] = [0.42, -0.5, 0.08, 0]            # Blackman (rounded coeffs) (-58 dB)
-ATS_BLACKMAN_WINDOW_COEFF[2] = [0.42323, -0.49755, 0.07922, 0]       # 3-term Blackman-Harris 1 (-67 dB)
-ATS_BLACKMAN_WINDOW_COEFF[3] = [0.44959, -0.49364, 0.05677, 0]       # 3-term Blackman-Harris 2 (-61 dB)
-ATS_BLACKMAN_WINDOW_COEFF[4] = [0.35875, -0.48829, 0.14128, -0.01168]   # 4-term Blackman-Harris 1 (-92 dB)
-ATS_BLACKMAN_WINDOW_COEFF[5] = [0.40217, -0.49703, 0.09392, -0.00183]  # 4-term Blackman-Harris 2 (-71 dB)
 
+# Window coefficients (a0, a1, a2, a3)
 ATS_BLACKMAN_WINDOW_COEFF_LABELS = {
-    'blackman-exact': ATS_BLACKMAN_WINDOW_COEFF[0],
-    'blackman': ATS_BLACKMAN_WINDOW_COEFF[1],
-    'blackman-harris-3-1': ATS_BLACKMAN_WINDOW_COEFF[2],
-    'blackman-harris-3-2': ATS_BLACKMAN_WINDOW_COEFF[3],
-    'blackman-harris-4-1': ATS_BLACKMAN_WINDOW_COEFF[4],
-    'blackman-harris-4-2': ATS_BLACKMAN_WINDOW_COEFF[5]
+    'blackman-exact': [0.42659, -0.49656, 0.07685, 0],              # Exact Blackman (-51 dB)
+    'blackman': [0.42, -0.5, 0.08, 0],                              # Blackman (rounded coeffs) (-58 dB)
+    'blackman-harris-3-1': [0.42323, -0.49755, 0.07922, 0],         # 3-term Blackman-Harris 1 (-67 dB)
+    'blackman-harris-3-2': [0.44959, -0.49364, 0.05677, 0],         # 3-term Blackman-Harris 2 (-61 dB)
+    'blackman-harris-4-1': [0.35875, -0.48829, 0.14128, -0.01168],  # 4-term Blackman-Harris 1 (-92 dB)
+    'blackman-harris-4-2': [0.40217, -0.49703, 0.09392, -0.00183]   # 4-term Blackman-Harris 2 (-71 dB)
     }
 
-def make_blackman_window(window_type, size):
-    """Function to TODO
 
-    TODO
+def make_blackman_window(window_type, size):
+    """Helper function to build Blackman windows
 
     Parameters
     ----------
     window_type : str
-        TODO
+        the type of blackman window (supported types are defined in :obj:`~pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS)`
     size : int
-        TODO
+        the size of the window to generate
 
     Returns
     -------
     ndarray[float]
-        TODO
+        a 1D array of floats representing the window
     """
     if window_type not in ATS_BLACKMAN_WINDOW_COEFF_LABELS.keys():
         raise Exception('Specified Blackman Window Type not Defined')
@@ -121,29 +136,28 @@ def make_blackman_window(window_type, size):
  
 
 def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
-    """Function to TODO
-
-    TODO
+    """Function to build the specified window
 
     Parameters
     ----------
     window_type : str
-        TODO
+        the type of window (supported types are defined in :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`)
     size : int
-        TODO
+        the size of the window to generate
     beta : float, optional
-        TODO (float: 1.0)
+        parameter used in certain window calculations (float: 1.0)
     alpha : float, optional
-        TODO (float: 0.5)
+        parameter used in tukey window calculation (float: 0.5)
 
     Returns
     -------
     ndarray[float]
-        TODO
+        a 1D array of floats representing the window
 
     Raises
     ------
-    TODO
+    ValueError
+        if `window_type` is not one of the supported window types in :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`
     """
     if (window_type.startswith('blackman')):
         return make_blackman_window(window_type, size)
@@ -232,13 +246,13 @@ def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
             angle += freq           
         return window
     else:
-        raise Exception('Specified Window Type not Defined')
+        raise ValueError('Specified Window Type not Defined')
 
 
 def window_norm (window):
-    """Function to TODO
+    """Function to compute the norm of a window
 
-    TODO # Returns the norm of the window
+    :math:`norm = \\frac{1}{\\sum | x |}` where :math:`x` are the window samples
 
     Parameters
     ----------
@@ -248,7 +262,7 @@ def window_norm (window):
     Returns
     -------
     float
-        TODO
+        the norm of the window
     """
     norm_factor = absolute(window).sum()
     if norm_factor == 0.0:
@@ -256,43 +270,42 @@ def window_norm (window):
     return 1.0 / norm_factor
 
 
-def norm_window(window):
-    """Function to TODO
+def normalize_window(window):
+    """Function to normalize a window
 
-    TODO returns a normalized window (i.e., integrates to 1.0)
+    Normalization here means that the window will integrate to 1.0 (i.e., total area of 1)
 
     Parameters
     ----------
     window : ndarray[float]
-        TODO
+        the window to normalize
 
     Returns
     -------
     ndarray[float]
-        TODO
+        a normalized version of the input window
     """
+    out_window = zeros(window.size, "float64")
     window_sum = sum(window)
     if window_sum == 0.0:
-        window_sum += 1 / len(window)
+        out_window = window + (1 / len(window))
     else:
-        window /= window_sum
-    return window
+        out_window = window / window_sum
+    return out_window
 
 
 def bes_i0 (x):
-    """Function to TODO
-
-    TODO Modified Bessel Function of the First Kind from "Numerical Recipes in C"
+    """Modified Bessel Function of the First Kind from "Numerical Recipes in C"
 
     Parameters
     ----------
     x : float
-        TODO
+        Bessel function input
 
     Returns
     -------
     float
-        TODO
+        Bessel function output
     """
     if (abs(x) < 3.75):
         y = pow( (x / 3.75), 2)

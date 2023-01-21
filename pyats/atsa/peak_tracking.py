@@ -10,9 +10,33 @@
 # <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
-"""TODO Summary
+"""
+Peak Tracking algorithms to assemble spectral trajectories
 
-TODO About
+Peaks issued by the peak detection algorithm need to be connected and 
+translated into spectral trajectories. This process involves the evaluation 
+of the possible candidates to continue trajectories on a frame-by-frame basis. 
+
+This is done using tracks that keep information of recent average values for each 
+of the trajectory parameters. The length of the tracks is adjustable and has to 
+be tuned depending on the characteristics of the analyzed sound. 
+
+A Gale-Shapley stable matching algorithm is used to determine the best candidate pair using a the cost criteria:
+
+    :math:`cost = \\frac{|P_{freq} - T_{freq}| + \\alpha * |P_{smr} - T_{smr}|}{1 + \\alpha}`
+    
+where :math:`P_{freq}` is the candidate peak frequency, and :math:`P_{smr}` its SMR, :math:`T_{freq}` 
+is the track frequency, and :math:`T_{smr}` its SMR, both averaged over the track length (typically 3 frames). 
+:math:`\\alpha` is a coefficient controlling how much the SMR deviation affects the cost. 
+
+The use of the SMR continuation as a parameter for the peak tracking process is based upon 
+psychoacoustic temporal masking phenomena. Conceptually, we assume that masking profiles of 
+stable sinusoidal trajectories can only evolve at slow rate (no sudden changes). This is true for 
+analysis performed with hop sizes between 10 and 50 milliseconds, which is comparable to the 
+average duration of pre- and post-making effects.
+
+New tracks get created from orphan peaks (the ones that were not incorporated to any existing tracks), 
+and tracks which couldn't find continuing peaks are set to sleep.
 
 """
 
@@ -23,25 +47,25 @@ from numpy import zeros, matmul
 
 
 def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta = 0.0):
-    """Function to TODO
+    """Function to update running averages of recent peaks
 
-    TODO updates the list of current <tracks>
-    we use <track_length> frames of memory to update average amp, frq, and smr of the tracks
-    the function returns None, as the tracks are updated directly
+    Using the list of current tracks, we use `track_length` frames to look back and update, 
+    the average amp, frq, and smr values for the tracks. 
+    
+    NOTE: Tracks are updated directly without return value.
 
     Parameters
     ----------
     tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
-        TODO
+        iterable of tracks to update
     track_length : int
-        TODO
+        how far back in time (in frames) to start average calculations
     frame_n : int
-        TODO
-    analysis_frames : 
-        TODO
+        the current frame
+    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]
+        a running collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time
     beta : float, optional
-        TODO (default: 0.0)
-
+        TOadditional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)
     """        
     frames = min(frame_n, track_length)
     first_frame = frame_n - frames
@@ -86,21 +110,20 @@ def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta =
 
 
 def find_track_in_peaks(track, peaks):
-    """Function to TODO
-
-    TODO 
+    """Function to search a the first peak found tagged a given track ind
 
     Parameters
     ----------
-    tracks : :obj:`~pyats.ats_structure.AtsPeak`
-        TODO
+    track : int
+        the track index to search for
     peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
-        TODO
+        a collection of :obj:`~pyats.ats_structure.AtsPeak` to search in
 
     Returns
     -------
     :obj:`~pyats.ats_structure.AtsPeak`
-        TODO
+        the first :obj:`~pyats.ats_structure.AtsPeak` found in `peaks` that has a .track attribute matching `track`.
+        If no matches are found, None is returned.
     """ 
     for pk in peaks:
         if track == pk.track:
@@ -109,35 +132,36 @@ def find_track_in_peaks(track, peaks):
 
 
 def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size, frequency_deviation = 0.45, SMR_continuity = 0.0, min_gap_length = 1):
-    """Function to TODO
+    """Core function to coordinate peak tracking
 
-    TODO 
-    adaptation of the Gale-Shapley algorithm for stable matching of peaks_a and peaks_b
-    for matched peaks, track numbers are updated
-    tracker is gap-size aware, and will monitor 'slept' tracks within gap distance as candidates
-    linear interpolation will be used to fill the gaps
-    return value is None, function will update tracks, peaks, and analysis_frames directly
+    This function coordinates the matching of new peaks with existing tracks using 
+    an adaptation of the Gale-Shapley algorithm for stable matching. The algorithm is 
+    gap-size aware and will monitor 'slept' tracks within the minimum gap distance as 
+    candidates. Linear interpolation is used to fill the gaps for frequency and amplitude,
+    and a cubic polynomial interpolation for phase.
+    
+    NOTE: Tracks, peaks, and analysis_frames are updated directly.
 
     Parameters
     ----------
     tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
-        TODO
+        collection of established tracks
     peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
-        TODO
+        collection of candidate peaks to match
     frame_n : int
-        TODO
-    analysis_frames : 
-        TODO
+        the current frame
+    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]
+        a running collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time
     sample_rate : int 
-        TODO
+        the sampling rate (in samples / s)
     hop_size : int 
-        TODO
+        the inter-frame distance (in samples)
     frequency_deviation : float, optional
-        TODO (default: 0.45)
+        maximum relative frequency deviation used to constrain peak tracking matches (default: 0.45)
     SMR_continuity : float, optional
-        TODO (default: 0.0)
+        percentage of SMR to use in cost calculations during peak tracking (default: 0.0)
     min_gap_length : int
-        TODO (default: 1)
+        tracked partial gaps longer than this (in frames) will not be interpolated (default: 1)
     """  
     # state for costs
     peak_costs = [[] for _ in peaks]
@@ -233,72 +257,80 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size
 
 
 def are_valid_candidates(candidate1, candidate2, deviation):
-    """Function to TODO
+    """Function to determine if the distance between two peaks are within the relative deviation constraint
 
-    TODO
+    Peaks are valid candidates for pair if their absolute distance is smaller than the frequency deviation 
+    multiplied by the lower of the candidate's frequencies.
 
     Parameters
     ----------
     candidate1 : :obj:`~pyats.ats_structure.AtsPeak`
-        TODO
+        a candidate peak
     candidate2 : :obj:`~pyats.ats_structure.AtsPeak`
-        TODO
+        a candidate peak
     deviation : float
-        TODO
+        relative frequency deviation
 
     Returns
     -------
-    float
-        TODO
+    bool
+        True if the candidates are within constrained range, False otherwise.
     """ 
     min_frq = min(candidate1.frq, candidate2.frq)
     return abs(candidate1.frq - candidate2.frq) <= 0.5 * min_frq * deviation
 
 
 def peak_dist(pk1, pk2, alpha):
-    """Function to TODO
+    """Function to calculate peak frequency distance
 
-    TODO 
+    This function is used to calculate the cost for the peak matching algorithm 
+    and allows for psychoacoustic biasing of the calculation:
+
+        :math:`dist = \\frac{|P1_{freq} - P2_{freq}| + \\alpha * |P1_{smr} - P2_{smr}|}{1 + \\alpha}`
+
+    where :math:`P\#_{freq}` is the peak's frequency, and :math:`P\#_{smr}` its SMR.  
+    :math:`\\alpha` is a coefficient controlling how much the SMR deviation affects the distance.   
 
     Parameters
     ----------
     pk1 : :obj:`~pyats.ats_structure.AtsPeak`
-        TODO
+        a candidate peak
     pk1 : :obj:`~pyats.ats_structure.AtsPeak`
-        TODO
+        a candidate peak
     alpha : float
-        TODO
+        percent of SMR to use to bias the result
 
     Returns
     -------
     float
-        TODO
+        the frequency distance (in Hz) between the peaks
     """ 
     return (abs(pk1.frq - pk2.frq) + (alpha * abs(pk1.smr - pk2.smr))) / (alpha + 1.0)
 
 
 def phase_interp(freq_0, freq_t, pha_0, t):
-    """Function to TODO
+    """Function to compute linear phase interpolation
 
-    TODO returns the phase (-pi,pi] at time t
-    given that the freq linearly interpolates from
-    freq_0, with phase pha_0 at time 0 to freq_t at time t
+    NOTE: currently not used in peak tracking, but supplied for legacy purposes
+
+    Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate 
+    from the relative time 0 to time t.
 
     Parameters
     ----------
     freq_0 : float
-        TODO
+        initial frequency (in Hz)
     freq_t : float
-        TODO
+        frequency at time t (in Hz)
     pha_0 : float
-        TODO
+        initial phase (in radians)
     t : float
-        TODO
+        time (in s) from freq_0
 
     Returns
     -------
     float
-        TODO
+        the phase (in radians) at relative time t
     """
     # assuming smooth linear interpolation the average frequency dictates phase rate estimate
     freq_est = (freq_t + freq_0) / 2
@@ -307,33 +339,41 @@ def phase_interp(freq_0, freq_t, pha_0, t):
 
 
 def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sample_rate):
-    """Function to TODO
+    """Function to interpolate phase using cubic polynomial interpolation
 
-    TODO 
-    for cubic polynomial interpolation of phase
-    credit: McAulay & Quatieri (1986)
+    Uses cubic interpolation to determine and intermediate phase within the curve linking 
+    a particular frequency and phase at relative time 0, to a frequency and phase at time t. 
+
+    The basis for this method is credited to:
+
+        MR. McAulay and T. Quatieri, "Speech analysis/Synthesis based on a 
+        sinusoidal representation," in IEEE Transactions on Acoustics, 
+        Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754, 
+        August 1986
+        
+        `doi: 10.1109/TASSP.1986.1164910 <https://doi.org/10.1109/TASSP.1986.1164910>`_.
 
     Parameters
     ----------
     freq_0 : float
-        TODO
+        initial frequency (in Hz)
     freq_t : float
-        TODO
+        frequency at time t (in Hz)
     pha_0 : float
-        TODO
+        initial phase (in radians)
     pha_t : float
-        TODO
+        phase at time t (in radians)
     i_samps_from_0 : int
-        TODO
+        relative sample index `i` to interpolate at
     samps_from_0_to_t : int
-        TODO
+        distance (in samples) from 0 to t
     sample_rate : int
-        TODO
+        sampling rate (in samps/s)
 
     Returns
     -------
     float
-        TODO
+        the modeled phase (in radians) at sample `i`
     """ 
     freq_to_radians_per_sample = tau / sample_rate
 
@@ -357,8 +397,14 @@ def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_
 
  
 class MatchCost():
-    """TODO
+    """Object to abstract cost for comparisons
 
+    Attributes
+    ----------
+    cost : float
+        the calculated cost to `index`
+    index : int
+        the index that indicates the track the cost was calculated against
     """ 
     def __init__(self, cost, index):
         self.cost = cost
