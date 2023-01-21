@@ -5,6 +5,7 @@
 *** index page
 * generate html & pdf docs
 * update Readme about section
+* read the docs
 
 * re-run some test cases
 

@@ -8,7 +8,7 @@ Arts and Experimental Media, University of Washington, Seattle, USA
 (http://www.washington.edu/dxarts). 
 
 Except where otherwise noted, ATSA and ATSH is Copyright 2002-2004 Oscar Pablo
-Di Liscia, Pete Moss and Juan Pampin.
+Di Liscia, Pete Moss, and Juan Pampin.
 
 ---
 pyats
