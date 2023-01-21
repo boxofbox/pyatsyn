@@ -195,23 +195,23 @@ for subjective measurements of loudness.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.atsa.peak_detect.parabolic_interp">
 <span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">parabolic_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_detect.html#parabolic_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_detect.parabolic_interp" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO
-does parabolic interpolation of 3 points
-returns the x offset and height
-of the interpolated peak</p>
+<dd><p>Function to obtain a parabolically modeled maximum from 3 points</p>
+<p>Given 3 evenly-spaced points, a parabolic interpolation
+scheme is used to calculate a coordinate frequency offset
+and maximum amplitude at the estimated parabolic apex.</p>
+<p>Expected: <cite>alpha</cite> &lt;= <cite>beta</cite> &lt;= <cite>gamma</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> (<em>float</em>) – TODO</p></li>
-<li><p><strong>beta</strong> (<em>float</em>) – TODO</p></li>
-<li><p><strong>gamma</strong> (<em>float</em>) – TODO</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – Amplitude at lower frequency</p></li>
+<li><p><strong>beta</strong> (<em>float</em>) – Amplitude at center frequency</p></li>
+<li><p><strong>gamma</strong> (<em>float</em>) – Amplitude at upper frequency</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>offset</strong> (<em>float</em>) – TODO</p></li>
-<li><p><strong>height</strong> (<em>float</em>) – TODO</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Frequency offset (in samples) relative to center frequency bin</p></li>
+<li><p><strong>height</strong> (<em>float</em>) – Amplitude of estimated parabolic apex</p></li>
 </ul>
 </p>
 </dd>
@@ -222,20 +222,23 @@ of the interpolated peak</p>
 <dt class="sig sig-object py" id="pyats.atsa.peak_detect.peak_detection">
 <span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">peak_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftfreqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftmags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftphases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_bin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_bin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_detect.html#peak_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_detect.peak_detection" title="Permalink to this definition"></a></dt>
 <dd><p>Function to detect peaks from FFT data</p>
-<p>TODO</p>
+<p>This function scans for peaks in FFT frequency data,
+returning found peaks that pass constraint criteria.
+Because FFT data is restricted to discrete bins, interpolation
+is used to provide a more precise estimation of amplitude, phase, and frequency.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fftfreqs</strong> (<em>ndarray</em><em>[</em><em>float64</em><em>]</em>) – TODO</p></li>
-<li><p><strong>fftmags</strong> (<em>ndarray</em><em>[</em><em>float64</em><em>]</em>) – TODO</p></li>
-<li><p><strong>fftphases</strong> (<em>ndarray</em><em>[</em><em>float64</em><em>]</em>) – TODO</p></li>
-<li><p><strong>lowest_bin</strong> (<em>int</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
-<li><p><strong>highest_bin</strong> (<em>int</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
-<li><p><strong>lowest_magnitude</strong> (<em>float</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
+<li><p><strong>fftfreqs</strong> (<em>ndarray</em><em>[</em><em>float64</em><em>]</em>) – A 1D array of frequency labels (in Hz) corresponding to <cite>fftmags</cite> and <cite>fftphases</cite></p></li>
+<li><p><strong>fftmags</strong> (<em>ndarray</em><em>[</em><em>float64</em><em>]</em>) – A 1D array of FFT magnitudes for each frequency in <cite>fftfreqs</cite>; this is the data where we search for the peaks.</p></li>
+<li><p><strong>fftphases</strong> (<em>ndarray</em><em>[</em><em>float64</em><em>]</em>) – A 1D array of FFT phases (in radians) for each index in <cite>fftfreqs</cite> and <cite>fftmags</cite></p></li>
+<li><p><strong>lowest_bin</strong> (<em>int</em><em>, </em><em>optional</em>) – Lower limit bin index used to restrict what bins of <cite>fftfreqs</cite> are searched (default: None)</p></li>
+<li><p><strong>highest_bin</strong> (<em>int</em><em>, </em><em>optional</em>) – Upper limit bin index used to restrict what bins of <cite>fftfreqs</cite> are searched (default: None)</p></li>
+<li><p><strong>lowest_magnitude</strong> (<em>float</em><em>, </em><em>optional</em>) – Minimum amplitude threshold that must be exceeded for a peak to validly detected (default: None)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>TODO</p>
+<dd class="field-even"><p>A list of <a class="reference internal" href="pyats.html#pyats.ats_structure.AtsPeak" title="pyats.ats_structure.AtsPeak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak</span></code></a> constructed from detected peaks</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="pyats.html#pyats.ats_structure.AtsPeak" title="pyats.ats_structure.AtsPeak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak</span></code></a>]</p>
@@ -246,19 +249,17 @@ of the interpolated peak</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.atsa.peak_detect.phase_correct">
 <span class="sig-prename descclassname"><span class="pre">pyats.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">phase_correct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/peak_detect.html#phase_correct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.peak_detect.phase_correct" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO
-angular interpolation</p>
+<dd><p>Function for angular interpolation of phase</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>left</strong> (<em>float</em>) – TODO</p></li>
-<li><p><strong>right</strong> (<em>float</em>) – TODO</p></li>
-<li><p><strong>offset</strong> (<em>float</em>) – TODO</p></li>
+<li><p><strong>left</strong> (<em>float</em>) – Phase value (in radians) to interpolate between</p></li>
+<li><p><strong>right</strong> (<em>float</em>) – Other phase value (in radians) to interpolate between</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Phase offset (in samples) between left and right at which to calculate</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>TODO</p>
+<dd class="field-even"><p>interpolated phase (in radians)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>float</p>
@@ -593,46 +594,50 @@ the function returns None, as the tracks are updated directly</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.atsa.tracker.tracker">
 <span class="sig-prename descclassname"><span class="pre">pyats.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blackman-harris-4-1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_peak_contribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/tracker.html#tracker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.tracker.tracker" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Function to generates an Analysis-Transformation-Synthesis :obj:~pyats.ats_structure.AtsSound from an audio file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>in_file</strong> (<em>str</em>) – TODO</p></li>
-<li><p><strong>out_snd</strong> (<em>str</em>) – TODO</p></li>
-<li><p><strong>start</strong> (<em>float</em>) – TODO analysis start point (in s) (default: 0.0)</p></li>
-<li><p><strong>duration</strong> (<em>float</em>) – TODO max duration to analyze (in seconds) or ‘None’ if analyze to end (default: None)</p></li>
-<li><p><strong>lowest_frequency</strong> – TODO  must be &gt; 0 (default: 20)</p></li>
-<li><p><strong>highest_frequency</strong> (<em>float</em>) – TODO  (default: 20000.0)</p></li>
-<li><p><strong>frequency_deviation</strong> (<em>float</em>) – TODO (default: 0.1)</p></li>
-<li><p><strong>window_cycles</strong> (<em>int</em>) – TODO (default: 4)</p></li>
-<li><p><strong>window_type</strong> (<em>str</em>) – TODO (default: ‘blackman-harris-4-1’)</p></li>
-<li><p><strong>hop_size</strong> (<em>float</em>) – TODO fraction of window size (default: 0.25)</p></li>
-<li><p><strong>fft_size</strong> (<em>int</em>) – TODO None, or force an fft size (default: None)</p></li>
-<li><p><strong>amp_threshold</strong> (<em>float</em>) – TODO (default: 0.001)</p></li>
-<li><p><strong>track_length</strong> (<em>int</em>) – TODO (default: 3)</p></li>
-<li><p><strong>min_gap_length</strong> (<em>int</em>) – TODO (default: 3)</p></li>
-<li><p><strong>min_segment_length</strong> (<em>int</em>) – TODO (default: 3)</p></li>
-<li><p><strong>last_peak_contribution</strong> (<em>float</em>) – TODO (default: 0.0)</p></li>
-<li><p><strong>SMR_continuity</strong> (<em>float</em>) – TODO (default: 0.0)</p></li>
-<li><p><strong>residual_file</strong> (<em>str</em>) – TODO (default: None)</p></li>
-<li><p><strong>optimize</strong> (<em>bool</em>) – TODO (default: True)</p></li>
-<li><p><strong>optimize_amp_threshold</strong> (<em>float</em>) – TODO in amplitude (default: None)</p></li>
-<li><p><strong>force_M</strong> (<em>int</em>) – TODO None, or a forced window length in samples (default: None)</p></li>
-<li><p><strong>force_window</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – TODO None, or a numpy.ndarray of floats (default: None)</p></li>
-<li><p><strong>window_alpha</strong> (<em>float</em>) – TODO (default: 0.5)</p></li>
-<li><p><strong>window_beta</strong> (<em>float</em>) – TODO (default: 1.0)</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em>) – TODO (default: False)</p></li>
+<li><p><strong>in_file</strong> (<em>str</em>) – path to the audio file to analyze (must be single channel/mono)</p></li>
+<li><p><strong>out_snd</strong> (<em>str</em>) – .ats file path to output to</p></li>
+<li><p><strong>start</strong> (<em>float</em>) – timepoint (in s) in audiofile to begin analysis (default: 0.0)</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) – max duration (in s) in audiofile from start to end analysis or ‘None’ if analyze to end (default: None)</p></li>
+<li><p><strong>lowest_frequency</strong> – lowest frequency to analyze (must be &gt; 0) (default: 20)</p></li>
+<li><p><strong>highest_frequency</strong> (<em>float</em>) – highest frequency to analyze (capped to nyquist frequency and must be greater than <cite>lowest_frequency</cite>) (default: 20000.0)</p></li>
+<li><p><strong>frequency_deviation</strong> (<em>float</em>) – maximum relative frequency deviation used to constrain peak tracking matches (default: 0.1)</p></li>
+<li><p><strong>window_cycles</strong> (<em>int</em>) – lowest frequency to fit in analysis window; used to determine window size (default: 4)</p></li>
+<li><p><strong>window_type</strong> (<em>str</em>) – type of window to use for FFT analysis (default: ‘blackman-harris-4-1’). See <a class="reference internal" href="#pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS" title="pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></p></li>
+<li><p><strong>hop_size</strong> (<em>float</em>) – fraction of window size to shift from frame-to-frame (default: 0.25)</p></li>
+<li><p><strong>fft_size</strong> (<em>int</em>) – None, or force an fft size (default: None)</p></li>
+<li><p><strong>amp_threshold</strong> (<em>float</em>) – lowest amplitude used for peak detection (default: 0.001)</p></li>
+<li><p><strong>track_length</strong> (<em>int</em>) – number of frames used to smooth frequency trajectories (default: 3)</p></li>
+<li><p><strong>min_gap_length</strong> (<em>int</em>) – tracked partial gaps longer than this (in frames) will not be interpolated (default: 3)</p></li>
+<li><p><strong>min_segment_length</strong> (<em>int</em>) – minimize size (in frames) of a track segment, otherwise it is pruned (default: 3)</p></li>
+<li><p><strong>last_peak_contribution</strong> (<em>float</em>) – additional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)</p></li>
+<li><p><strong>SMR_continuity</strong> (<em>float</em>) – percentage of SMR to use in cost calculations during peak tracking (default: 0.0)</p></li>
+<li><p><strong>residual_file</strong> (<em>str</em>) – path to the audio file used to store residual analysis.
+NOTE: noise calculation will not be performed in .ats file without this (default: None)</p></li>
+<li><p><strong>optimize</strong> (<em>bool</em>) – whether to perform the post-peak tracking optimization on the <a class="reference internal" href="pyats.html#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> object (default: True)</p></li>
+<li><p><strong>optimize_amp_threshold</strong> (<em>float</em>) – additional amplitude threshold used during optimization to prune tracks (default: None)</p></li>
+<li><p><strong>force_M</strong> (<em>int</em>) – None, or a forced window length in samples (default: None)</p></li>
+<li><p><strong>force_window</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – None, or a 1D array describing a windowing curve (default: None)</p></li>
+<li><p><strong>window_alpha</strong> (<em>float</em>) – parameter used for calculating tukey windows (default: 0.5)</p></li>
+<li><p><strong>window_beta</strong> (<em>float</em>) – parameter used for calculating certain window types (default: 1.0)</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – increase verbosity (default: False)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>TODO</p>
+<dd class="field-even"><p>the ats object that represents the analysis of the input audio file</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="pyats.html#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>TODO</strong> – </p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – if input file is not single channel/mono</p></li>
+<li><p><strong>ValueError</strong> – if <cite>lowest_frequency</cite> is &lt; 0.0</p></li>
+<li><p><strong>ValueError</strong> – if <cite>highest_frequency</cite> is &lt; <cite>lowest_frequency</cite></p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -640,8 +645,20 @@ the function returns None, as the tracks are updated directly</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.atsa.tracker.tracker_CLI">
 <span class="sig-prename descclassname"><span class="pre">pyats.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/atsa/tracker.html#tracker_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.atsa.tracker.tracker_CLI" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Command line wrapper for <a class="reference internal" href="#pyats.atsa.tracker.tracker" title="pyats.atsa.tracker.tracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracker</span></code></a></p>
+<p class="rubric">Example</p>
+<p>Display usage details with help flag</p>
+<blockquote>
+<div><p>$ pyats-atsa -h</p>
+</div></blockquote>
+<p>Analyze a wav file</p>
+<blockquote>
+<div><p>$ pyats-atsa example.wav example.ats</p>
+</div></blockquote>
+<p>Analyze a wav file and compute the residual and increase verbosity</p>
+<blockquote>
+<div><p>$ pyats-atsa example.wav example.ats -v -r example-residual.wav</p>
+</div></blockquote>
 </dd></dl>
 
 </section>

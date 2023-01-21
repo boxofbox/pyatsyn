@@ -6,13 +6,11 @@
 # pyats Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
-# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
-# Di Liscia, Pete Moss and Juan Pampin>
+# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
+# <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
-"""TODO Summary
-
-TODO About
+"""Synthesizer Methods for Rendering .ats Files to Audio
 
 """
 
@@ -31,38 +29,48 @@ from pyats.ats_io import ats_load
 def synth(ats_snd, normalize=False, compute_phase=True, 
             export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None, 
             normalize_sine = False, normalize_noise = False):    
-    """Function to TODO
+    """Function to synthesize audio from :obj:`~pyats.ats_structure.AtsSound`
 
-    TODO
+    Sine generator bank and band-limited noise synthesizer for .ats files. When
+    phase information is ignored phase is linearly interpolated between consecutive
+    frequencies from an initial phase of 0.0 at the first non-zero amplitude for that partial.
+    
+    The method for cubic polynomial interpolation of phase used is credited to:
 
-        for cubic polynomial interpolation of phase
-        credit: McAulay & Quatieri (1986)
+        MR. McAulay and T. Quatieri, "Speech analysis/Synthesis based on a 
+        sinusoidal representation," in IEEE Transactions on Acoustics, 
+        Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754, 
+        August 1986
+        
+        `doi: 10.1109/TASSP.1986.1164910 <https://doi.org/10.1109/TASSP.1986.1164910>`_.
 
     Parameters
     ----------
     ats_snd : :obj:`~pyats.ats_structure.AtsSound`
-        TODO
+        the .ats file used to synthesize
     normalize : bool, optional
-        TODO (default: False)
+        normalize sound to ±1 before output (default: False)
     compute_phase : bool, optional
-        TODO (default: True)
+        use cubic polynomial interpolation of phase information during synthesis, if available (default: True)
     export_file : str
-        TODO (default: None)
+        audio file path to write synthesis to, or None for no file output (default: None)
     sine_pct : float
-        TODO (default: 1.0)
+        percentage of sine components to mix into output (default: 1.0)
     noise_pct : float
-        TODO (default: 0.0)
-    noise_bands : TODO
-        TODO (default: None)
+        percentage of noise components to mix into output (default: 0.0)
+    noise_bands : ndarray[float]
+        1D array of band edges to use for noise analysis. Currently using other than 25 bands 
+        (i.e. 26 edges) is not fully supported. If None, 
+        :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` will be used. (default: None)
     normalize_sine : bool
-        TODO (default: False)
+        normalize sine components to ±1 before mixing (default: False)
     normalize_noise : bool
-        TODO (default: False)
+        normalize noise componenets to ±1 before mixing (default: False)
 
     Returns
     -------
     ndarray[float]
-        TODO
+        A 1D array of amplitudes representing the synthesized sound
     """
     sample_rate = ats_snd.sampling_rate
     out_size = int(ats_snd.dur * sample_rate)
@@ -261,27 +269,38 @@ def synth(ats_snd, normalize=False, compute_phase=True,
     return synthesized  
 
 def synth_CLI():    
-    """Function to TODO
+    """Command line wrapper for :obj:`~pyats.ats_synth.synth`
 
-    TODO
+    Example
+    ------- 
+    Display usage details with help flag   
+
+        $ pyats-synth -h
+
+    Generate a wav file from a sine generator bank from an ats file
+
+        $ pyats-synth example.ats example.wav
+
+    Generate a wav file from a sine generator bank and band-limited noise using from an ats file
+
+        $ pyats-synth example.ats example.wav --noise 1.0
 
     """
     parser = argparse.ArgumentParser(
-        description = "Sine generator bank and band-limited noise synthesizer for .ats files"
-        
+        description = "Sine generator bank and band-limited noise synthesizer for .ats files"        
     )
-    parser.add_argument("ats_file_in", help="the .ats file to synthesize")
+    parser.add_argument("ats_file_in", help="the path to the .ats file to synthesize")
     parser.add_argument("audio_file_out", help="audio file path to synthesize to")
     parser.add_argument("-n", "--normalize", help="normalize sound to ±1 before output", action="store_true")
-    parser.add_argument("--compute_phase", help="use phase information if available", action="store_true")
     parser.add_argument("--sine", type=float, help="percentage of sine components to mix (default 1.0)", default=1.0)
     parser.add_argument("--noise", type=float, help="percentage of noise components to mix (default 0.0)", default=0.0)
     parser.add_argument("--normalize_sine", help="normalize sine components to ±1 before mixing", action="store_true")
     parser.add_argument("--normalize_noise", help="normalize noise componenets to ±1 before mixing", action="store_true")
+    parser.add_argument("--ignore_phase", help="ignore phase information during synthesis", action="store_true")
     args = parser.parse_args()
     synth(  ats_load(args.ats_file_in, args.ats_file_in), 
             normalize = args.normalize,
-            compute_phase = args.compute_phase,
+            compute_phase = not args.ignore_phase,
             export_file = args.audio_file_out,
             sine_pct = args.sine,
             noise_pct = args.noise,

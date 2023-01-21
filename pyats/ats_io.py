@@ -6,89 +6,78 @@
 # pyats Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
-# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
-# Di Liscia, Pete Moss and Juan Pampin>
+# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, 
+# <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
-"""TODO Summary
+"""ATS File I/O
 
-TODO About
--ATS header consists of (all double floats):
+Functions for handling loading and saving of .ats files.
 
-ATS_MAGIC_NUMBER
-sampling-rate (samples/sec)
-frame-size (samples)
-window-size (samples)
-partials (number)
-frames (number)
-ampmax (max. amplitude)
-frqmax (max. frequecny)
-dur (duration)
-type (number, see below)
+.ats files are written in binary format using double floats.
 
--ATS frames can be of four different types:
+The expected structure of a .ats is:
 
-1) without phase or noise:
-==========================
-time (frame starting time)
-amp (par#0 amplitude)
-frq (par#0 frequency)
-...
-amp (par#n amplitude)
-frq (par#n frequency)
++-------------------------------------------+
+| ATS Header (all double floats)            |
++===========================================+
+| :obj:`~pyats.ats_io.ATS_MAGIC_NUMBER`     |
++-------------------------------------------+
+| sampling-rate (samples/sec)               |
++-------------------------------------------+
+| frame-size (samples)                      |
++-------------------------------------------+
+| window-size (samples)                     |
++-------------------------------------------+
+| partials (number)                         |
++-------------------------------------------+
+| frames (number)                           |
++-------------------------------------------+
+| ampmax (max. amplitude)                   |
++-------------------------------------------+
+| frqmax (max. frequency)                   |
++-------------------------------------------+
+| dur (duration)                            |
++-------------------------------------------+
+| type (# specifying frame type, see below) |
++-------------------------------------------+
 
+The frame data immediately follows the header, 
+again all double floats, frame by frame, with a 
+format matching the `type` (int) as specified in the header
 
-2) with phase but not noise:
-============================
-time (frame starting time)
-amp (par#0 amplitude)
-frq (par#0 frequency)
-pha (par#0 phase)
-...
-amp (par#n amplitude)
-frq (par#n frequency)
-pha (par#n phase)
+ATS frames can be one of four different types:
 
-
-3) with noise but not phase:
-============================
-time (frame starting time)
-amp (par#0 amplitude)
-frq (par#0 frequency)
-...
-amp (par#n amplitude)
-frq (par#n frequency)
-
-energy (band#0 energy)
-...
-energy (band#n energy)
-
-4) with phase and noise:
-========================
-time (frame starting time)
-amp (par#0 amplitude)
-frq (par#0 frequency)
-pha (par#0 phase)
-...
-amp (par#n amplitude)
-frq (par#n frequency)
-pha (par#n phase)
-
-noise (band#0 energy)
-...
-noise (band#n energy)
-
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+| TYPE 1: NO phase & NO noise     | TYPE 2: WITH phase & NO noise   | TYPE 3: NO phase & WITH noise   | TYPE 4: WITH phase & WITH noise |
++=================================+=================================+=================================+=================================+
+| time (frame starting time)      | time (frame starting time)      | time (frame starting time)      | time (frame starting time)      |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+| amp (partial #0 amplitude)      | amp (partial #0 amplitude)      | amp (partial #0 amplitude)      | amp (partial #0 amplitude)      |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+| frq (partial #0 frequency)      | frq (partial #0 frequency)      | frq (partial #0 frequency)      | frq (partial #0 frequency)      |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+| ...                             | pha (partial #0 phase)          | ...                             | pha (partial #0 phase)          |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+| amp (partial #n amplitude)      | ...                             | amp (partial #n amplitude)      | ...                             |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+| frq (partial #n frequency)      | amp (partial #n amplitude)      | frq (partial #n frequency)      | amp (partial #n amplitude)      |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+|                                 | frq (partial #n frequency)      | noise (band #0 energy)          | frq (partial #n frequency)      |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+|                                 | pha (partial #n phase)          | ...                             | pha (partial #n phase)          |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+|                                 |                                 | noise (band #n energy)          | noise (band #0 energy)          |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+|                                 |                                 |                                 | ...                             |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
+|                                 |                                 |                                 | noise (band #n energy)          |
++---------------------------------+---------------------------------+---------------------------------+---------------------------------+
 
 Attributes 
 ----------
 ATS_MAGIC_NUMBER : float
-    TODO 123.0
-DOUBLE_SIZE : float
-    TODO calcsize('d')
-DOUBLE_BIG_ENDIAN
-    TODO
-DOUBLE_LIL_ENDIAN
-    TODO
+    'magic' number used to validate and check endianness when using .ats files: 123.0
 """
 
 from struct import pack, unpack, calcsize
@@ -97,25 +86,24 @@ from numpy import zeros, arange
 from pyats.ats_structure import AtsSound
 
 ATS_MAGIC_NUMBER = 123.0
+
 DOUBLE_SIZE = calcsize('d')
 DOUBLE_BIG_ENDIAN = '>d'
 DOUBLE_LIL_ENDIAN = '<d'
 
 def ats_save(sound, file, save_phase=True, save_noise=True):
-    """Function to TODO
-
-    TODO
+    """Function to save an :obj:`~pyats.ats_structure.AtsSound` to a file
 
     Parameters
     ----------
     sound : :obj:`~pyats.ats_structure.AtsSound`
-        TODO
+        ats sound object to save
     file : str
-        TODO
+        file path to save to
     save_phase : bool, optional
-        TODO (default: True)
+        whether to include phase data in file output (default: True)
     save_noise : bool, optional
-        TODO (default: True)
+        whether to include noise band energy data in file output (default: True)
     """
     has_pha = save_phase and len(sound.pha) > 0
     has_noi = save_noise and (len(sound.energy) > 0 or len(sound.band_energy) > 0)
@@ -165,35 +153,42 @@ def ats_load(   name,
                 amp_threshold = None, 
                 highest_frequency = None,
                 lowest_frequency = None):
-    """Function to TODO
+    """Function to load a .ats file into python
 
-    TODO
+    Loads a .ats file into python and provides routines to re-optimize the 
+    :obj:`~pyats.ats_structure.AtsSound` data if required.
 
     Parameters
     ----------
     name : str
-        TODO
+        name used for labeling :obj:`~pyats.ats_structure.AtsSound`
     file : str
-        TODO
+        filepath to .ats file to load
     optimize : bool, optional
-        TODO (default: True)
+        determined whether to call :obj:`~pyats.ats_structure.AtsSound.optimize` upon load (default: True)
     min_gap_size : int, optional
-        TODO (default: None)
+        when optimizing, tracked partial gaps smaller than or equal to this (in frames) will be 
+        interpolated and filled. If None, no gap filling will occur (default: None)
     amp_threshold : float, optional
-        TODO (default: None)
+        minimum amplitude threshold used during optimization to prune tracks. 
+        If None, no amplitude thresholding will occur (default: None)
     highest_frequency : float, optional
-        TODO (default: None)
+        maximum frequency threshold used during optimization to prune tracks.
+        If None, no maximum frequency thresholding will occur (default: None)
     lowest_frequency : float, optional
-        TODO
+        minimum frequency threshold used during optimization to prune tracks.
+        If None, no minimum frequency thresholding will occur (default: None)
+        
     
     Returns
     -------
     :obj:`~pyats.ats_structure.AtsSound`
-        TODO
+        the loaded ats data
 
     Raises
     ------
-    TODO
+    ValueError
+        if file is not a compatible ATS format (i.e., the ATS magic number was not decodable)
     """
     with open(file, 'rb') as fil:
         
@@ -205,7 +200,7 @@ def ats_load(   name,
         elif unpack(DOUBLE_LIL_ENDIAN,check_magic_number_raw)[0] == ATS_MAGIC_NUMBER:
             ordered_double = DOUBLE_LIL_ENDIAN
         else:
-            raise Exception("File is not a compatible ATS format (ATS magic number was not accurate)")
+            raise ValueError("File is not a compatible ATS format (ATS magic number was not accurate)")
         
         sampling_rate = int(unpack(ordered_double, fil.read(DOUBLE_SIZE))[0])
         frame_size = int(unpack(ordered_double, fil.read(DOUBLE_SIZE))[0])

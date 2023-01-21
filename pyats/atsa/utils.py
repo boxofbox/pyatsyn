@@ -6,8 +6,8 @@
 # pyats Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
-# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
-# Di Liscia, Pete Moss and Juan Pampin>
+# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
+# <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
 """TODO Summary
@@ -202,7 +202,6 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length,
     for tk in tracks:
         if tk.amp_max < amp_threshold or tk.frq_max > highest_frequency or tk.frq_min < lowest_frequency:
             tracks_for_removal.add(tk.track)
-    
     
     renumbering_tracks = [None] * len(tracks)
     

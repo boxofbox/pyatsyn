@@ -6,8 +6,8 @@
 # pyats Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
-# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
-# Di Liscia, Pete Moss and Juan Pampin>
+# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, 
+# <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
 """Single-Frame Peak Detection from FFT Data
@@ -27,27 +27,30 @@ def peak_detection (fftfreqs, fftmags, fftphases,
                     lowest_bin=None, highest_bin=None, lowest_magnitude=None):
     """Function to detect peaks from FFT data
 
-    TODO
+    This function scans for peaks in FFT frequency data,
+    returning found peaks that pass constraint criteria.
+    Because FFT data is restricted to discrete bins, interpolation
+    is used to provide a more precise estimation of amplitude, phase, and frequency.
 
     Parameters
     ----------
     fftfreqs : ndarray[float64]
-        TODO
+        A 1D array of frequency labels (in Hz) corresponding to `fftmags` and `fftphases`
     fftmags : ndarray[float64]
-        TODO
+        A 1D array of FFT magnitudes for each frequency in `fftfreqs`; this is the data where we search for the peaks.
     fftphases : ndarray[float64]
-        TODO
+        A 1D array of FFT phases (in radians) for each index in `fftfreqs` and `fftmags`
     lowest_bin : int, optional
-        TODO (default: None)
+        Lower limit bin index used to restrict what bins of `fftfreqs` are searched (default: None)
     highest_bin : int, optional
-        TODO (default: None)
+        Upper limit bin index used to restrict what bins of `fftfreqs` are searched (default: None)
     lowest_magnitude : float, optional
-        TODO (default: None)
+        Minimum amplitude threshold that must be exceeded for a peak to validly detected (default: None)
 
     Returns
     -------
     list[:obj:`~pyats.ats_structure.AtsPeak`]
-        TODO
+        A list of :obj:`~pyats.ats_structure.AtsPeak` constructed from detected peaks
     """
     peaks = []
 
@@ -84,28 +87,29 @@ def peak_detection (fftfreqs, fftmags, fftphases,
 
 
 def parabolic_interp(alpha, beta, gamma):
-    """Function to TODO
+    """Function to obtain a parabolically modeled maximum from 3 points    
 
-    TODO
-    does parabolic interpolation of 3 points
-    returns the x offset and height
-    of the interpolated peak  
+    Given 3 evenly-spaced points, a parabolic interpolation 
+    scheme is used to calculate a coordinate frequency offset
+    and maximum amplitude at the estimated parabolic apex.
+
+    Expected: `alpha` <= `beta` <= `gamma`
 
     Parameters
     ----------
     alpha : float
-        TODO
+        Amplitude at lower frequency
     beta : float
-        TODO
+        Amplitude at center frequency
     gamma : float
-        TODO
+        Amplitude at upper frequency
 
     Returns
     -------
     offset : float
-        TODO
+        Frequency offset (in samples) relative to center frequency bin
     height : float
-        TODO
+        Amplitude of estimated parabolic apex
     """
     dB_alpha = amp_to_db(alpha)
     dB_beta = amp_to_db(beta)
@@ -116,24 +120,21 @@ def parabolic_interp(alpha, beta, gamma):
     return offset, height
 
 def phase_correct(left, right, offset):
-    """Function to TODO
-
-    TODO
-    angular interpolation 
+    """Function for angular interpolation of phase
 
     Parameters
     ----------
     left : float
-        TODO
+        Phase value (in radians) to interpolate between
     right : float
-        TODO
+        Other phase value (in radians) to interpolate between
     offset : float
-        TODO
+        Phase offset (in samples) between left and right at which to calculate
 
     Returns
     -------
     float
-        TODO
+        interpolated phase (in radians)
     """
     if left - right > 1.5 * pi:
         return (left + (offset * (right - left + tau)))

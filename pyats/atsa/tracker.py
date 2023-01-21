@@ -6,8 +6,8 @@
 # pyats Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
-# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
-# Di Liscia, Pete Moss and Juan Pampin>
+# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
+# <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
 """TODO Summary
@@ -56,77 +56,81 @@ def tracker (   in_file,
                 window_beta = 1.0,
                 verbose = False,                
                 ):    
-    """Function to TODO
-
-    TODO
-
+    """Function to generates an Analysis-Transformation-Synthesis :obj:~pyats.ats_structure.AtsSound from an audio file
+    
     Parameters
     ----------
     in_file : str
-        TODO
+        path to the audio file to analyze (must be single channel/mono)
     out_snd : str
-        TODO
+        .ats file path to output to
     start : float
-        TODO analysis start point (in s) (default: 0.0)
+        timepoint (in s) in audiofile to begin analysis (default: 0.0)
     duration : float
-        TODO max duration to analyze (in seconds) or 'None' if analyze to end (default: None)
+        max duration (in s) in audiofile from start to end analysis or 'None' if analyze to end (default: None)
     lowest_frequency
-        TODO  must be > 0 (default: 20)
+        lowest frequency to analyze (must be > 0) (default: 20)
     highest_frequency : float
-        TODO  (default: 20000.0)
+        highest frequency to analyze (capped to nyquist frequency and must be greater than `lowest_frequency`) (default: 20000.0)
     frequency_deviation : float
-        TODO (default: 0.1)
+        maximum relative frequency deviation used to constrain peak tracking matches (default: 0.1)
     window_cycles : int
-        TODO (default: 4)
+        lowest frequency to fit in analysis window; used to determine window size (default: 4)
     window_type : str
-        TODO (default: 'blackman-harris-4-1')
+        type of window to use for FFT analysis (default: 'blackman-harris-4-1'). See :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`
     hop_size : float
-        TODO fraction of window size (default: 0.25)
+        fraction of window size to shift from frame-to-frame (default: 0.25)
     fft_size : int
-        TODO None, or force an fft size (default: None)
+        None, or force an fft size (default: None)
     amp_threshold : float
-        TODO (default: 0.001)
+        lowest amplitude used for peak detection (default: 0.001)
     track_length : int
-        TODO (default: 3)
+        number of frames used to smooth frequency trajectories (default: 3)
     min_gap_length : int
-        TODO (default: 3)
+        tracked partial gaps longer than this (in frames) will not be interpolated (default: 3)
     min_segment_length : int
-        TODO (default: 3)
+        minimize size (in frames) of a track segment, otherwise it is pruned (default: 3)
     last_peak_contribution : float
-        TODO (default: 0.0)
+        additional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)
     SMR_continuity : float
-        TODO (default: 0.0)
+        percentage of SMR to use in cost calculations during peak tracking (default: 0.0)
     residual_file : str
-        TODO (default: None)
+        path to the audio file used to store residual analysis. 
+        NOTE: noise calculation will not be performed in .ats file without this (default: None)
     optimize : bool
-        TODO (default: True)
+        whether to perform the post-peak tracking optimization on the :obj:`~pyats.ats_structure.AtsSound` object (default: True)
     optimize_amp_threshold : float
-        TODO in amplitude (default: None)
+        additional amplitude threshold used during optimization to prune tracks (default: None)
     force_M : int
-        TODO None, or a forced window length in samples (default: None)
+        None, or a forced window length in samples (default: None)
     force_window : ndarray[float]
-        TODO None, or a numpy.ndarray of floats (default: None)
+        None, or a 1D array describing a windowing curve (default: None)
     window_alpha : float
-        TODO (default: 0.5)
+        parameter used for calculating tukey windows (default: 0.5)
     window_beta : float
-        TODO (default: 1.0)
+        parameter used for calculating certain window types (default: 1.0)
     verbose : bool
-        TODO (default: False)
+        increase verbosity (default: False)
 
     Returns
     -------
     :obj:`~pyats.ats_structure.AtsSound`
-        TODO
+        the ats object that represents the analysis of the input audio file
 
     Raises
     ------
-    TODO
+    ValueError
+        if input file is not single channel/mono
+    ValueError
+        if `lowest_frequency` is < 0.0
+    ValueError
+        if `highest_frequency` is < `lowest_frequency`
     """
     # read input audio file
     in_sound, sample_rate = sf.read(in_file)
 
     if in_sound.ndim > 1:
-        raise Exception("Input audio file must be mono")
+        raise ValueError("Input audio file must be mono")
     
     # get first and last sample indices
     st = int(start * sample_rate)
@@ -170,14 +174,14 @@ def tracker (   in_file,
 
     l_frq = lowest_frequency
     if l_frq <= 0.0:
-        raise Exception('Lowest frequency must be greater than 0.0')
+        raise ValueError('Lowest frequency must be greater than 0.0')
     
     h_frq = highest_frequency
     if h_frq > (sample_rate / 2.0):
         if verbose: print('WARNING: Capping highest frequency to Nyquist Frequency')
         h_frq = int(sample_rate / 2.0)
     if h_frq < l_frq:
-        raise Exception('Highest frequency must be greater than lowest frequency')
+        raise ValueError('Highest frequency must be greater than lowest frequency')
 
     # lowest/highest bins to read
     lowest_bin = int(l_frq / fft_mag)
@@ -337,9 +341,21 @@ def tracker (   in_file,
 
 
 def tracker_CLI():
-    """Function to TODO
+    """Command line wrapper for :obj:`~pyats.atsa.tracker.tracker`
 
-    TODO
+    Example
+    ------- 
+    Display usage details with help flag   
+
+        $ pyats-atsa -h
+
+    Analyze a wav file
+
+        $ pyats-atsa example.wav example.ats
+
+    Analyze a wav file and compute the residual and increase verbosity
+
+        $ pyats-atsa example.wav example.ats -v -r example-residual.wav
 
     """
     parser = argparse.ArgumentParser(
@@ -349,12 +365,12 @@ def tracker_CLI():
     parser.add_argument("audio_file_in", help="path to the audio file to analyze")
     parser.add_argument("ats_file_out", help=".ats file path to output to")
 
-    parser.add_argument("-v", "--verbose", help="verbose processing", action="store_true")
+    parser.add_argument("-v", "--verbose", help="increase verbosity", action="store_true")
     parser.add_argument("-r","--residual_file", help="path to the audio file used to store residual analysis. \
                             NOTE: noise calculation will not be performed in .ats file without this", default=None)
 
     parser.add_argument("-s", "--start", type=float, help="timepoint (in s) in audiofile to begin analysis (default 0.0)", default=0.0)
-    parser.add_argument("-d", "--duration", type=float, help="duration (in s) in audiofile from start to end analysis (default duration of file)", default=None)
+    parser.add_argument("-d", "--duration", type=float, help="max duration (in s) in audiofile from start to end analysis (default duration of file)", default=None)
     parser.add_argument("--low_freq", type=float, help="lowest frequency to analyze (must be > 0) (default 20)", default=20)
     parser.add_argument("--hi_freq", type=float, help="highest frequency to analyze (default 20000)", default=20000)
     parser.add_argument("--amp_threshold", type=float, help="lowest amplitude used for peak detection (default 0.001)", default=0.001)
@@ -365,20 +381,20 @@ def tracker_CLI():
     parser.add_argument("--win_type", type=ascii, 
         help=f"type of window to use for FFT analysis (default: blackman-harris-4-1); Supported types: {valid_fft_win_str}", default=None)
 
-    parser.add_argument("--win_alpha", type=float, help="parameter used for tukey windows (default 0.5)", default=0.5)
-    parser.add_argument("--win_beta", type=float, help="parameter used for certain window types (default 1.0)", default=1.0)
+    parser.add_argument("--win_alpha", type=float, help="parameter used for calculating tukey windows (default 0.5)", default=0.5)
+    parser.add_argument("--win_beta", type=float, help="parameter used for calculating certain window types (default 1.0)", default=1.0)
     
 
-    parser.add_argument("--hop_size", type=float, help="percentage of window overlap (default 0.25)", default=0.25)
+    parser.add_argument("--hop_size", type=float, help="fraction of window size to shift from frame-to-frame (default 0.25)", default=0.25)
     parser.add_argument("--fft_size", type=int, help="force an fft_size", default=None)
     parser.add_argument("--win_cycles", type=float, help="lowest frequency to fit in analysis window; used to determine window size (default 4)", default=4)
     parser.add_argument("--force_M", type=int, help="forced window length in samples", default=None)
 
 
     parser.add_argument("--track_length", type=int, help="number of frames used to smooth frequency trajectories (default 3)", default=3)
-    parser.add_argument("--last_peak_contribution", type=float, help="additional bias for most recent value; used for smoothing trajectories (default 0.0)", default=0.0)
+    parser.add_argument("--last_peak_contribution", type=float, help="aadditional bias for the immediately prior frames values when calculating smoothing trajectories (default 0.0)", default=0.0)
 
-    parser.add_argument("--min_gap_length", type=int, help="tracked peak gaps longer than this (in frames) will not be interpolated (default 3)", default=3)
+    parser.add_argument("--min_gap_length", type=int, help="tracked partial gaps longer than this (in frames) will not be interpolated (default 3)", default=3)
     parser.add_argument("--min_segment_length", type=int, help="minimize size (in frames) of a track segment, otherwise it is pruned (default 3)", default=3)
     
     parser.add_argument("--opt_amp_threshold", type=float, help="additional amplitude threshold used during optimization to prune tracks (default 0.001)", default=None)

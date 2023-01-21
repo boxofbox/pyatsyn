@@ -49,10 +49,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-pyats.ats_io">pyats.ats_io module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#without-phase-or-noise">1) without phase or noise:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#with-phase-but-not-noise">2) with phase but not noise:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#with-noise-but-not-phase">3) with noise but not phase:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#with-phase-and-noise">4) with phase and noise:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyats.ats_io.ATS_MAGIC_NUMBER"><code class="docutils literal notranslate"><span class="pre">ATS_MAGIC_NUMBER</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyats.ats_io.ats_load"><code class="docutils literal notranslate"><span class="pre">ats_load()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyats.ats_io.ats_save"><code class="docutils literal notranslate"><span class="pre">ats_save()</span></code></a></li>
 </ul>
@@ -182,69 +179,121 @@
 </section>
 <section id="module-pyats.ats_io">
 <span id="pyats-ats-io-module"></span><h2>pyats.ats_io module<a class="headerlink" href="#module-pyats.ats_io" title="Permalink to this heading"></a></h2>
-<p>TODO Summary</p>
-<p>TODO About
--ATS header consists of (all double floats):</p>
-<p>ATS_MAGIC_NUMBER
-sampling-rate (samples/sec)
-frame-size (samples)
-window-size (samples)
-partials (number)
-frames (number)
-ampmax (max. amplitude)
-frqmax (max. frequecny)
-dur (duration)
-type (number, see below)</p>
-<p>-ATS frames can be of four different types:</p>
-<section id="without-phase-or-noise">
-<h3>1) without phase or noise:<a class="headerlink" href="#without-phase-or-noise" title="Permalink to this heading"></a></h3>
-<p>time (frame starting time)
-amp (par#0 amplitude)
-frq (par#0 frequency)
-…
-amp (par#n amplitude)
-frq (par#n frequency)</p>
-</section>
-<section id="with-phase-but-not-noise">
-<h3>2) with phase but not noise:<a class="headerlink" href="#with-phase-but-not-noise" title="Permalink to this heading"></a></h3>
-<p>time (frame starting time)
-amp (par#0 amplitude)
-frq (par#0 frequency)
-pha (par#0 phase)
-…
-amp (par#n amplitude)
-frq (par#n frequency)
-pha (par#n phase)</p>
-</section>
-<section id="with-noise-but-not-phase">
-<h3>3) with noise but not phase:<a class="headerlink" href="#with-noise-but-not-phase" title="Permalink to this heading"></a></h3>
-<p>time (frame starting time)
-amp (par#0 amplitude)
-frq (par#0 frequency)
-…
-amp (par#n amplitude)
-frq (par#n frequency)</p>
-<p>energy (band#0 energy)
-…
-energy (band#n energy)</p>
-</section>
-<section id="with-phase-and-noise">
-<h3>4) with phase and noise:<a class="headerlink" href="#with-phase-and-noise" title="Permalink to this heading"></a></h3>
-<p>time (frame starting time)
-amp (par#0 amplitude)
-frq (par#0 frequency)
-pha (par#0 phase)
-…
-amp (par#n amplitude)
-frq (par#n frequency)
-pha (par#n phase)</p>
-<p>noise (band#0 energy)
-…
-noise (band#n energy)</p>
+<p>ATS File I/O</p>
+<p>Functions for handling loading and saving of .ats files.</p>
+<p>.ats files are written in binary format using double floats.</p>
+<p>The expected structure of a .ats is:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>ATS Header (all double floats)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyats.ats_io.ATS_MAGIC_NUMBER" title="pyats.ats_io.ATS_MAGIC_NUMBER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_MAGIC_NUMBER</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>sampling-rate (samples/sec)</p></td>
+</tr>
+<tr class="row-even"><td><p>frame-size (samples)</p></td>
+</tr>
+<tr class="row-odd"><td><p>window-size (samples)</p></td>
+</tr>
+<tr class="row-even"><td><p>partials (number)</p></td>
+</tr>
+<tr class="row-odd"><td><p>frames (number)</p></td>
+</tr>
+<tr class="row-even"><td><p>ampmax (max. amplitude)</p></td>
+</tr>
+<tr class="row-odd"><td><p>frqmax (max. frequency)</p></td>
+</tr>
+<tr class="row-even"><td><p>dur (duration)</p></td>
+</tr>
+<tr class="row-odd"><td><p>type (# specifying frame type, see below)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The frame data immediately follows the header,
+again all double floats, frame by frame, with a
+format matching the <cite>type</cite> (int) as specified in the header</p>
+<p>ATS frames can be one of four different types:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>TYPE 1: NO phase &amp; NO noise</p></th>
+<th class="head"><p>TYPE 2: WITH phase &amp; NO noise</p></th>
+<th class="head"><p>TYPE 3: NO phase &amp; WITH noise</p></th>
+<th class="head"><p>TYPE 4: WITH phase &amp; WITH noise</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>time (frame starting time)</p></td>
+<td><p>time (frame starting time)</p></td>
+<td><p>time (frame starting time)</p></td>
+<td><p>time (frame starting time)</p></td>
+</tr>
+<tr class="row-odd"><td><p>amp (partial #0 amplitude)</p></td>
+<td><p>amp (partial #0 amplitude)</p></td>
+<td><p>amp (partial #0 amplitude)</p></td>
+<td><p>amp (partial #0 amplitude)</p></td>
+</tr>
+<tr class="row-even"><td><p>frq (partial #0 frequency)</p></td>
+<td><p>frq (partial #0 frequency)</p></td>
+<td><p>frq (partial #0 frequency)</p></td>
+<td><p>frq (partial #0 frequency)</p></td>
+</tr>
+<tr class="row-odd"><td><p>…</p></td>
+<td><p>pha (partial #0 phase)</p></td>
+<td><p>…</p></td>
+<td><p>pha (partial #0 phase)</p></td>
+</tr>
+<tr class="row-even"><td><p>amp (partial #n amplitude)</p></td>
+<td><p>…</p></td>
+<td><p>amp (partial #n amplitude)</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>frq (partial #n frequency)</p></td>
+<td><p>amp (partial #n amplitude)</p></td>
+<td><p>frq (partial #n frequency)</p></td>
+<td><p>amp (partial #n amplitude)</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>frq (partial #n frequency)</p></td>
+<td><p>noise (band #0 energy)</p></td>
+<td><p>frq (partial #n frequency)</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>pha (partial #n phase)</p></td>
+<td><p>…</p></td>
+<td><p>pha (partial #n phase)</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>noise (band #n energy)</p></td>
+<td><p>noise (band #0 energy)</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>noise (band #n energy)</p></td>
+</tr>
+</tbody>
+</table>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pyats.ats_io.ATS_MAGIC_NUMBER">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">ATS_MAGIC_NUMBER</span></span><a class="headerlink" href="#pyats.ats_io.ATS_MAGIC_NUMBER" title="Permalink to this definition"></a></dt>
-<dd><p>TODO 123.0</p>
+<dd><p>‘magic’ number used to validate and check endianness when using .ats files: 123.0</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -252,55 +301,36 @@ noise (band#n energy)</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyats.ats_io.DOUBLE_SIZE">
-<span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">DOUBLE_SIZE</span></span><a class="headerlink" href="#pyats.ats_io.DOUBLE_SIZE" title="Permalink to this definition"></a></dt>
-<dd><p>TODO calcsize(‘d’)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyats.ats_io.DOUBLE_BIG_ENDIAN">
-<span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">DOUBLE_BIG_ENDIAN</span></span><a class="headerlink" href="#pyats.ats_io.DOUBLE_BIG_ENDIAN" title="Permalink to this definition"></a></dt>
-<dd><p>TODO</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyats.ats_io.DOUBLE_LIL_ENDIAN">
-<span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">DOUBLE_LIL_ENDIAN</span></span><a class="headerlink" href="#pyats.ats_io.DOUBLE_LIL_ENDIAN" title="Permalink to this definition"></a></dt>
-<dd><p>TODO</p>
-</dd></dl>
-
-</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.ats_io.ats_load">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">ats_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_io.html#ats_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_io.ats_load" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Function to load a .ats file into python</p>
+<p>Loads a .ats file into python and provides routines to re-optimize the
+<a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> data if required.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – TODO</p></li>
-<li><p><strong>file</strong> (<em>str</em>) – TODO</p></li>
-<li><p><strong>optimize</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
-<li><p><strong>min_gap_size</strong> (<em>int</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
-<li><p><strong>amp_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
-<li><p><strong>highest_frequency</strong> (<em>float</em><em>, </em><em>optional</em>) – TODO (default: None)</p></li>
-<li><p><strong>lowest_frequency</strong> (<em>float</em><em>, </em><em>optional</em>) – TODO</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name used for labeling <a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p></li>
+<li><p><strong>file</strong> (<em>str</em>) – filepath to .ats file to load</p></li>
+<li><p><strong>optimize</strong> (<em>bool</em><em>, </em><em>optional</em>) – determined whether to call <a class="reference internal" href="#pyats.ats_structure.AtsSound.optimize" title="pyats.ats_structure.AtsSound.optimize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize</span></code></a> upon load (default: True)</p></li>
+<li><p><strong>min_gap_size</strong> (<em>int</em><em>, </em><em>optional</em>) – when optimizing, tracked partial gaps smaller than or equal to this (in frames) will be
+interpolated and filled. If None, no gap filling will occur (default: None)</p></li>
+<li><p><strong>amp_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum amplitude threshold used during optimization to prune tracks.
+If None, no amplitude thresholding will occur (default: None)</p></li>
+<li><p><strong>highest_frequency</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum frequency threshold used during optimization to prune tracks.
+If None, no maximum frequency thresholding will occur (default: None)</p></li>
+<li><p><strong>lowest_frequency</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum frequency threshold used during optimization to prune tracks.
+If None, no minimum frequency thresholding will occur (default: None)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>TODO</p>
+<dd class="field-even"><p>the loaded ats data</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>TODO</strong> – </p>
+<dd class="field-even"><p><strong>ValueError</strong> – if file is not a compatible ATS format (i.e., the ATS magic number was not decodable)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -308,15 +338,14 @@ noise (band#n energy)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.ats_io.ats_save">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_io.</span></span><span class="sig-name descname"><span class="pre">ats_save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_io.html#ats_save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_io.ats_save" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Function to save an <a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> to a file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sound</strong> (<a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – TODO</p></li>
-<li><p><strong>file</strong> (<em>str</em>) – TODO</p></li>
-<li><p><strong>save_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
-<li><p><strong>save_noise</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
+<li><p><strong>sound</strong> (<a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – ats sound object to save</p></li>
+<li><p><strong>file</strong> (<em>str</em>) – file path to save to</p></li>
+<li><p><strong>save_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to include phase data in file output (default: True)</p></li>
+<li><p><strong>save_noise</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to include noise band energy data in file output (default: True)</p></li>
 </ul>
 </dd>
 </dl>
@@ -366,33 +395,40 @@ noise modeling information (experimental format)</p>
 </section>
 <section id="module-pyats.ats_synth">
 <span id="pyats-ats-synth-module"></span><h2>pyats.ats_synth module<a class="headerlink" href="#module-pyats.ats_synth" title="Permalink to this heading"></a></h2>
-<p>TODO Summary</p>
-<p>TODO About</p>
+<p>Synthesizer Methods for Rendering .ats Files to Audio</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.ats_synth.synth">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_synth.</span></span><span class="sig-name descname"><span class="pre">synth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sine_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_sine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_synth.html#synth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_synth.synth" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Function to synthesize audio from <a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
+<p>Sine generator bank and band-limited noise synthesizer for .ats files. When
+phase information is ignored phase is linearly interpolated between consecutive
+frequencies from an initial phase of 0.0 at the first non-zero amplitude for that partial.</p>
+<p>The method for cubic polynomial interpolation of phase used is credited to:</p>
 <blockquote>
-<div><p>for cubic polynomial interpolation of phase
-credit: McAulay &amp; Quatieri (1986)</p>
+<div><p>MR. McAulay and T. Quatieri, “Speech analysis/Synthesis based on a
+sinusoidal representation,” in IEEE Transactions on Acoustics,
+Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754,
+August 1986</p>
+<p><a class="reference external" href="https://doi.org/10.1109/TASSP.1986.1164910">doi: 10.1109/TASSP.1986.1164910</a>.</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – TODO</p></li>
-<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: False)</p></li>
-<li><p><strong>compute_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
-<li><p><strong>export_file</strong> (<em>str</em>) – TODO (default: None)</p></li>
-<li><p><strong>sine_pct</strong> (<em>float</em>) – TODO (default: 1.0)</p></li>
-<li><p><strong>noise_pct</strong> (<em>float</em>) – TODO (default: 0.0)</p></li>
-<li><p><strong>noise_bands</strong> (<em>TODO</em>) – TODO (default: None)</p></li>
-<li><p><strong>normalize_sine</strong> (<em>bool</em>) – TODO (default: False)</p></li>
-<li><p><strong>normalize_noise</strong> (<em>bool</em>) – TODO (default: False)</p></li>
+<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyats.ats_structure.AtsSound" title="pyats.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – the .ats file used to synthesize</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – normalize sound to ±1 before output (default: False)</p></li>
+<li><p><strong>compute_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – use cubic polynomial interpolation of phase information during synthesis, if available (default: True)</p></li>
+<li><p><strong>export_file</strong> (<em>str</em>) – audio file path to write synthesis to, or None for no file output (default: None)</p></li>
+<li><p><strong>sine_pct</strong> (<em>float</em>) – percentage of sine components to mix into output (default: 1.0)</p></li>
+<li><p><strong>noise_pct</strong> (<em>float</em>) – percentage of noise components to mix into output (default: 0.0)</p></li>
+<li><p><strong>noise_bands</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – 1D array of band edges to use for noise analysis. Currently using other than 25 bands
+(i.e. 26 edges) is not fully supported. If None,
+<a class="reference internal" href="pyats.atsa.html#pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> will be used. (default: None)</p></li>
+<li><p><strong>normalize_sine</strong> (<em>bool</em>) – normalize sine components to ±1 before mixing (default: False)</p></li>
+<li><p><strong>normalize_noise</strong> (<em>bool</em>) – normalize noise componenets to ±1 before mixing (default: False)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>TODO</p>
+<dd class="field-even"><p>A 1D array of amplitudes representing the synthesized sound</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>ndarray[float]</p>
@@ -403,8 +439,20 @@ credit: McAulay &amp; Quatieri (1986)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyats.ats_synth.synth_CLI">
 <span class="sig-prename descclassname"><span class="pre">pyats.ats_synth.</span></span><span class="sig-name descname"><span class="pre">synth_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyats/ats_synth.html#synth_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyats.ats_synth.synth_CLI" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Command line wrapper for <a class="reference internal" href="#pyats.ats_synth.synth" title="pyats.ats_synth.synth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">synth</span></code></a></p>
+<p class="rubric">Example</p>
+<p>Display usage details with help flag</p>
+<blockquote>
+<div><p>$ pyats-synth -h</p>
+</div></blockquote>
+<p>Generate a wav file from a sine generator bank from an ats file</p>
+<blockquote>
+<div><p>$ pyats-synth example.ats example.wav</p>
+</div></blockquote>
+<p>Generate a wav file from a sine generator bank and band-limited noise using from an ats file</p>
+<blockquote>
+<div><p>$ pyats-synth example.ats example.wav –noise 1.0</p>
+</div></blockquote>
 </dd></dl>
 
 </section>

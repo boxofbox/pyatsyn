@@ -124,77 +124,81 @@
                 <span class="n">window_beta</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
                 <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                
                 <span class="p">):</span>    
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO</span>
-
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to generates an Analysis-Transformation-Synthesis :obj:~pyats.ats_structure.AtsSound from an audio file</span>
+<span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    in_file : str</span>
-<span class="sd">        TODO</span>
+<span class="sd">        path to the audio file to analyze (must be single channel/mono)</span>
 <span class="sd">    out_snd : str</span>
-<span class="sd">        TODO</span>
+<span class="sd">        .ats file path to output to</span>
 <span class="sd">    start : float</span>
-<span class="sd">        TODO analysis start point (in s) (default: 0.0)</span>
+<span class="sd">        timepoint (in s) in audiofile to begin analysis (default: 0.0)</span>
 <span class="sd">    duration : float</span>
-<span class="sd">        TODO max duration to analyze (in seconds) or &#39;None&#39; if analyze to end (default: None)</span>
+<span class="sd">        max duration (in s) in audiofile from start to end analysis or &#39;None&#39; if analyze to end (default: None)</span>
 <span class="sd">    lowest_frequency</span>
-<span class="sd">        TODO  must be &gt; 0 (default: 20)</span>
+<span class="sd">        lowest frequency to analyze (must be &gt; 0) (default: 20)</span>
 <span class="sd">    highest_frequency : float</span>
-<span class="sd">        TODO  (default: 20000.0)</span>
+<span class="sd">        highest frequency to analyze (capped to nyquist frequency and must be greater than `lowest_frequency`) (default: 20000.0)</span>
 <span class="sd">    frequency_deviation : float</span>
-<span class="sd">        TODO (default: 0.1)</span>
+<span class="sd">        maximum relative frequency deviation used to constrain peak tracking matches (default: 0.1)</span>
 <span class="sd">    window_cycles : int</span>
-<span class="sd">        TODO (default: 4)</span>
+<span class="sd">        lowest frequency to fit in analysis window; used to determine window size (default: 4)</span>
 <span class="sd">    window_type : str</span>
-<span class="sd">        TODO (default: &#39;blackman-harris-4-1&#39;)</span>
+<span class="sd">        type of window to use for FFT analysis (default: &#39;blackman-harris-4-1&#39;). See :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`</span>
 <span class="sd">    hop_size : float</span>
-<span class="sd">        TODO fraction of window size (default: 0.25)</span>
+<span class="sd">        fraction of window size to shift from frame-to-frame (default: 0.25)</span>
 <span class="sd">    fft_size : int</span>
-<span class="sd">        TODO None, or force an fft size (default: None)</span>
+<span class="sd">        None, or force an fft size (default: None)</span>
 <span class="sd">    amp_threshold : float</span>
-<span class="sd">        TODO (default: 0.001)</span>
+<span class="sd">        lowest amplitude used for peak detection (default: 0.001)</span>
 <span class="sd">    track_length : int</span>
-<span class="sd">        TODO (default: 3)</span>
+<span class="sd">        number of frames used to smooth frequency trajectories (default: 3)</span>
 <span class="sd">    min_gap_length : int</span>
-<span class="sd">        TODO (default: 3)</span>
+<span class="sd">        tracked partial gaps longer than this (in frames) will not be interpolated (default: 3)</span>
 <span class="sd">    min_segment_length : int</span>
-<span class="sd">        TODO (default: 3)</span>
+<span class="sd">        minimize size (in frames) of a track segment, otherwise it is pruned (default: 3)</span>
 <span class="sd">    last_peak_contribution : float</span>
-<span class="sd">        TODO (default: 0.0)</span>
+<span class="sd">        additional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)</span>
 <span class="sd">    SMR_continuity : float</span>
-<span class="sd">        TODO (default: 0.0)</span>
+<span class="sd">        percentage of SMR to use in cost calculations during peak tracking (default: 0.0)</span>
 <span class="sd">    residual_file : str</span>
-<span class="sd">        TODO (default: None)</span>
+<span class="sd">        path to the audio file used to store residual analysis. </span>
+<span class="sd">        NOTE: noise calculation will not be performed in .ats file without this (default: None)</span>
 <span class="sd">    optimize : bool</span>
-<span class="sd">        TODO (default: True)</span>
+<span class="sd">        whether to perform the post-peak tracking optimization on the :obj:`~pyats.ats_structure.AtsSound` object (default: True)</span>
 <span class="sd">    optimize_amp_threshold : float</span>
-<span class="sd">        TODO in amplitude (default: None)</span>
+<span class="sd">        additional amplitude threshold used during optimization to prune tracks (default: None)</span>
 <span class="sd">    force_M : int</span>
-<span class="sd">        TODO None, or a forced window length in samples (default: None)</span>
+<span class="sd">        None, or a forced window length in samples (default: None)</span>
 <span class="sd">    force_window : ndarray[float]</span>
-<span class="sd">        TODO None, or a numpy.ndarray of floats (default: None)</span>
+<span class="sd">        None, or a 1D array describing a windowing curve (default: None)</span>
 <span class="sd">    window_alpha : float</span>
-<span class="sd">        TODO (default: 0.5)</span>
+<span class="sd">        parameter used for calculating tukey windows (default: 0.5)</span>
 <span class="sd">    window_beta : float</span>
-<span class="sd">        TODO (default: 1.0)</span>
+<span class="sd">        parameter used for calculating certain window types (default: 1.0)</span>
 <span class="sd">    verbose : bool</span>
-<span class="sd">        TODO (default: False)</span>
+<span class="sd">        increase verbosity (default: False)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :obj:`~pyats.ats_structure.AtsSound`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the ats object that represents the analysis of the input audio file</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
-<span class="sd">    TODO</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if input file is not single channel/mono</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if `lowest_frequency` is &lt; 0.0</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if `highest_frequency` is &lt; `lowest_frequency`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># read input audio file</span>
     <span class="n">in_sound</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">in_file</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">in_sound</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Input audio file must be mono&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input audio file must be mono&quot;</span><span class="p">)</span>
     
     <span class="c1"># get first and last sample indices</span>
     <span class="n">st</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span> <span class="o">*</span> <span class="n">sample_rate</span><span class="p">)</span>
@@ -238,14 +242,14 @@
 
     <span class="n">l_frq</span> <span class="o">=</span> <span class="n">lowest_frequency</span>
     <span class="k">if</span> <span class="n">l_frq</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Lowest frequency must be greater than 0.0&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Lowest frequency must be greater than 0.0&#39;</span><span class="p">)</span>
     
     <span class="n">h_frq</span> <span class="o">=</span> <span class="n">highest_frequency</span>
     <span class="k">if</span> <span class="n">h_frq</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: Capping highest frequency to Nyquist Frequency&#39;</span><span class="p">)</span>
         <span class="n">h_frq</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sample_rate</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">h_frq</span> <span class="o">&lt;</span> <span class="n">l_frq</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Highest frequency must be greater than lowest frequency&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Highest frequency must be greater than lowest frequency&#39;</span><span class="p">)</span>
 
     <span class="c1"># lowest/highest bins to read</span>
     <span class="n">lowest_bin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">l_frq</span> <span class="o">/</span> <span class="n">fft_mag</span><span class="p">)</span>
@@ -405,9 +409,21 @@
 
 
 <div class="viewcode-block" id="tracker_CLI"><a class="viewcode-back" href="../../../pyats.atsa.html#pyats.atsa.tracker.tracker_CLI">[docs]</a><span class="k">def</span> <span class="nf">tracker_CLI</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Command line wrapper for :obj:`~pyats.atsa.tracker.tracker`</span>
 
-<span class="sd">    TODO</span>
+<span class="sd">    Example</span>
+<span class="sd">    ------- </span>
+<span class="sd">    Display usage details with help flag   </span>
+
+<span class="sd">        $ pyats-atsa -h</span>
+
+<span class="sd">    Analyze a wav file</span>
+
+<span class="sd">        $ pyats-atsa example.wav example.ats</span>
+
+<span class="sd">    Analyze a wav file and compute the residual and increase verbosity</span>
+
+<span class="sd">        $ pyats-atsa example.wav example.ats -v -r example-residual.wav</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
@@ -417,12 +433,12 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;audio_file_in&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to the audio file to analyze&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;ats_file_out&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;.ats file path to output to&quot;</span><span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;verbose processing&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;increase verbosity&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-r&quot;</span><span class="p">,</span><span class="s2">&quot;--residual_file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;path to the audio file used to store residual analysis. </span><span class="se">\</span>
 <span class="s2">                            NOTE: noise calculation will not be performed in .ats file without this&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s2">&quot;--start&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;timepoint (in s) in audiofile to begin analysis (default 0.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--duration&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;duration (in s) in audiofile from start to end analysis (default duration of file)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s2">&quot;--duration&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;max duration (in s) in audiofile from start to end analysis (default duration of file)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--low_freq&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;lowest frequency to analyze (must be &gt; 0) (default 20)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--hi_freq&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;highest frequency to analyze (default 20000)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--amp_threshold&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;lowest amplitude used for peak detection (default 0.001)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
@@ -433,20 +449,20 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_type&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">ascii</span><span class="p">,</span> 
         <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;type of window to use for FFT analysis (default: blackman-harris-4-1); Supported types: </span><span class="si">{</span><span class="n">valid_fft_win_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_alpha&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter used for tukey windows (default 0.5)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_beta&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter used for certain window types (default 1.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_alpha&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter used for calculating tukey windows (default 0.5)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_beta&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;parameter used for calculating certain window types (default 1.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
     
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--hop_size&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;percentage of window overlap (default 0.25)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--hop_size&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;fraction of window size to shift from frame-to-frame (default 0.25)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--fft_size&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;force an fft_size&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--win_cycles&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;lowest frequency to fit in analysis window; used to determine window size (default 4)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--force_M&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;forced window length in samples&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--track_length&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;number of frames used to smooth frequency trajectories (default 3)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--last_peak_contribution&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;additional bias for most recent value; used for smoothing trajectories (default 0.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--last_peak_contribution&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;aadditional bias for the immediately prior frames values when calculating smoothing trajectories (default 0.0)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--min_gap_length&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;tracked peak gaps longer than this (in frames) will not be interpolated (default 3)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--min_gap_length&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;tracked partial gaps longer than this (in frames) will not be interpolated (default 3)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--min_segment_length&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;minimize size (in frames) of a track segment, otherwise it is pruned (default 3)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--opt_amp_threshold&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;additional amplitude threshold used during optimization to prune tracks (default 0.001)&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>

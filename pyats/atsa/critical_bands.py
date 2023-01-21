@@ -6,8 +6,8 @@
 # pyats Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
-# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, <Oscar Pablo
-# Di Liscia, Pete Moss and Juan Pampin>
+# Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, 
+# <Oscar Pablo Di Liscia, Pete Moss and Juan Pampin>
 
 
 """Critical Bands and Signal-to-Mask Ratio Evaluation
