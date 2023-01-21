@@ -51,9 +51,10 @@ from pyats.atsa.peak_detect import peak_detection
 from pyats.atsa.critical_bands import evaluate_smr
 from pyats.atsa.peak_tracking import update_track_averages, peak_tracking
 from pyats.atsa.residual import compute_residual, residual_analysis
+from pyats.ats_io import ats_save
 
 def tracker (   in_file, 
-                out_snd,
+                ats_snd_label,
                 start = 0.0, # analysis start point (in seconds)
                 duration = None, # max duration to analyze (in seconds) or 'None' if analyze to end
                 lowest_frequency = 20, # must be > 0
@@ -78,14 +79,14 @@ def tracker (   in_file,
                 window_beta = 1.0,
                 verbose = False,                
                 ):    
-    """Function to generates an Analysis-Transformation-Synthesis :obj:~pyats.ats_structure.AtsSound from an audio file
+    """Function to generates an Analysis-Transformation-Synthesis :obj:`~pyats.ats_structure.AtsSound` from an audio file
     
     Parameters
     ----------
     in_file : str
         path to the audio file to analyze (must be single channel/mono)
-    out_snd : str
-        .ats file path to output to
+    ats_snd_label : str
+        internal name for the :obj:`~pyats.ats_structure.AtsSound`
     start : float
         timepoint (in s) in audiofile to begin analysis (default: 0.0)
     duration : float
@@ -321,7 +322,7 @@ def tracker (   in_file,
 
     if verbose:
         print("Initializing AtsSound object...")
-    ats_snd = AtsSound(out_snd, sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
+    ats_snd = AtsSound(ats_snd_label, sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
 
     if optimize:
         ats_snd.optimized = True
@@ -424,29 +425,30 @@ def tracker_CLI():
     
     args = parser.parse_args()
 
-    tracker(    args.audio_file_in,
-                args.ats_file_out,
-                start = args.start,
-                duration = args.duration,
-                lowest_frequency = args.low_freq,
-                highest_frequency = args.hi_freq,
-                frequency_deviation = args.freq_dev,
-                window_cycles = args.win_cycles,
-                window_type = args.win_type,
-                hop_size = args.hop_size,                
-                fft_size = args.fft_size,
-                amp_threshold = args.amp_threshold,
-                track_length = args.track_length,
-                min_gap_length = args.min_gap_length,
-                min_segment_length = args.min_segment_length,
-                last_peak_contribution = args.last_peak_contribution,
-                SMR_continuity = args.SMR_continuity,
-                optimize_amp_threshold = args.opt_amp_threshold,
-                residual_file = args.residual_file,
-                optimize = not args.no_optimize,
-                force_M = args.force_M,
-                window_alpha = args.win_alpha,
-                window_beta = args.win_beta,
-                verbose = args.verbose,  
-            )
+    ats_save(tracker(   args.audio_file_in,
+                        args.ats_file_out,
+                        start = args.start,
+                        duration = args.duration,
+                        lowest_frequency = args.low_freq,
+                        highest_frequency = args.hi_freq,
+                        frequency_deviation = args.freq_dev,
+                        window_cycles = args.win_cycles,
+                        window_type = args.win_type,
+                        hop_size = args.hop_size,                
+                        fft_size = args.fft_size,
+                        amp_threshold = args.amp_threshold,
+                        track_length = args.track_length,
+                        min_gap_length = args.min_gap_length,
+                        min_segment_length = args.min_segment_length,
+                        last_peak_contribution = args.last_peak_contribution,
+                        SMR_continuity = args.SMR_continuity,
+                        optimize_amp_threshold = args.opt_amp_threshold,
+                        residual_file = args.residual_file,
+                        optimize = not args.no_optimize,
+                        force_M = args.force_M,
+                        window_alpha = args.win_alpha,
+                        window_beta = args.win_beta,
+                        verbose = args.verbose,  
+                    ),
+                args.ats_file_out)                
 

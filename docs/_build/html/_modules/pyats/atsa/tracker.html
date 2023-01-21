@@ -120,9 +120,10 @@
 <span class="kn">from</span> <span class="nn">pyats.atsa.critical_bands</span> <span class="kn">import</span> <span class="n">evaluate_smr</span>
 <span class="kn">from</span> <span class="nn">pyats.atsa.peak_tracking</span> <span class="kn">import</span> <span class="n">update_track_averages</span><span class="p">,</span> <span class="n">peak_tracking</span>
 <span class="kn">from</span> <span class="nn">pyats.atsa.residual</span> <span class="kn">import</span> <span class="n">compute_residual</span><span class="p">,</span> <span class="n">residual_analysis</span>
+<span class="kn">from</span> <span class="nn">pyats.ats_io</span> <span class="kn">import</span> <span class="n">ats_save</span>
 
 <div class="viewcode-block" id="tracker"><a class="viewcode-back" href="../../../pyats.html#pyats.atsa.tracker.tracker">[docs]</a><span class="k">def</span> <span class="nf">tracker</span> <span class="p">(</span>   <span class="n">in_file</span><span class="p">,</span> 
-                <span class="n">out_snd</span><span class="p">,</span>
+                <span class="n">ats_snd_label</span><span class="p">,</span>
                 <span class="n">start</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="c1"># analysis start point (in seconds)</span>
                 <span class="n">duration</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># max duration to analyze (in seconds) or &#39;None&#39; if analyze to end</span>
                 <span class="n">lowest_frequency</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="c1"># must be &gt; 0</span>
@@ -147,14 +148,14 @@
                 <span class="n">window_beta</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
                 <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                
                 <span class="p">):</span>    
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to generates an Analysis-Transformation-Synthesis :obj:~pyats.ats_structure.AtsSound from an audio file</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to generates an Analysis-Transformation-Synthesis :obj:`~pyats.ats_structure.AtsSound` from an audio file</span>
 <span class="sd">    </span>
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    in_file : str</span>
 <span class="sd">        path to the audio file to analyze (must be single channel/mono)</span>
-<span class="sd">    out_snd : str</span>
-<span class="sd">        .ats file path to output to</span>
+<span class="sd">    ats_snd_label : str</span>
+<span class="sd">        internal name for the :obj:`~pyats.ats_structure.AtsSound`</span>
 <span class="sd">    start : float</span>
 <span class="sd">        timepoint (in s) in audiofile to begin analysis (default: 0.0)</span>
 <span class="sd">    duration : float</span>
@@ -390,7 +391,7 @@
 
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initializing AtsSound object...&quot;</span><span class="p">)</span>
-    <span class="n">ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="n">out_snd</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">hop</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">),</span> <span class="n">frames</span><span class="p">,</span> <span class="n">analysis_duration</span><span class="p">,</span> <span class="n">has_phase</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="n">ats_snd_label</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">,</span> <span class="n">hop</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">),</span> <span class="n">frames</span><span class="p">,</span> <span class="n">analysis_duration</span><span class="p">,</span> <span class="n">has_phase</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">optimize</span><span class="p">:</span>
         <span class="n">ats_snd</span><span class="o">.</span><span class="n">optimized</span> <span class="o">=</span> <span class="kc">True</span>
@@ -493,31 +494,32 @@
     
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
-    <span class="n">tracker</span><span class="p">(</span>    <span class="n">args</span><span class="o">.</span><span class="n">audio_file_in</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">ats_file_out</span><span class="p">,</span>
-                <span class="n">start</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
-                <span class="n">duration</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
-                <span class="n">lowest_frequency</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">low_freq</span><span class="p">,</span>
-                <span class="n">highest_frequency</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">hi_freq</span><span class="p">,</span>
-                <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">freq_dev</span><span class="p">,</span>
-                <span class="n">window_cycles</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_cycles</span><span class="p">,</span>
-                <span class="n">window_type</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_type</span><span class="p">,</span>
-                <span class="n">hop_size</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">hop_size</span><span class="p">,</span>                
-                <span class="n">fft_size</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">fft_size</span><span class="p">,</span>
-                <span class="n">amp_threshold</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">amp_threshold</span><span class="p">,</span>
-                <span class="n">track_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">track_length</span><span class="p">,</span>
-                <span class="n">min_gap_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">min_gap_length</span><span class="p">,</span>
-                <span class="n">min_segment_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">min_segment_length</span><span class="p">,</span>
-                <span class="n">last_peak_contribution</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">last_peak_contribution</span><span class="p">,</span>
-                <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">SMR_continuity</span><span class="p">,</span>
-                <span class="n">optimize_amp_threshold</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">opt_amp_threshold</span><span class="p">,</span>
-                <span class="n">residual_file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">residual_file</span><span class="p">,</span>
-                <span class="n">optimize</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_optimize</span><span class="p">,</span>
-                <span class="n">force_M</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">force_M</span><span class="p">,</span>
-                <span class="n">window_alpha</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_alpha</span><span class="p">,</span>
-                <span class="n">window_beta</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_beta</span><span class="p">,</span>
-                <span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>  
-            <span class="p">)</span></div>
+    <span class="n">ats_save</span><span class="p">(</span><span class="n">tracker</span><span class="p">(</span>   <span class="n">args</span><span class="o">.</span><span class="n">audio_file_in</span><span class="p">,</span>
+                        <span class="n">args</span><span class="o">.</span><span class="n">ats_file_out</span><span class="p">,</span>
+                        <span class="n">start</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                        <span class="n">duration</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+                        <span class="n">lowest_frequency</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">low_freq</span><span class="p">,</span>
+                        <span class="n">highest_frequency</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">hi_freq</span><span class="p">,</span>
+                        <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">freq_dev</span><span class="p">,</span>
+                        <span class="n">window_cycles</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_cycles</span><span class="p">,</span>
+                        <span class="n">window_type</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_type</span><span class="p">,</span>
+                        <span class="n">hop_size</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">hop_size</span><span class="p">,</span>                
+                        <span class="n">fft_size</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">fft_size</span><span class="p">,</span>
+                        <span class="n">amp_threshold</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">amp_threshold</span><span class="p">,</span>
+                        <span class="n">track_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">track_length</span><span class="p">,</span>
+                        <span class="n">min_gap_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">min_gap_length</span><span class="p">,</span>
+                        <span class="n">min_segment_length</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">min_segment_length</span><span class="p">,</span>
+                        <span class="n">last_peak_contribution</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">last_peak_contribution</span><span class="p">,</span>
+                        <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">SMR_continuity</span><span class="p">,</span>
+                        <span class="n">optimize_amp_threshold</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">opt_amp_threshold</span><span class="p">,</span>
+                        <span class="n">residual_file</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">residual_file</span><span class="p">,</span>
+                        <span class="n">optimize</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_optimize</span><span class="p">,</span>
+                        <span class="n">force_M</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">force_M</span><span class="p">,</span>
+                        <span class="n">window_alpha</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_alpha</span><span class="p">,</span>
+                        <span class="n">window_beta</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">win_beta</span><span class="p">,</span>
+                        <span class="n">verbose</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>  
+                    <span class="p">),</span>
+                <span class="n">args</span><span class="o">.</span><span class="n">ats_file_out</span><span class="p">)</span>                </div>
 
 </pre></div>
 

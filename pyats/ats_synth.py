@@ -111,8 +111,8 @@ def synth(ats_snd, normalize=False, compute_phase=True,
         for frame_n in range(frames):
             
             # constrain number of samples we write at tail end of sound
-            if fil_ptr + frame_size > out_size:
-                frame_size_range = fil_ptr + frame_size - out_size
+            if fil_ptr + frame_size_range > out_size:
+                frame_size_range = out_size - fil_ptr
             
             for partial in range(n_partials):
                 if ats_snd.frq[partial][frame_n] == 0.0 and ats_snd.frq[partial][frame_n + 1] == 0.0:
@@ -227,12 +227,12 @@ def synth(ats_snd, normalize=False, compute_phase=True,
 
         # envelope bands
         fil_ptr = 0
+        frame_size_range = frame_size
         for frame_n in range(frames):
 
             # constrain number of samples we write at tail end of sound
-            if fil_ptr + frame_size > out_size:
-                frame_size_range = fil_ptr + frame_size - out_size
-
+            if fil_ptr + frame_size_range > out_size:
+                frame_size_range = out_size - fil_ptr
             for band in ats_snd.bands:
                 if ats_snd.band_energy[band][frame_n] == 0.0 and ats_snd.band_energy[band][frame_n + 1] == 0.0:
                     continue
@@ -241,7 +241,6 @@ def synth(ats_snd, normalize=False, compute_phase=True,
                 amp_0 = ats_snd.band_energy[band][frame_n]
                 amp_t = ats_snd.band_energy[band][frame_n + 1]
                 amp_step = (amp_t - amp_0) / frame_size
-
                 noise[fil_ptr:fil_ptr + frame_size_range] += (amp_0 + (arange(frame_size_range) * amp_step)) * \
                                                                 banded_noise[band][fil_ptr:fil_ptr + frame_size_range]
 

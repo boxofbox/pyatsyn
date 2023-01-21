@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="pyats" href="pyats.html" /> 
+    <link rel="next" title="Getting Started" href="info.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -38,10 +38,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">API</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="info.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyats.html">pyats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pyats.html#pyats-atsa">pyats.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
 </ul>
 
         </div>
@@ -70,13 +72,19 @@
              
   <section id="pyats">
 <h1>pyats<a class="headerlink" href="#pyats" title="Permalink to this heading"></a></h1>
-<p>TODO INSTALLATION</p>
-<p>for newcomers start with tracker</p>
-<p>TODO ABOUT &amp; copy to github readme</p>
-<p>TODO Licence &amp; copyright</p>
+<p>pyats is a python implementation of the Analysis-Transformation-Synthesis (ATS) spectral modeling system.
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TODO</p>
+<p><a class="reference external" href="https://github.com/boxofbox/pyats">pyats on Github</a></p>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">API</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="info.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="info.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info.html#ats-overview">ATS Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info.html#other-ats-implementations">Other ATS Implementations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="info.html#ats-theory">ATS Theory</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="pyats.html">pyats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pyats.html#module-pyats.ats_io">ats_io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pyats.html#module-pyats.ats_structure">ats_structure</a></li>
@@ -93,64 +101,25 @@
 <li class="toctree-l2"><a class="reference internal" href="pyats.html#module-pyats.atsa.windows">windows</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
 </ul>
 </div>
+<section id="copyright">
+<h2>Copyright<a class="headerlink" href="#copyright" title="Permalink to this heading"></a></h2>
+<p>pyats Copyright (c) &lt;2023&gt;, Johnathan G Lyon
+All rights reserved.</p>
+<p>Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;
+Oscar Pablo Di Liscia, Pete Moss and Juan Pampin</p>
+<p>This source code is licensed under the BSD-style license found in the
+LICENSE.rst file in the root directory of the source tree.</p>
 </section>
-<section id="ats-overview">
-<h1>ATS Overview<a class="headerlink" href="#ats-overview" title="Permalink to this heading"></a></h1>
-<p>Analysis, Transformation and Synthesis (ATS) is a spectral modeling system based on a
-sinusoidal plus critical-band noise decomposition. The system can be used to analyze
-recorded sounds, transform their spectrum using a wide variety of algorithms and
-resynthesize them both out of time and in real time.</p>
-<a class="reference internal image-reference" href="_images/ats_block.png"><img alt="graphic depiction of smr calculation" src="_images/ats_block.png" style="width: 350px;" /></a>
-<p>Psychoacoustic processing informs the system’s sinusoidal tracking and noise modeling
-algorithms. Perceptual Audio Coding (PAC) techniques such as Signal-to-Mask Ratio (SMR)
-evaluation are used to achieve perceptually accurate sinusoidal tracking. SMR values
-are also used as a psychoacoustic metric to determine the perceptual relevance of partials
-during analysis data postprocessing. The system’s noise component is modeled using
-Bark-scale frequency warping and sub-band noise energy evaluation. Noise energy at the
-sub-bands is then distributed on a frame-by-frame basis among the partials resulting
-in a compact hybrid representation based on noise modulated sinusoidal trajectories.</p>
-</section>
-<section id="other-ats-implementations">
-<h1>Other ATS Implementations<a class="headerlink" href="#other-ats-implementations" title="Permalink to this heading"></a></h1>
-<p>Originally implemented in LISP, using the CLM sound synthesis and processing language,
-ATS has been ported to C in the form of a spectral modeling library. This library,
-called ATSA, implements the ATS system API which has served as foundation for the
-development of the ATSH graphic user interface. Written in GTK+, ATSH not only provides
-user- friendly access to the ATS analysis/synthesis core but also graphic data editing
-and transformation tools. ATS interfaces for SuperCollider, Csound and PD have also
-been developed.</p>
-<p><a class="reference external" href="https://gitlab.com/dxarts/projects/ats">https://gitlab.com/dxarts/projects/ats</a></p>
-<p>SuperCollider
-Interfaces for ATS (including classes to read ATS files as well ad UGens to do transformation and synthesis) are included in Josh Parmenter’s UGen library, JoshUGens, distributed in the sc3-plugins package for SuperCollider.</p>
-<p><a class="reference external" href="https://supercollider.github.io/sc3-plugins/">https://supercollider.github.io/sc3-plugins/</a></p>
-<p><a class="reference external" href="http://flossmanual.csound.com/sound-modification/ats-resynthesis">http://flossmanual.csound.com/sound-modification/ats-resynthesis</a></p>
-<p>PureData
-Pablo Di Liscia’s Pure Data Binaries and Toolkit
-<a class="reference external" href="https://puredata.info/Members/pdiliscia/ats-pd">https://puredata.info/Members/pdiliscia/ats-pd</a></p>
-<p>ATS File Format <a class="reference external" href="http://floss.booktype.pro/csound/k-ats-resynthesis/">http://floss.booktype.pro/csound/k-ats-resynthesis/</a></p>
-</section>
-<section id="ats-theory">
-<h1>ATS Theory<a class="headerlink" href="#ats-theory" title="Permalink to this heading"></a></h1>
-<p><a class="reference external" href="_static/pdf/ats_theory.pdf">Link to pdf</a></p>
-<p>ATS: A System for Sound Analysis Transformation and Synthesis Based on a Sinusoidal plus Critical-Band Noise Model and Psychoacoustics
-Juan Pampin
-Center for Digital Arts and Experimental Media (DXARTS), University of Washington <a class="reference external" href="mailto:pampin&#37;&#52;&#48;u&#46;washington&#46;edu">pampin<span>&#64;</span>u<span>&#46;</span>washington<span>&#46;</span>edu</a></p>
-</section>
-<section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pyats.html" class="btn btn-neutral float-right" title="pyats" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="info.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

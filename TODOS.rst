@@ -6,7 +6,6 @@
 * generate html & pdf docs
 * update Readme about section
 
-
 * re-run some test cases
 
 * remove this todo list
