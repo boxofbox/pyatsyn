@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
@@ -142,14 +142,14 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length,
 
     Parameters
     ----------
-    tracks : Iterable[:obj:`~pyats.ats_structure.AtsSound`]
+    tracks : Iterable[:obj:`~pyatsyn.ats_structure.AtsSound`]
         collection of established tracks
-    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]
-        a collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time
+    analysis_frames : Iterable[Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]]
+        a collection storing the :obj:`~pyatsyn.ats_structure.AtsPeak` objects at each frame in time
     min_segment_length : int
         minimal size (in frames) of a valid track segment, otherwise it is pruned
     amp_threshold : float
-        amplitude threshold used to prune tracks. If None, will default to :obj:`~pyats.atsa.utils.ATS_AMP_THRESHOLD` converted to amplitude.
+        amplitude threshold used to prune tracks. If None, will default to :obj:`~pyatsyn.atsa.utils.ATS_AMP_THRESHOLD` converted to amplitude.
     highest_frequency : float
         upper frequency threshold, tracks with maxima above this will be pruned
     lowest_frequency : float
@@ -157,7 +157,7 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length,
 
     Returns
     -------
-    tracks : Iterable[:obj:`pyats.ats_structure.AtsPeak`]
+    tracks : Iterable[:obj:`pyatsyn.ats_structure.AtsPeak`]
         the optimized subset of input tracks
     """
     if min_segment_length < 1:

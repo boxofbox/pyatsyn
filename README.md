@@ -1,16 +1,16 @@
 
 
 
-# ABOUT pyats
+# ABOUT pyatsyn
 
-pyats is a python implementation of the Analysis-Transformation-Synthesis (ATS) spectral modeling system.
+pyatsyn is a python implementation of the Analysis-Transformation-Synthesis (ATS) spectral modeling system.
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TODO
 
 
 ---
 
-pyats Copyright (c) <2023>, Johnathan G Lyon
+pyatsyn Copyright (c) <2023>, Johnathan G Lyon
 All rights reserved.
 
 Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
@@ -34,32 +34,32 @@ for Debian: ```$ apt-get install libsndfile-dev```
 install via the PyPi repository
 
 ```
-$ pip install pyats
+$ pip install pyatsyn
 ```
 
 # included command line utilities
 
 ```
-$ pyats-atsa --help```
-$ pyats-synth --help
+$ pyatsyn-atsa --help```
+$ pyatsyn-synth --help
 ```
 
 Example command line usage to generate an ats file with residual:
 
 ```
-$ pyats-atsa example.wav example.ats -v -r example-residual.wav
+$ pyatsyn-atsa example.wav example.ats -v -r example-residual.wav
 ```
 
 Example to synthesize the result using a sine-generator bank:
 
 ```
-$ pyats-synth example.ats synthesized.wav
+$ pyatsyn-synth example.ats synthesized.wav
 ```
 
 Example to synthesize the result a sine-generator bank and w/ band-limited noise synthesis for the residual:
 
 ```
-$ pyats-synth example.ats synthesized_w_noise.wav --noise 1.0
+$ pyatsyn-synth example.ats synthesized_w_noise.wav --noise 1.0
 ```
 
 ---
@@ -67,13 +67,13 @@ $ pyats-synth example.ats synthesized_w_noise.wav --noise 1.0
 # for Developers, if using from source
 
 ```
-$ git clone https://github.com/boxofbox/pyats
+$ git clone https://github.com/boxofbox/pyatsyn
 ```
 
 i recommend running in a virtual environment from within the project base directory
 
 ```
-$ cd pyats
+$ cd pyatsyn
 $ python -m venv .venv
 $ source .venv/bin/activate
 ```
@@ -93,7 +93,7 @@ $pip install sphinx
 ```
 
 may need to be run as a package in development mode
-(from within the outermost pyats directory containing the pyproject.toml file)
+(from within the outermost pyatsyn directory containing the pyproject.toml file)
 
 ```
 $ pip install -e .

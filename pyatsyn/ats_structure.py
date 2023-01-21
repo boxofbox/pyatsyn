@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
@@ -18,8 +18,8 @@ TODO About
 
 from numpy import zeros, inf, copy, mean, any, arange
 
-from pyats.atsa.utils import ATS_MIN_SEGMENT_LENGTH
-from pyats.atsa.peak_tracking import phase_interp
+from pyatsyn.atsa.utils import ATS_MIN_SEGMENT_LENGTH
+from pyatsyn.atsa.peak_tracking import phase_interp
 
 class AtsPeak:
     """TODO
@@ -45,12 +45,12 @@ class AtsPeak:
         self.frq_min = inf
 
     def clone (self):
-        """Function to return a copy of an :obj:`~pyats.ats_structure.AtsSound`
+        """Function to return a copy of an :obj:`~pyatsyn.ats_structure.AtsSound`
 
         Returns
         -------
-        :obj:`~pyats.ats_structure.AtsPeak`
-            a copy of the calling :obj:`~pyats.ats_structure.AtsPeak` object
+        :obj:`~pyatsyn.ats_structure.AtsPeak`
+            a copy of the calling :obj:`~pyatsyn.ats_structure.AtsPeak` object
         """
         return AtsPeak(self.amp,self.frq,self.pha,self.smr,self.track,self.db_spl,
                         self.barkfrq,self.slope_r,self.asleep_for, self.duration)
@@ -101,12 +101,12 @@ class AtsSound:
 
     
     def clone(self):
-        """Function to return a deep copy of an :obj:`~pyats.ats_structure.AtsSound`
+        """Function to return a deep copy of an :obj:`~pyatsyn.ats_structure.AtsSound`
 
         Returns
         -------
-        :obj:`~pyats.ats_structure.AtsSound`
-            a deep copy of the calling :obj:`~pyats.ats_structure.AtsSound` object
+        :obj:`~pyatsyn.ats_structure.AtsSound`
+            a deep copy of the calling :obj:`~pyatsyn.ats_structure.AtsSound` object
         """
         has_pha = True
         if self.pha is None:

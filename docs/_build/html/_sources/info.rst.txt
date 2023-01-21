@@ -25,32 +25,32 @@ install via the PyPi repository
 
 ::
         
-        $ pip install pyats
+        $ pip install pyatsyn
 
 # included command line utilities
 
 ::
 
-        $ pyats-atsa --help
-        $ pyats-synth --help
+        $ pyatsyn-atsa --help
+        $ pyatsyn-synth --help
 
 Example command line usage to generate an ats file with residual:
 
 ::
         
-        $ pyats-atsa example.wav example.ats -v -r example-residual.wav
+        $ pyatsyn-atsa example.wav example.ats -v -r example-residual.wav
 
 Example to synthesize the result using a sine-generator bank:
 
 ::
         
-        $ pyats-synth example.ats synthesized.wav
+        $ pyatsyn-synth example.ats synthesized.wav
 
 Example to synthesize the result a sine-generator bank and w/ band-limited noise synthesis for the residual:
 
 ::
 
-        $ pyats-synth example.ats synthesized_w_noise.wav --noise 1.0
+        $ pyatsyn-synth example.ats synthesized_w_noise.wav --noise 1.0
 
 
 
@@ -58,13 +58,13 @@ Example to synthesize the result a sine-generator bank and w/ band-limited noise
 
 ::
 
-        $ git clone https://github.com/boxofbox/pyats
+        $ git clone https://github.com/boxofbox/pyatsyn
 
 we recommend running in a virtual environment from within the project base directory
 
 ::
 
-        $ cd pyats
+        $ cd pyatsyn
         $ python -m venv .venv
         $ source .venv/bin/activate
 
@@ -84,13 +84,13 @@ optional documentation generation requires:
         $ pip install sphinx
 
 may need to be run as a package in development mode
-(from within the outermost pyats directory containing the pyproject.toml file)
+(from within the outermost pyatsyn directory containing the pyproject.toml file)
 
 ::
 
         $ pip install -e .
 
-If you are a newcomer to the ATS system we recommend you start by looking at :obj:`~pyats.atsa.tracker.tracker`
+If you are a newcomer to the ATS system we recommend you start by looking at :obj:`~pyatsyn.atsa.tracker.tracker`
 
 ATS Overview
 ------------
@@ -134,7 +134,7 @@ Csound Opcodes for ATS `Csound FLOSS manual <https://flossmanual.csound.com/soun
 
 PureData binaries and toolkit `puredata ats-pd <https://puredata.info/Members/pdiliscia/ats-pd>`_
 
-Grow your own using the ATS Binary File Format: :obj:`~pyats.ats_io`
+Grow your own using the ATS Binary File Format: :obj:`~pyatsyn.ats_io`
 
 
 ATS Theory

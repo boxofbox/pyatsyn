@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
@@ -19,10 +19,10 @@ from numpy import zeros, mean, roll, arange, absolute, asarray
 from numpy.fft import fft
 import soundfile as sf
 
-from pyats.ats_synth import synth
+from pyatsyn.ats_synth import synth
 
-from pyats.atsa.utils import next_power_of_2, db_to_amp, ATS_NOISE_THRESHOLD
-from pyats.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
+from pyatsyn.atsa.utils import next_power_of_2, db_to_amp, ATS_NOISE_THRESHOLD
+from pyatsyn.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
 
 
 def compute_residual(   residual_file, 
@@ -40,7 +40,7 @@ def compute_residual(   residual_file,
     ----------
     residual_file : str
         TODO
-    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
         TODO
     in_sound : ndarray[float]
         TODO
@@ -83,7 +83,7 @@ def residual_analysis(  residual,
     ----------
     residual : ndarray[float]
         TODO
-    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
         TODO
     min_fft_size : int, optional
         TODO (default: 4096)
@@ -270,7 +270,7 @@ def band_to_energy(ats_snd, band_edges, use_smr = False):
 
     Parameters
     ----------
-    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
         TODO
     band_edges : TODO
         TODO
@@ -334,7 +334,7 @@ def remove_bands(ats_snd, threshold):
 
     Parameters
     ----------
-    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
         TODO
     threshold : float
         TODO

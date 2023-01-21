@@ -1,10 +1,10 @@
-pyats
+pyatsyn
 =============
 
 ats\_io
 --------------------
 
-.. automodule:: pyats.ats_io
+.. automodule:: pyatsyn.ats_io
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ ats\_io
 ats\_structure
 ---------------------------
 
-.. automodule:: pyats.ats_structure
+.. automodule:: pyatsyn.ats_structure
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,18 +20,18 @@ ats\_structure
 ats\_synth
 -----------------------
 
-.. automodule:: pyats.ats_synth
+.. automodule:: pyatsyn.ats_synth
    :members:
    :undoc-members:
    :show-inheritance:
 
-pyats.atsa
+pyatsyn.atsa
 ==================
 
 critical\_bands
 ---------------------------------
 
-.. automodule:: pyats.atsa.critical_bands
+.. automodule:: pyatsyn.atsa.critical_bands
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,7 +39,7 @@ critical\_bands
 peak\_detect
 ------------------------------
 
-.. automodule:: pyats.atsa.peak_detect
+.. automodule:: pyatsyn.atsa.peak_detect
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ peak\_detect
 peak\_tracking
 --------------------------------
 
-.. automodule:: pyats.atsa.peak_tracking
+.. automodule:: pyatsyn.atsa.peak_tracking
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ peak\_tracking
 residual
 --------------------------
 
-.. automodule:: pyats.atsa.residual
+.. automodule:: pyatsyn.atsa.residual
    :members:
    :undoc-members:
    :show-inheritance:
@@ -63,7 +63,7 @@ residual
 tracker
 -------------------------
 
-.. automodule:: pyats.atsa.tracker
+.. automodule:: pyatsyn.atsa.tracker
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,7 +71,7 @@ tracker
 utils
 -----------------------
 
-.. automodule:: pyats.atsa.utils
+.. automodule:: pyatsyn.atsa.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -79,7 +79,7 @@ utils
 windows
 -------------------------
 
-.. automodule:: pyats.atsa.windows
+.. automodule:: pyatsyn.atsa.windows
    :members:
    :undoc-members:
    :show-inheritance:

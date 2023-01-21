@@ -36,9 +36,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">pyatsyn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../info.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html">pyatsyn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#pyatsyn-atsa">pyatsyn.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
 </ul>
 
         </div>
@@ -75,7 +78,7 @@
 <span class="c1"># All rights reserved.</span>
 
 <span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
-<span class="c1"># &lt;Oscar Pablo Di Liscia, Pete Moss and Juan Pampin&gt;</span>
+<span class="c1"># &lt;Oscar Pablo Di Liscia, ,and Juan Pampin&gt;</span>
 
 <span class="sd">&quot;&quot;&quot;TODO Summary</span>
 
@@ -93,7 +96,7 @@
 <span class="kn">from</span> <span class="nn">pyatsyn.atsa.critical_bands</span> <span class="kn">import</span> <span class="n">ATS_CRITICAL_BAND_EDGES</span>
 
 
-<div class="viewcode-block" id="compute_residual"><a class="viewcode-back" href="../../../pyatsyn.atsa.html#pyatsyn.atsa.residual.compute_residual">[docs]</a><span class="k">def</span> <span class="nf">compute_residual</span><span class="p">(</span>   <span class="n">residual_file</span><span class="p">,</span> 
+<div class="viewcode-block" id="compute_residual"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.compute_residual">[docs]</a><span class="k">def</span> <span class="nf">compute_residual</span><span class="p">(</span>   <span class="n">residual_file</span><span class="p">,</span> 
                                 <span class="n">ats_snd</span><span class="p">,</span> 
                                 <span class="n">in_sound</span><span class="p">,</span>
                                 <span class="n">start_sample</span><span class="p">,</span>
@@ -134,7 +137,7 @@
     <span class="k">return</span> <span class="n">residual</span></div>
 
 
-<div class="viewcode-block" id="residual_analysis"><a class="viewcode-back" href="../../../pyatsyn.atsa.html#pyatsyn.atsa.residual.residual_analysis">[docs]</a><span class="k">def</span> <span class="nf">residual_analysis</span><span class="p">(</span>  <span class="n">residual</span><span class="p">,</span> 
+<div class="viewcode-block" id="residual_analysis"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.residual_analysis">[docs]</a><span class="k">def</span> <span class="nf">residual_analysis</span><span class="p">(</span>  <span class="n">residual</span><span class="p">,</span> 
                         <span class="n">ats_snd</span><span class="p">,</span> 
                         <span class="n">min_fft_size</span> <span class="o">=</span> <span class="mi">4096</span><span class="p">,</span>
                         <span class="n">equalize</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -256,7 +259,7 @@
         <span class="n">remove_bands</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">ATS_NOISE_THRESHOLD</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="residual_N"><a class="viewcode-back" href="../../../pyatsyn.atsa.html#pyatsyn.atsa.residual.residual_N">[docs]</a><span class="k">def</span> <span class="nf">residual_N</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">min_fft_size</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+<div class="viewcode-block" id="residual_N"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.residual_N">[docs]</a><span class="k">def</span> <span class="nf">residual_N</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">min_fft_size</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
 
 <span class="sd">    TODO </span>
@@ -281,7 +284,7 @@
         <span class="k">return</span> <span class="n">next_power_of_2</span><span class="p">(</span><span class="n">min_fft_size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="residual_get_band_limits"><a class="viewcode-back" href="../../../pyatsyn.atsa.html#pyatsyn.atsa.residual.residual_get_band_limits">[docs]</a><span class="k">def</span> <span class="nf">residual_get_band_limits</span><span class="p">(</span><span class="n">fft_mag</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">):</span>
+<div class="viewcode-block" id="residual_get_band_limits"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.residual_get_band_limits">[docs]</a><span class="k">def</span> <span class="nf">residual_get_band_limits</span><span class="p">(</span><span class="n">fft_mag</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
 
 <span class="sd">    TODO </span>
@@ -304,7 +307,7 @@
     <span class="k">return</span> <span class="n">band_limits</span> </div>
 
 
-<div class="viewcode-block" id="residual_compute_band_energy"><a class="viewcode-back" href="../../../pyatsyn.atsa.html#pyatsyn.atsa.residual.residual_compute_band_energy">[docs]</a><span class="k">def</span> <span class="nf">residual_compute_band_energy</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">,</span> <span class="n">band_limits</span><span class="p">,</span> <span class="n">band_energy</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">):</span>
+<div class="viewcode-block" id="residual_compute_band_energy"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.residual_compute_band_energy">[docs]</a><span class="k">def</span> <span class="nf">residual_compute_band_energy</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">,</span> <span class="n">band_limits</span><span class="p">,</span> <span class="n">band_energy</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
 
 <span class="sd">    TODO </span>
@@ -331,7 +334,7 @@
         <span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">[</span><span class="n">low</span><span class="p">:</span><span class="n">high</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">fft_mags</span><span class="o">.</span><span class="n">size</span></div>
 
 
-<div class="viewcode-block" id="band_to_energy"><a class="viewcode-back" href="../../../pyatsyn.atsa.html#pyatsyn.atsa.residual.band_to_energy">[docs]</a><span class="k">def</span> <span class="nf">band_to_energy</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">,</span> <span class="n">use_smr</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="band_to_energy"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.band_to_energy">[docs]</a><span class="k">def</span> <span class="nf">band_to_energy</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">,</span> <span class="n">use_smr</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
 
 <span class="sd">    TODO </span>
@@ -395,7 +398,7 @@
     <span class="n">ats_snd</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="n">par_energy</span></div>
             
             
-<div class="viewcode-block" id="remove_bands"><a class="viewcode-back" href="../../../pyatsyn.atsa.html#pyatsyn.atsa.residual.remove_bands">[docs]</a><span class="k">def</span> <span class="nf">remove_bands</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+<div class="viewcode-block" id="remove_bands"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.remove_bands">[docs]</a><span class="k">def</span> <span class="nf">remove_bands</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function TODO</span>
 
 <span class="sd">    TODO  remove bands from ats_snd that are below threshold (in dB)</span>

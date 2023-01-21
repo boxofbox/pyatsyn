@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, 
@@ -19,8 +19,8 @@ Functions to process FFT data and extract peaks
 from numpy import pi
 from math import tau
 
-from pyats.ats_structure import AtsPeak
-from pyats.atsa.utils import amp_to_db, db_to_amp
+from pyatsyn.ats_structure import AtsPeak
+from pyatsyn.atsa.utils import amp_to_db, db_to_amp
 
 
 def peak_detection (fftfreqs, fftmags, fftphases, 
@@ -49,8 +49,8 @@ def peak_detection (fftfreqs, fftmags, fftphases,
 
     Returns
     -------
-    list[:obj:`~pyats.ats_structure.AtsPeak`]
-        A list of :obj:`~pyats.ats_structure.AtsPeak` constructed from detected peaks
+    list[:obj:`~pyatsyn.ats_structure.AtsPeak`]
+        A list of :obj:`~pyatsyn.ats_structure.AtsPeak` constructed from detected peaks
     """
     peaks = []
 

@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, 
@@ -22,7 +22,7 @@ ATS_CRITICAL_BAND_EDGES : ndarray[float]
 
 from numpy import log10, array
 
-from pyats.atsa.utils import amp_to_db_spl
+from pyatsyn.atsa.utils import amp_to_db_spl
 
 
 ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
@@ -36,7 +36,7 @@ ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
 def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50):    
     """Function to evaluate signal-to-mask ratio for the given peaks
 
-    This function evaluates masking values (SMR) for :obj:`~pyats.ats_structure.AtsPeak`s in list `peaks`
+    This function evaluates masking values (SMR) for :obj:`~pyatsyn.ats_structure.AtsPeak`s in list `peaks`
     Iteratively the parameters will be use to generate a triangular mask 
     with a primary vertex at the frequency of, and at delta_dB below the amplitude 
     of the masker. 
@@ -54,7 +54,7 @@ def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50):
 
     Parameters
     ----------
-    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
+    peaks : Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]
         An iterable collection of AtsPeaks that will have their `smr` attributes updated
     slope_l : float, optional
         A float (in dB/bark) to dictate the slope of the left side of the mask (default: -27.0)
@@ -122,22 +122,22 @@ def frq_to_bark(freq):
 
 
 def find_band(freq):
-    """Function to retrieve lower band edge in :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`
+    """Function to retrieve lower band edge in :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`
 
     Parameters
     ----------
     freq : float
-        A frequency (in Hz) to find the related band in :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` for
+        A frequency (in Hz) to find the related band in :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` for
     
     Returns
     ----------
     int
-        index into :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` that marks the lower band edge for the given freq
+        index into :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` that marks the lower band edge for the given freq
 
     Raises
     ----------
     LookupError
-        if the frequency given is outside the range of the lowest or highest edge in :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`
+        if the frequency given is outside the range of the lowest or highest edge in :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`
 
     """
     if freq < ATS_CRITICAL_BAND_EDGES[0]:

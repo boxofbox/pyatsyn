@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
@@ -107,7 +107,7 @@ def make_blackman_window(window_type, size):
     Parameters
     ----------
     window_type : str
-        the type of blackman window (supported types are defined in :obj:`~pyats.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS)`
+        the type of blackman window (supported types are defined in :obj:`~pyatsyn.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS)`
     size : int
         the size of the window to generate
 
@@ -141,7 +141,7 @@ def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
     Parameters
     ----------
     window_type : str
-        the type of window (supported types are defined in :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`)
+        the type of window (supported types are defined in :obj:`~pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`)
     size : int
         the size of the window to generate
     beta : float, optional
@@ -157,7 +157,7 @@ def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
     Raises
     ------
     ValueError
-        if `window_type` is not one of the supported window types in :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`
+        if `window_type` is not one of the supported window types in :obj:`~pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`
     """
     if (window_type.startswith('blackman')):
         return make_blackman_window(window_type, size)

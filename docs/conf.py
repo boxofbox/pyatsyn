@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'pyats'
+project = 'pyatsyn'
 copyright = '2023, Johnathan G Lyon'
 author = 'Johnathan G Lyon'
 release = '1.0.0'

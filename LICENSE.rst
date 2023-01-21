@@ -11,7 +11,7 @@ Except where otherwise noted, ATSA and ATSH is Copyright 2002-2004 Oscar Pablo
 Di Liscia, Pete Moss, and Juan Pampin.
 
 ---
-pyats
+pyatsyn
 Copyright (c) <2023>, <Johnathan G Lyon>
 All rights reserved.
 

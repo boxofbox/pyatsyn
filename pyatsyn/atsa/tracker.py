@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
@@ -17,24 +17,24 @@ into the .ats format. The system uses a Short Time Fourier Transform (STFT) as
 is core analysis tool. Sound is analyzed using overlapping time windows and by
 taking the STFT on each window. 
 
-After converting to polar coordinates, a peak detection algorithm (:obj:`~pyats.atsa.peak_detection`)
+After converting to polar coordinates, a peak detection algorithm (:obj:`~pyatsyn.atsa.peak_detection`)
 determines relevant spectral peaks in the data. At this point, pyschoacoustics 
 are considered in the form of masking curve evaluation and computation of the 
 Signal-to-Mask ratio (SMR) for each candidate peak. SMR data is store together with 
 a corrected frequency, magnitude and phase.
 
-The next step involves frame-to-frame tracking of peaks (:obj:`~pyats.atsa.peak_tracking`) to connect peaks that
+The next step involves frame-to-frame tracking of peaks (:obj:`~pyatsyn.atsa.peak_tracking`) to connect peaks that
 follow a similar spectral trajectory using both frequency and SMR data. The system 
 uses a stable matching algorithm to pair candidate peaks, and is capable of interpolating
 gaps in the tracks.
 
-Once valid tracks are assembled, the results can be modeled with sinusoids (:obj:`~pyats.atsa_synth`) and subtracted 
+Once valid tracks are assembled, the results can be modeled with sinusoids (:obj:`~pyatsyn.atsa_synth`) and subtracted 
 from the origin source sound to compute a residual. NOTE: This part of the ATS system is currently under
-active research. For now, the residual analysis (:obj:`~pyats.atsa.residual`) is modeled using a 
+active research. For now, the residual analysis (:obj:`~pyatsyn.atsa.residual`) is modeled using a 
 25 time-varying critical noise band energy model (consistent with the critical bands used during SMR evaluation). 
 These noise bands can then be resynthesized using 25 correspoding banks of time-enveloped, band-limited noise.
 
-Analysis is finally stored and abstracted as an :obj:`~pyats.ats_structure.AtsSound` object.
+Analysis is finally stored and abstracted as an :obj:`~pyatsyn.ats_structure.AtsSound` object.
 
 """
 
@@ -43,15 +43,15 @@ from numpy.fft import fft, fftfreq
 import soundfile as sf
 import argparse
 
-from pyats.ats_structure import AtsSound
+from pyatsyn.ats_structure import AtsSound
 
-from pyats.atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
-from pyats.atsa.windows import make_fft_window, normalize_window, window_norm, VALID_FFT_WINDOW_DEFINITIONS
-from pyats.atsa.peak_detect import peak_detection
-from pyats.atsa.critical_bands import evaluate_smr
-from pyats.atsa.peak_tracking import update_track_averages, peak_tracking
-from pyats.atsa.residual import compute_residual, residual_analysis
-from pyats.ats_io import ats_save
+from pyatsyn.atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
+from pyatsyn.atsa.windows import make_fft_window, normalize_window, window_norm, VALID_FFT_WINDOW_DEFINITIONS
+from pyatsyn.atsa.peak_detect import peak_detection
+from pyatsyn.atsa.critical_bands import evaluate_smr
+from pyatsyn.atsa.peak_tracking import update_track_averages, peak_tracking
+from pyatsyn.atsa.residual import compute_residual, residual_analysis
+from pyatsyn.ats_io import ats_save
 
 def tracker (   in_file, 
                 ats_snd_label,
@@ -79,14 +79,14 @@ def tracker (   in_file,
                 window_beta = 1.0,
                 verbose = False,                
                 ):    
-    """Function to generates an Analysis-Transformation-Synthesis :obj:`~pyats.ats_structure.AtsSound` from an audio file
+    """Function to generates an Analysis-Transformation-Synthesis :obj:`~pyatsyn.ats_structure.AtsSound` from an audio file
     
     Parameters
     ----------
     in_file : str
         path to the audio file to analyze (must be single channel/mono)
     ats_snd_label : str
-        internal name for the :obj:`~pyats.ats_structure.AtsSound`
+        internal name for the :obj:`~pyatsyn.ats_structure.AtsSound`
     start : float
         timepoint (in s) in audiofile to begin analysis (default: 0.0)
     duration : float
@@ -100,7 +100,7 @@ def tracker (   in_file,
     window_cycles : int
         lowest frequency to fit in analysis window; used to determine window size (default: 4)
     window_type : str
-        type of window to use for FFT analysis (default: 'blackman-harris-4-1'). See :obj:`~pyats.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`
+        type of window to use for FFT analysis (default: 'blackman-harris-4-1'). See :obj:`~pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`
     hop_size : float
         fraction of window size to shift from frame-to-frame (default: 0.25)
     fft_size : int
@@ -121,7 +121,7 @@ def tracker (   in_file,
         path to the audio file used to store residual analysis. 
         NOTE: noise calculation will not be performed in .ats file without this (default: None)
     optimize : bool
-        whether to perform the post-peak tracking optimization on the :obj:`~pyats.ats_structure.AtsSound` object (default: True)
+        whether to perform the post-peak tracking optimization on the :obj:`~pyatsyn.ats_structure.AtsSound` object (default: True)
     optimize_amp_threshold : float
         additional amplitude threshold used during optimization to prune tracks (default: None)
     force_M : int
@@ -137,7 +137,7 @@ def tracker (   in_file,
 
     Returns
     -------
-    :obj:`~pyats.ats_structure.AtsSound`
+    :obj:`~pyatsyn.ats_structure.AtsSound`
         the ats object that represents the analysis of the input audio file
 
     Raises
@@ -364,21 +364,21 @@ def tracker (   in_file,
 
 
 def tracker_CLI():
-    """Command line wrapper for :obj:`~pyats.atsa.tracker.tracker`
+    """Command line wrapper for :obj:`~pyatsyn.atsa.tracker.tracker`
 
     Example
     ------- 
     Display usage details with help flag   
 
-        $ pyats-atsa -h
+        $ pyatsyn-atsa -h
 
     Analyze a wav file
 
-        $ pyats-atsa example.wav example.ats
+        $ pyatsyn-atsa example.wav example.ats
 
     Analyze a wav file and compute the residual and increase verbosity
 
-        $ pyats-atsa example.wav example.ats -v -r example-residual.wav
+        $ pyatsyn-atsa example.wav example.ats -v -r example-residual.wav
 
     """
     parser = argparse.ArgumentParser(

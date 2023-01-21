@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>, 
@@ -21,7 +21,7 @@ The expected structure of a .ats is:
 +-------------------------------------------+
 | ATS Header (all double floats)            |
 +===========================================+
-| :obj:`~pyats.ats_io.ATS_MAGIC_NUMBER`     |
+| :obj:`~pyatsyn.ats_io.ATS_MAGIC_NUMBER`   |
 +-------------------------------------------+
 | sampling-rate (samples/sec)               |
 +-------------------------------------------+
@@ -83,7 +83,7 @@ ATS_MAGIC_NUMBER : float
 from struct import pack, unpack, calcsize
 from numpy import zeros, arange
 
-from pyats.ats_structure import AtsSound
+from pyatsyn.ats_structure import AtsSound
 
 ATS_MAGIC_NUMBER = 123.0
 
@@ -92,11 +92,11 @@ DOUBLE_BIG_ENDIAN = '>d'
 DOUBLE_LIL_ENDIAN = '<d'
 
 def ats_save(sound, file, save_phase=True, save_noise=True):
-    """Function to save an :obj:`~pyats.ats_structure.AtsSound` to a file
+    """Function to save an :obj:`~pyatsyn.ats_structure.AtsSound` to a file
 
     Parameters
     ----------
-    sound : :obj:`~pyats.ats_structure.AtsSound`
+    sound : :obj:`~pyatsyn.ats_structure.AtsSound`
         ats sound object to save
     file : str
         file path to save to
@@ -156,16 +156,16 @@ def ats_load(   name,
     """Function to load a .ats file into python
 
     Loads a .ats file into python and provides routines to re-optimize the 
-    :obj:`~pyats.ats_structure.AtsSound` data if required.
+    :obj:`~pyatsyn.ats_structure.AtsSound` data if required.
 
     Parameters
     ----------
     name : str
-        name used for labeling :obj:`~pyats.ats_structure.AtsSound`
+        name used for labeling :obj:`~pyatsyn.ats_structure.AtsSound`
     file : str
         filepath to .ats file to load
     optimize : bool, optional
-        determined whether to call :obj:`~pyats.ats_structure.AtsSound.optimize` upon load (default: True)
+        determined whether to call :obj:`~pyatsyn.ats_structure.AtsSound.optimize` upon load (default: True)
     min_gap_size : int, optional
         when optimizing, tracked partial gaps smaller than or equal to this (in frames) will be 
         interpolated and filled. If None, no gap filling will occur (default: None)
@@ -182,7 +182,7 @@ def ats_load(   name,
     
     Returns
     -------
-    :obj:`~pyats.ats_structure.AtsSound`
+    :obj:`~pyatsyn.ats_structure.AtsSound`
         the loaded ats data
 
     Raises

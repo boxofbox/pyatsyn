@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Getting Started &mdash; pyats 1.0.0 documentation</title>
+  <title>Getting Started &mdash; pyatsyn 1.0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="pyats" href="pyats.html" />
-    <link rel="prev" title="pyats" href="index.html" /> 
+    <link rel="next" title="pyatsyn" href="pyatsyn.html" />
+    <link rel="prev" title="pyatsyn" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,7 +29,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> pyats
+            <a href="index.html" class="icon icon-home"> pyatsyn
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -48,8 +48,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#ats-theory">ATS Theory</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pyats.html">pyats</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pyats.html#pyats-atsa">pyats.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyatsyn.html">pyatsyn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyatsyn.html#pyatsyn-atsa">pyatsyn.atsa</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
 </ul>
 
@@ -59,7 +59,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">pyats</a>
+          <a href="index.html">pyatsyn</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -93,32 +93,32 @@ developed/tested on python 3.9.15 using M1 Mac running macOS 13.0.1</p>
 </pre></div>
 </div>
 <p>install via the PyPi repository</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pyats
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pyatsyn
 </pre></div>
 </div>
 <p># included command line utilities</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyats-atsa --help
-$ pyats-synth --help
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-atsa --help
+$ pyatsyn-synth --help
 </pre></div>
 </div>
 <p>Example command line usage to generate an ats file with residual:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyats-atsa example.wav example.ats -v -r example-residual.wav
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-atsa example.wav example.ats -v -r example-residual.wav
 </pre></div>
 </div>
 <p>Example to synthesize the result using a sine-generator bank:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyats-synth example.ats synthesized.wav
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-synth example.ats synthesized.wav
 </pre></div>
 </div>
 <p>Example to synthesize the result a sine-generator bank and w/ band-limited noise synthesis for the residual:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyats-synth example.ats synthesized_w_noise.wav --noise 1.0
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-synth example.ats synthesized_w_noise.wav --noise 1.0
 </pre></div>
 </div>
 <p><strong>for Developers, if using from source</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/boxofbox/pyats
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/boxofbox/pyatsyn
 </pre></div>
 </div>
 <p>we recommend running in a virtual environment from within the project base directory</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd pyats
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd pyatsyn
 $ python -m venv .venv
 $ source .venv/bin/activate
 </pre></div>
@@ -133,11 +133,11 @@ $ pip install soundfile
 </pre></div>
 </div>
 <p>may need to be run as a package in development mode
-(from within the outermost pyats directory containing the pyproject.toml file)</p>
+(from within the outermost pyatsyn directory containing the pyproject.toml file)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
 </pre></div>
 </div>
-<p>If you are a newcomer to the ATS system we recommend you start by looking at <a class="reference internal" href="pyats.html#pyats.atsa.tracker.tracker" title="pyats.atsa.tracker.tracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracker</span></code></a></p>
+<p>If you are a newcomer to the ATS system we recommend you start by looking at <a class="reference internal" href="pyatsyn.html#pyatsyn.atsa.tracker.tracker" title="pyatsyn.atsa.tracker.tracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracker</span></code></a></p>
 </section>
 <section id="ats-overview">
 <h2>ATS Overview<a class="headerlink" href="#ats-overview" title="Permalink to this heading"></a></h2>
@@ -170,7 +170,7 @@ to do transformation and synthesis) are included in Josh Parmenter’s UGen libr
 distributed in the sc3-plugins package for SuperCollider: <a class="reference external" href="https://supercollider.github.io/sc3-plugins/">sc3-plugins</a> | <a class="reference external" href="https://doc.sccode.org/Browse.html#UGens%3EAnalysis%3ASynthesis">docs</a></p>
 <p>Csound Opcodes for ATS <a class="reference external" href="https://flossmanual.csound.com/sound-modification/ats-resynthesis#synthesizing-ats-analysis-files">Csound FLOSS manual</a></p>
 <p>PureData binaries and toolkit <a class="reference external" href="https://puredata.info/Members/pdiliscia/ats-pd">puredata ats-pd</a></p>
-<p>Grow your own using the ATS Binary File Format: <a class="reference internal" href="pyats.html#module-pyats.ats_io" title="pyats.ats_io"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ats_io</span></code></a></p>
+<p>Grow your own using the ATS Binary File Format: <a class="reference internal" href="pyatsyn.html#module-pyatsyn.ats_io" title="pyatsyn.ats_io"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ats_io</span></code></a></p>
 </section>
 <section id="ats-theory">
 <h2>ATS Theory<a class="headerlink" href="#ats-theory" title="Permalink to this heading"></a></h2>
@@ -185,8 +185,8 @@ University of Washington <a class="reference external" href="mailto:pampin&#37;&
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="pyats" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pyats.html" class="btn btn-neutral float-right" title="pyats" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="pyatsyn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyatsyn.html" class="btn btn-neutral float-right" title="pyatsyn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pyats"
+name = "pyatsyn"
 authors = [
     {name = "Johnathan G. Lyon", email = "johnathanglyon@gmail.com"}
 ]
@@ -30,13 +30,13 @@ dependencies = [
 exclude = ['docs*']
 
 [project.scripts]
-pyats-atsa = "pyats.atsa.tracker:tracker_CLI"
-pyats-synth = "pyats.ats_synth:synth_CLI"
+pyatsyn-atsa = "pyatsyn.atsa.tracker:tracker_CLI"
+pyatsyn-synth = "pyatsyn.ats_synth:synth_CLI"
 
 [project.optional-dependencies]
 docs = ["sphinx"]
 
 [project.urls]
-"Homepage" = "https://github.com/boxofbox/pyats"
-"Bug Tracker" = "https://github.com/boxofbox/pyats/issues"
+"Homepage" = "https://github.com/boxofbox/pyatsyn"
+"Bug Tracker" = "https://github.com/boxofbox/pyatsyn/issues"
 

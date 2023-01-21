@@ -1,10 +1,10 @@
-pyats.atsa
+pyatsyn.atsa
 ==================
 
 critical\_bands module
 ---------------------------------
 
-.. automodule:: pyats.atsa.critical_bands
+.. automodule:: pyatsyn.atsa.critical_bands
    :members:
    :undoc-members:
    :show-inheritance:
@@ -12,7 +12,7 @@ critical\_bands module
 peak\_detect module
 ------------------------------
 
-.. automodule:: pyats.atsa.peak_detect
+.. automodule:: pyatsyn.atsa.peak_detect
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,7 +20,7 @@ peak\_detect module
 peak\_tracking module
 --------------------------------
 
-.. automodule:: pyats.atsa.peak_tracking
+.. automodule:: pyatsyn.atsa.peak_tracking
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,7 +28,7 @@ peak\_tracking module
 residual module
 --------------------------
 
-.. automodule:: pyats.atsa.residual
+.. automodule:: pyatsyn.atsa.residual
    :members:
    :undoc-members:
    :show-inheritance:
@@ -36,7 +36,7 @@ residual module
 tracker module
 -------------------------
 
-.. automodule:: pyats.atsa.tracker
+.. automodule:: pyatsyn.atsa.tracker
    :members:
    :undoc-members:
    :show-inheritance:
@@ -44,7 +44,7 @@ tracker module
 utils module
 -----------------------
 
-.. automodule:: pyats.atsa.utils
+.. automodule:: pyatsyn.atsa.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -52,7 +52,7 @@ utils module
 windows module
 -------------------------
 
-.. automodule:: pyats.atsa.windows
+.. automodule:: pyatsyn.atsa.windows
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,7 +1,7 @@
-pyats
+pyatsyn
 =====
 
 .. toctree::
    :maxdepth: 4
 
-   pyats
+   pyatsyn

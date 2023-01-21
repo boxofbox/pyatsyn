@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
@@ -56,14 +56,14 @@ def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta =
 
     Parameters
     ----------
-    tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
+    tracks : Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]
         iterable of tracks to update
     track_length : int
         how far back in time (in frames) to start average calculations
     frame_n : int
         the current frame
-    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]
-        a running collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time
+    analysis_frames : Iterable[Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]]
+        a running collection storing the :obj:`~pyatsyn.ats_structure.AtsPeak` objects at each frame in time
     beta : float, optional
         TOadditional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)
     """        
@@ -116,13 +116,13 @@ def find_track_in_peaks(track, peaks):
     ----------
     track : int
         the track index to search for
-    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
-        a collection of :obj:`~pyats.ats_structure.AtsPeak` to search in
+    peaks : Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]
+        a collection of :obj:`~pyatsyn.ats_structure.AtsPeak` to search in
 
     Returns
     -------
-    :obj:`~pyats.ats_structure.AtsPeak`
-        the first :obj:`~pyats.ats_structure.AtsPeak` found in `peaks` that has a .track attribute matching `track`.
+    :obj:`~pyatsyn.ats_structure.AtsPeak`
+        the first :obj:`~pyatsyn.ats_structure.AtsPeak` found in `peaks` that has a .track attribute matching `track`.
         If no matches are found, None is returned.
     """ 
     for pk in peaks:
@@ -144,14 +144,14 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size
 
     Parameters
     ----------
-    tracks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
+    tracks : Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]
         collection of established tracks
-    peaks : Iterable[:obj:`~pyats.ats_structure.AtsPeak`]
+    peaks : Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]
         collection of candidate peaks to match
     frame_n : int
         the current frame
-    analysis_frames : Iterable[Iterable[:obj:`~pyats.ats_structure.AtsPeak`]]
-        a running collection storing the :obj:`~pyats.ats_structure.AtsPeak` objects at each frame in time
+    analysis_frames : Iterable[Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]]
+        a running collection storing the :obj:`~pyatsyn.ats_structure.AtsPeak` objects at each frame in time
     sample_rate : int 
         the sampling rate (in samples / s)
     hop_size : int 
@@ -264,9 +264,9 @@ def are_valid_candidates(candidate1, candidate2, deviation):
 
     Parameters
     ----------
-    candidate1 : :obj:`~pyats.ats_structure.AtsPeak`
+    candidate1 : :obj:`~pyatsyn.ats_structure.AtsPeak`
         a candidate peak
-    candidate2 : :obj:`~pyats.ats_structure.AtsPeak`
+    candidate2 : :obj:`~pyatsyn.ats_structure.AtsPeak`
         a candidate peak
     deviation : float
         relative frequency deviation
@@ -293,9 +293,9 @@ def peak_dist(pk1, pk2, alpha):
 
     Parameters
     ----------
-    pk1 : :obj:`~pyats.ats_structure.AtsPeak`
+    pk1 : :obj:`~pyatsyn.ats_structure.AtsPeak`
         a candidate peak
-    pk1 : :obj:`~pyats.ats_structure.AtsPeak`
+    pk1 : :obj:`~pyatsyn.ats_structure.AtsPeak`
         a candidate peak
     alpha : float
         percent of SMR to use to bias the result

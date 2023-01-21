@@ -3,7 +3,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE.rst file in the root directory of this source tree. 
 
-# pyats Copyright (c) <2023>, <Johnathan G Lyon>
+# pyatsyn Copyright (c) <2023>, <Johnathan G Lyon>
 # All rights reserved.
 
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
@@ -21,15 +21,15 @@ import soundfile as sf
 from math import tau
 import argparse
 
-from pyats.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
-from pyats.atsa.utils import compute_frames
-from pyats.ats_io import ats_load
+from pyatsyn.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
+from pyatsyn.atsa.utils import compute_frames
+from pyatsyn.ats_io import ats_load
 
 
 def synth(ats_snd, normalize=False, compute_phase=True, 
             export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None, 
             normalize_sine = False, normalize_noise = False):    
-    """Function to synthesize audio from :obj:`~pyats.ats_structure.AtsSound`
+    """Function to synthesize audio from :obj:`~pyatsyn.ats_structure.AtsSound`
 
     Sine generator bank and band-limited noise synthesizer for .ats files. When
     phase information is ignored phase is linearly interpolated between consecutive
@@ -46,7 +46,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
 
     Parameters
     ----------
-    ats_snd : :obj:`~pyats.ats_structure.AtsSound`
+    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
         the .ats file used to synthesize
     normalize : bool, optional
         normalize sound to ±1 before output (default: False)
@@ -61,7 +61,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
     noise_bands : ndarray[float]
         1D array of band edges to use for noise analysis. Currently using other than 25 bands 
         (i.e. 26 edges) is not fully supported. If None, 
-        :obj:`~pyats.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` will be used. (default: None)
+        :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` will be used. (default: None)
     normalize_sine : bool
         normalize sine components to ±1 before mixing (default: False)
     normalize_noise : bool
@@ -268,21 +268,21 @@ def synth(ats_snd, normalize=False, compute_phase=True,
     return synthesized  
 
 def synth_CLI():    
-    """Command line wrapper for :obj:`~pyats.ats_synth.synth`
+    """Command line wrapper for :obj:`~pyatsyn.ats_synth.synth`
 
     Example
     ------- 
     Display usage details with help flag   
 
-        $ pyats-synth -h
+        $ pyatsyn-synth -h
 
     Generate a wav file from a sine generator bank from an ats file
 
-        $ pyats-synth example.ats example.wav
+        $ pyatsyn-synth example.ats example.wav
 
     Generate a wav file from a sine generator bank and band-limited noise using from an ats file
 
-        $ pyats-synth example.ats example.wav --noise 1.0
+        $ pyatsyn-synth example.ats example.wav --noise 1.0
 
     """
     parser = argparse.ArgumentParser(
