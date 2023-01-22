@@ -141,11 +141,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.residual.residual_get_band_limits"><code class="docutils literal notranslate"><span class="pre">residual_get_band_limits()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.tracker">tracker</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.tracker.tracker"><code class="docutils literal notranslate"><span class="pre">tracker()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.tracker.tracker_CLI"><code class="docutils literal notranslate"><span class="pre">tracker_CLI()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#tracker">tracker</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.utils">utils</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.MAX_DB_SPL"><code class="docutils literal notranslate"><span class="pre">MAX_DB_SPL</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.ATS_MIN_SEGMENT_LENGTH"><code class="docutils literal notranslate"><span class="pre">ATS_MIN_SEGMENT_LENGTH</span></code></a></li>
@@ -1474,97 +1470,8 @@ amplitude data for a given bin <span class="math notranslate nohighlight">\(k\)<
 </dd></dl>
 
 </section>
-<section id="module-pyatsyn.atsa.tracker">
-<span id="tracker"></span><h2>tracker<a class="headerlink" href="#module-pyatsyn.atsa.tracker" title="Permalink to this heading"></a></h2>
-<p>Main ATS Analysis Function</p>
-<p>The analysis tracker is responsible for driving the analysis of an audio file
-into the .ats format. The system uses a Short Time Fourier Transform (STFT) as
-is core analysis tool. Sound is analyzed using overlapping time windows and by
-taking the STFT on each window.</p>
-<p>After converting to polar coordinates, a peak detection algorithm (<code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_detection</span></code>)
-determines relevant spectral peaks in the data. At this point, pyschoacoustics
-are considered in the form of masking curve evaluation and computation of the
-Signal-to-Mask ratio (SMR) for each candidate peak. SMR data is store together with
-a corrected frequency, magnitude and phase.</p>
-<p>The next step involves frame-to-frame tracking of peaks (<a class="reference internal" href="#module-pyatsyn.atsa.peak_tracking" title="pyatsyn.atsa.peak_tracking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_tracking</span></code></a>) to connect peaks that
-follow a similar spectral trajectory using both frequency and SMR data. The system
-uses a stable matching algorithm to pair candidate peaks, and is capable of interpolating
-gaps in the tracks.</p>
-<p>Once valid tracks are assembled, the results can be modeled with sinusoids (<code class="xref py py-obj docutils literal notranslate"><span class="pre">atsa_synth</span></code>) and subtracted
-from the origin source sound to compute a residual. NOTE: This part of the ATS system is currently under
-active research. For now, the residual analysis (<a class="reference internal" href="#module-pyatsyn.atsa.residual" title="pyatsyn.atsa.residual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual</span></code></a>) is modeled using a
-25 time-varying critical noise band energy model (consistent with the critical bands used during SMR evaluation).
-These noise bands can then be resynthesized using 25 correspoding banks of time-enveloped, band-limited noise.</p>
-<p>Analysis is finally stored and abstracted as an <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> object.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.tracker.tracker">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blackman-harris-4-1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_peak_contribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/tracker.html#tracker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.tracker.tracker" title="Permalink to this definition"></a></dt>
-<dd><p>Function to generates an Analysis-Transformation-Synthesis <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> from an audio file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>in_file</strong> (<em>str</em>) – path to the audio file to analyze (must be single channel/mono)</p></li>
-<li><p><strong>start</strong> (<em>float</em>) – timepoint (in s) in audiofile to begin analysis (default: 0.0)</p></li>
-<li><p><strong>duration</strong> (<em>float</em>) – max duration (in s) in audiofile from start to end analysis or ‘None’ if analyze to end (default: None)</p></li>
-<li><p><strong>lowest_frequency</strong> – lowest frequency to analyze (must be &gt; 0) (default: 20)</p></li>
-<li><p><strong>highest_frequency</strong> (<em>float</em>) – highest frequency to analyze (capped to nyquist frequency and must be greater than <cite>lowest_frequency</cite>) (default: 20000.0)</p></li>
-<li><p><strong>frequency_deviation</strong> (<em>float</em>) – maximum relative frequency deviation used to constrain peak tracking matches (default: 0.1)</p></li>
-<li><p><strong>window_cycles</strong> (<em>int</em>) – lowest frequency to fit in analysis window; used to determine window size (default: 4)</p></li>
-<li><p><strong>window_type</strong> (<em>str</em>) – type of window to use for FFT analysis (default: ‘blackman-harris-4-1’). See <a class="reference internal" href="#pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS" title="pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></p></li>
-<li><p><strong>hop_size</strong> (<em>float</em>) – fraction of window size to shift from frame-to-frame (default: 0.25)</p></li>
-<li><p><strong>fft_size</strong> (<em>int</em>) – None, or force an fft size (default: None)</p></li>
-<li><p><strong>amp_threshold</strong> (<em>float</em>) – lowest amplitude used for peak detection (default: 0.001)</p></li>
-<li><p><strong>track_length</strong> (<em>int</em>) – number of frames used to smooth frequency trajectories (default: 3)</p></li>
-<li><p><strong>min_gap_length</strong> (<em>int</em>) – tracked partial gaps longer than this (in frames) will not be interpolated (default: 3)</p></li>
-<li><p><strong>min_segment_length</strong> (<em>int</em>) – minimal size (in frames) of a track segment, otherwise it is pruned (default: 3)</p></li>
-<li><p><strong>last_peak_contribution</strong> (<em>float</em>) – additional bias for the immediately prior frames values when calculating smoothing trajectories (default: 0.0)</p></li>
-<li><p><strong>SMR_continuity</strong> (<em>float</em>) – percentage of SMR to use in cost calculations during peak tracking (default: 0.0)</p></li>
-<li><p><strong>residual_file</strong> (<em>str</em>) – path to the audio file used to store residual analysis.
-NOTE: noise calculation will not be performed in .ats file without this (default: None)</p></li>
-<li><p><strong>optimize</strong> (<em>bool</em>) – whether to perform the post-peak tracking optimization on the <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> object (default: True)</p></li>
-<li><p><strong>optimize_amp_threshold</strong> (<em>float</em>) – additional amplitude threshold used during optimization to prune tracks (default: None)</p></li>
-<li><p><strong>force_M</strong> (<em>int</em>) – None, or a forced window length in samples (default: None)</p></li>
-<li><p><strong>force_window</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – None, or a 1D array describing a windowing curve (default: None)</p></li>
-<li><p><strong>window_alpha</strong> (<em>float</em>) – parameter used for calculating tukey windows (default: 0.5)</p></li>
-<li><p><strong>window_beta</strong> (<em>float</em>) – parameter used for calculating certain window types (default: 1.0)</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em>) – increase verbosity (default: False)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the ats object that represents the analysis of the input audio file</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – if input file is not single channel/mono</p></li>
-<li><p><strong>ValueError</strong> – if <cite>lowest_frequency</cite> is &lt; 0.0</p></li>
-<li><p><strong>ValueError</strong> – if <cite>highest_frequency</cite> is &lt; <cite>lowest_frequency</cite></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.tracker.tracker_CLI">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/tracker.html#tracker_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.tracker.tracker_CLI" title="Permalink to this definition"></a></dt>
-<dd><p>Command line wrapper for <a class="reference internal" href="#pyatsyn.atsa.tracker.tracker" title="pyatsyn.atsa.tracker.tracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracker</span></code></a></p>
-<p class="rubric">Example</p>
-<p>Display usage details with help flag</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-atsa -h
-</pre></div>
-</div>
-<p>Analyze a wav file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-atsa example.wav example.ats
-</pre></div>
-</div>
-<p>Analyze a wav file and compute the residual and increase verbosity</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-atsa example.wav example.ats -v -r example-residual.wav
-</pre></div>
-</div>
-</dd></dl>
-
+<section id="tracker">
+<h2>tracker<a class="headerlink" href="#tracker" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-pyatsyn.atsa.utils">
 <span id="utils"></span><h2>utils<a class="headerlink" href="#module-pyatsyn.atsa.utils" title="Permalink to this heading"></a></h2>
