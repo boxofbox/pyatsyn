@@ -40,3 +40,4 @@ docs = ["sphinx", "sphinx_rtd_theme"]
 [project.urls]
 "Homepage" = "https://github.com/boxofbox/pyatsyn"
 "Bug Tracker" = "https://github.com/boxofbox/pyatsyn/issues"
+"Documentation" = "https://pyatsyn.readthedocs.io"
