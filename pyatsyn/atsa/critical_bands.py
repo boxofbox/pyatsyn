@@ -36,7 +36,7 @@ ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
 def evaluate_smr(peaks, slope_l = -27.0, delta_db = -50):    
     """Function to evaluate signal-to-mask ratio for the given peaks
 
-    This function evaluates masking values (SMR) for :obj:`~pyatsyn.ats_structure.AtsPeak`s in list `peaks`
+    This function evaluates masking values (SMR) for :obj:`~pyatsyn.ats_structure.AtsPeak` in list `peaks`
     Iteratively the parameters will be use to generate a triangular mask 
     with a primary vertex at the frequency of, and at delta_dB below the amplitude 
     of the masker. 
