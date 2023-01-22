@@ -2,6 +2,10 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('..'))
 
+sys.path.insert(0, os.path.join(os.path.abspath('..'), 'pyatsyn'))
+
+sys.path.insert(0, os.path.join(os.path.abspath('..'), 'pyatsyn', 'atsa'))
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
