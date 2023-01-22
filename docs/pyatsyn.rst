@@ -25,8 +25,8 @@ ats\_synth
    :undoc-members:
    :show-inheritance:
 
-pyatsyn.atsa
-==================
+atsa module
+===================
 
 critical\_bands
 ---------------------------------

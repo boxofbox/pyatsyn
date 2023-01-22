@@ -9,9 +9,12 @@
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
 # <Oscar Pablo Di Liscia, ,and Juan Pampin>
 
-"""TODO Summary
+"""Functions to Compute and Analyze Residual Signals
 
-TODO About
+The reisidual signal is computed by taking the time-domain difference between the orignal sound 
+and the sinusoidal synthesis of the spectral trajectories. NOTE: this section is under active research.
+Currently, this noise signal is analyzed using the STFT to obtain time-varying energy at 
+25 critical bands (see :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`)
 
 """
 
@@ -25,42 +28,39 @@ from pyatsyn.atsa.utils import next_power_of_2, db_to_amp, ATS_NOISE_THRESHOLD
 from pyatsyn.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
 
 
-def compute_residual(   residual_file, 
-                                ats_snd, 
-                                in_sound,
-                                start_sample,
-                                end_sample,
-                                export_residual = True,
+def compute_residual(   ats_snd, 
+                        in_sound,
+                        start_sample,
+                        end_sample,
+                        residual_file = None,
                                 ):
-    """Function to computes the difference between the ats_snd synthesis and the original sound
-
-    TODO 
+    """Function to computes the time domain difference between the sinusoidal synthesis of spectral trajectories in an ats_snd, 
+    and the original sound data
 
     Parameters
     ----------
-    residual_file : str
-        TODO
+    
     ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
-        TODO
+        the input ats object to compute the residual for
     in_sound : ndarray[float]
-        TODO
+        the original sound signal from which to extract the residual
     start_sample : int
-        TODO
+        sample in `in_sound` where the `ats_snd` begins
     end_sample : int
-        TODO
-    export_residual: bool, optional
-        TODO (default: True)
+        sample in `in_sound` where  the `ats_snd` ends
+    residual_file : str, optional
+        path to audio file to output residual signal to. None if no file output. (Default: None)
 
     Returns
     -------
     residual : ndarray[float]
-        TODO
+        a 1D array of floats containing the amplitudes of the computed residual in the time domain
     """ 
     synthesized = synth(ats_snd)
     residual = in_sound[start_sample:end_sample] - synthesized
 
     # export residual to audio file
-    if export_residual:
+    if residual_file is not None:
         sf.write(residual_file, residual, ats_snd.sampling_rate)
 
     return residual
@@ -73,30 +73,40 @@ def residual_analysis(  residual,
                         pad_factor = 2,
                         band_edges = None,
                         par_energy = False,
-                        verbose = True,                                               
+                        verbose = False,                                               
                         ):
-    """Function to TODO
+    """Function to compute noise energy in a residual signal across 25 critical bands
 
-    TODO 
+    Noise energy in each critical band is evaluated in the following way:
+
+    :math:`E[i] = \\frac{1}{K} \\sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2`
+
+    where :math:`i` is the band number (0 to 24), :math:`K` is the number of bins
+    of the STFT where the band :math:`i` has frequency information. :math:`k_{i0}`
+    is the lowest STFT bin where band :math:`i` has information, and :math:`X` is the
+    amplitude data for a given bin :math:`k`.
+
+    The algorithm evaluates the noise energy at each step of the Bark scale.
 
     Parameters
     ----------
     residual : ndarray[float]
-        TODO
+        a 1D array of floats containing the amplitudes of the residual signal in the time domain
     ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
-        TODO
+        the input ats object to store the residual analysis in
     min_fft_size : int, optional
-        TODO (default: 4096)
+        restricts the minimum size of the FFT window (default: 4096)
     equalize : bool, optional
-        TODO (default: False)
+        equalize noise energy in the frequency domain to the time domain energy using Parseval's Theorem (default: False)
     pad_factor : int, optional
-        TODO (default: 2)
-    band_edges : TODO
-        TODO (default: None)
+        multiplicative window padding relative to `ats_snd.window_size` for calculating FFT window size (default: 2)
+    band_edges : ndarray[float]
+        1D array containing 26 frequencies that distinguish the default 25 critical bands. 
+        If None, will use :obj:`~pyatsyn.atsa.cricital_bands.ATS_CRITICAL_BAND_EDGES` (default: None)
     par_energy : bool
-        TODO (default: False)
+        whether to transfer noise energy to partials. NOTE: currently not fully supported; only for legacy support (default: False)
     verbose : bool, optional
-        TODO (default: True)
+        increase verbosity (default: False)
     """ 
     hop = ats_snd.frame_size
     M = ats_snd.window_size
@@ -189,23 +199,21 @@ def residual_analysis(  residual,
 
 
 def residual_N(M, min_fft_size, factor = 2):
-    """Function to TODO
-
-    TODO 
+    """Function to compute an FFT window size for residual analysis
 
     Parameters
     ----------
     M : int
-        TODO
+        target window size
     min_fft_size : int
-        TODO
+        restricts the minimum size of the FFT window 
     factor : int, optional
-        TODOe)
+        multiplicative window padding relative to `M` for calculating FFT window size(default: 2)
 
     Returns
     -------
     int
-        TODO
+        power-of-2 window size
     """ 
     if M * factor > min_fft_size:
         return next_power_of_2(M * factor)
@@ -214,43 +222,50 @@ def residual_N(M, min_fft_size, factor = 2):
 
 
 def residual_get_band_limits(fft_mag, band_edges):
-    """Function to TODO
-
-    TODO 
+    """Function to convert band edges to FFT bin indices
 
     Parameters
     ----------
     fft_mag : float
-        TODO
-    band_edges : TODO
-        TODO
+        FFT magic number - sampling rate / FFT window size
+    band_edges : ndarray[float]
+        1D array of band edge frequencies (in Hz)
 
     Returns
     -------
-    band_limits : TODO
-        TODO
+    band_limits : ndarray[int]
+        1D array of bin indicies mapping band edge frequencies to bins in FFT frequency domain
     """ 
     band_limits = zeros(len(band_edges),"int64")
     for ind, band in enumerate(band_edges):
         band_limits[ind] = band / fft_mag
-    return band_limits 
+    return band_limits
 
 
 def residual_compute_band_energy(fft_mags, band_limits, band_energy, frame_n):
-    """Function to TODO
+    """Function to compute the band energy
 
-    TODO 
+    Energy in each band is evaluated in the following way:
+
+    :math:`E[i] = \\frac{1}{K} \\sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2`
+
+    where :math:`i` is the band number (0 to 24), :math:`K` is the number of bins
+    of the STFT where the band :math:`i` has frequency information. :math:`k_{i0}`
+    is the lowest STFT bin where band :math:`i` has information, and :math:`X` is the
+    amplitude data for a given bin :math:`k`.
+
+    NOTE: band_energy is updated directly
 
     Parameters
     ----------
     fft_mags : ndarray[float]
-        TODO
-    band_limits : TODO
-        TODO
-    band_energy : TODO
-        TODO
+        1D array of frequency domain amplitudes
+    band_limits : ndarray[int]
+        1D array of bin indicies mapping band edge frequencies to bins in FFT frequency domain
+    band_energy : ndarray[float]
+        2D array to store band energies for each band at each frame
     frame_n : int
-        TODO
+        the current frame
     """ 
     for band in range(len(band_limits) - 1):
         low = band_limits[band]
@@ -260,22 +275,22 @@ def residual_compute_band_energy(fft_mags, band_limits, band_energy, frame_n):
         if high > fft_mags.size // 2:
             high = fft_mags.size // 2
 
-        band_energy[band][frame_n] = sum(fft_mags[low:high]**2) / fft_mags.size
+        band_energy[band][frame_n] = sum(fft_mags[low:high]**2) / fft_mags[low:high].size
 
 
 def band_to_energy(ats_snd, band_edges, use_smr = False):
-    """Function to TODO
+    """Function to transfer band energies into partials
 
-    TODO 
+    NOTE: Currently not fully supported. Included for legacy purposes.
 
     Parameters
     ----------
     ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
-        TODO
-    band_edges : TODO
-        TODO
+        the ats object containing band energies
+    band_edges : ndarray[float]
+        1D array of band edge frequencies (in Hz)        
     use_smr : bool, optional
-        TODO (default: False)
+        whether to use smr instead of amplitude for scaling energy across partials (default: False)
     """     
     bands = len(ats_snd.bands)
     partials = ats_snd.partials
@@ -328,16 +343,16 @@ def band_to_energy(ats_snd, band_edges, use_smr = False):
             
             
 def remove_bands(ats_snd, threshold):
-    """Function TODO
+    """Function to remove bands and band_energies below a threshold
 
-    TODO  remove bands from ats_snd that are below threshold (in dB)
+    NOTE: ats_snd is updated directly
 
     Parameters
     ----------
     ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
-        TODO
+        the ats object storing band energies to threshold
     threshold : float
-        TODO
+        energy threshold used to prune band energies and bands
     """ 
     frames = ats_snd.frames
     threshold = db_to_amp(threshold)

@@ -49,7 +49,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pyatsyn.html">pyatsyn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pyatsyn.html#pyatsyn-atsa">pyatsyn.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyatsyn.html#atsa-module">atsa module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
 </ul>
 
@@ -86,7 +86,7 @@
 <div class="line">developed/tested on python 3.9.15 using M1 Mac running macOS 13.0.1</div>
 <div class="line">requires LIBSNDFILE</div>
 </div>
-<p>for Mac:</p>
+<p>for Mac (assuming Homebrew is installed):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ brew install libsndfile
 </pre></div>
 </div>
@@ -144,7 +144,7 @@ $ pip install soundfile
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -e .
 </pre></div>
 </div>
-<p>If you are a newcomer to the ATS system we recommend you start by looking at <a class="reference internal" href="pyatsyn.html#pyatsyn.atsa.tracker.tracker" title="pyatsyn.atsa.tracker.tracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracker</span></code></a></p>
+<p>If you are a newcomer to the ATS system we recommend you start by looking at <a class="reference internal" href="pyatsyn.html#module-pyatsyn.atsa.tracker" title="pyatsyn.atsa.tracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracker</span></code></a></p>
 </section>
 <section id="ats-overview">
 <h2>ATS Overview<a class="headerlink" href="#ats-overview" title="Permalink to this heading"></a></h2>
@@ -152,7 +152,7 @@ $ pip install soundfile
 sinusoidal plus critical-band noise decomposition. The system can be used to analyze
 recorded sounds, transform their spectrum using a wide variety of algorithms and
 resynthesize them both out of time and in real time.</p>
-<a class="reference internal image-reference" href="_images/ats_block.png"><img alt="graphic depiction of smr calculation" src="_images/ats_block.png" style="width: 350px;" /></a>
+<a class="reference internal image-reference" href="_images/ats_block.png"><img alt="graphic depiction of smr calculation" src="_images/ats_block.png" style="width: 550px;" /></a>
 <p>Psychoacoustic processing informs the system’s sinusoidal tracking and noise modeling
 algorithms. Perceptual Audio Coding (PAC) techniques such as Signal-to-Mask Ratio (SMR)
 evaluation are used to achieve perceptually accurate sinusoidal tracking. SMR values
@@ -164,14 +164,7 @@ in a compact hybrid representation based on noise modulated sinusoidal trajector
 </section>
 <section id="other-ats-implementations">
 <h2>Other ATS Implementations<a class="headerlink" href="#other-ats-implementations" title="Permalink to this heading"></a></h2>
-<p>Originally implemented in LISP, using the CLM sound synthesis and processing language,
-ATS has been ported to C in the form of a spectral modeling library. This library,
-called ATSA, implements the ATS system API which has served as foundation for the
-development of the ATSH graphic user interface. Written in GTK+, ATSH not only provides
-user-friendly access to the ATS analysis/synthesis core but also graphic data editing
-and transformation tools. ATS interfaces for SuperCollider, Csound and PD have also
-been developed.</p>
-<p>C implementations of ATSA and Qatsh and Lisp archive: <a class="reference external" href="https://gitlab.com/dxarts/projects/ats">DXARTS Gitlab</a></p>
+<p>C implementations of ATSA and Qatsh and original Lisp version archive: <a class="reference external" href="https://gitlab.com/dxarts/projects/ats">DXARTS Gitlab</a></p>
 <p>SuperCollider Interfaces for ATS (including classes to read ATS files as well ad UGens
 to do transformation and synthesis) are included in Josh Parmenter’s UGen library, JoshUGens,
 distributed in the sc3-plugins package for SuperCollider: <a class="reference external" href="https://supercollider.github.io/sc3-plugins/">sc3-plugins</a> | <a class="reference external" href="https://doc.sccode.org/Browse.html#UGens%3EAnalysis%3ASynthesis">docs</a></p>

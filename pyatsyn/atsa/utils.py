@@ -138,9 +138,7 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length,
         * prune tracks outside frequency constraints
         * sort and renumber tracks and peaks in analysis_frames according to average frq    
 
-    NOTE
-    ----
-    directly updates analysis_frames, pruning peaks corresponding to pruned tracks.
+    NOTE: directly updates analysis_frames, pruning peaks corresponding to pruned tracks.
 
     Parameters
     ----------

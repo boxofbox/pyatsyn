@@ -246,7 +246,7 @@ def ats_load(   file,
                 for band in range(len(ats_snd.bands)):
                     ats_snd.band_energy[band][frame_n] = unpack(ordered_double, fil.read(DOUBLE_SIZE))[0]
         
-        # TODO load frq/amp averages
+        # load frq/amp averages
         for partial in range(ats_snd.partials):
             ats_snd.frq_av[partial] = mean(ats_snd.frq[partial][ats_snd.frq[partial] > 0.0])
             ats_snd.amp_av[partial] = mean(ats_snd.amp[partial][ats_snd.amp[partial] > 0.0])

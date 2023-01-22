@@ -101,7 +101,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#pyatsyn-atsa">pyatsyn.atsa</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="#atsa-module">atsa module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.critical_bands">critical_bands</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.critical_bands.compute_slope_r"><code class="docutils literal notranslate"><span class="pre">compute_slope_r()</span></code></a></li>
@@ -410,7 +410,6 @@ If None, no minimum frequency thresholding will occur (default: None)</p></li>
 <section id="module-pyatsyn.ats_structure">
 <span id="ats-structure"></span><h2>ats_structure<a class="headerlink" href="#module-pyatsyn.ats_structure" title="Permalink to this heading"></a></h2>
 <p>Data Abstraction for ATS</p>
-<p>TODO About</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsPeak">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_structure.</span></span><span class="sig-name descname"><span class="pre">AtsPeak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_spl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barkfrq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asleep_for</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#AtsPeak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.AtsPeak" title="Permalink to this definition"></a></dt>
@@ -906,8 +905,8 @@ August 1986</p>
 
 </section>
 </section>
-<section id="pyatsyn-atsa">
-<h1>pyatsyn.atsa<a class="headerlink" href="#pyatsyn-atsa" title="Permalink to this heading"></a></h1>
+<section id="atsa-module">
+<h1>atsa module<a class="headerlink" href="#atsa-module" title="Permalink to this heading"></a></h1>
 <section id="module-pyatsyn.atsa.critical_bands">
 <span id="critical-bands"></span><h2>critical_bands<a class="headerlink" href="#module-pyatsyn.atsa.critical_bands" title="Permalink to this heading"></a></h2>
 <p>Critical Bands and Signal-to-Mask Ratio Evaluation</p>
@@ -1221,10 +1220,7 @@ an adaptation of the Gale-Shapley algorithm for stable matching. The algorithm i
 gap-size aware and will monitor ‘slept’ tracks within the minimum gap distance as
 candidates. Linear interpolation is used to fill the gaps for frequency and amplitude,
 and a cubic polynomial interpolation for phase.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Tracks, peaks, and analysis_frames are updated directly.</p>
-</div>
+<p>NOTE: Tracks, peaks, and analysis_frames are updated directly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1246,12 +1242,9 @@ and a cubic polynomial interpolation for phase.</p>
 <dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.phase_interp">
 <span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">phase_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#phase_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.phase_interp" title="Permalink to this definition"></a></dt>
 <dd><p>Function to compute linear phase interpolation</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>currently not used in peak tracking, but supplied for legacy purposes</p>
+<p>NOTE: currently not used in peak tracking, but supplied for legacy purposes</p>
 <p>Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate
 from the relative time 0 to time t.</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1311,10 +1304,7 @@ August 1986</p>
 <dd><p>Function to update running averages of recent peaks</p>
 <p>Using the list of current tracks, we use <cite>track_length</cite> frames to look back and update,
 the average amp, frq, and smr values for the tracks.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Tracks are updated directly without return value.</p>
-</div>
+<p>NOTE: Tracks are updated directly without return value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1331,19 +1321,22 @@ the average amp, frq, and smr values for the tracks.</p>
 </section>
 <section id="module-pyatsyn.atsa.residual">
 <span id="residual"></span><h2>residual<a class="headerlink" href="#module-pyatsyn.atsa.residual" title="Permalink to this heading"></a></h2>
-<p>TODO Summary</p>
-<p>TODO About</p>
+<p>Functions to Compute and Analyze Residual Signals</p>
+<p>The reisidual signal is computed by taking the time-domain difference between the orignal sound
+and the sinusoidal synthesis of the spectral trajectories. NOTE: this section is under active research.
+Currently, this noise signal is analyzed using the STFT to obtain time-varying energy at
+25 critical bands (see <a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a>)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyatsyn.atsa.residual.band_to_energy">
 <span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">band_to_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_smr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#band_to_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.band_to_energy" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Function to transfer band energies into partials</p>
+<p>NOTE: Currently not fully supported. Included for legacy purposes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – TODO</p></li>
-<li><p><strong>band_edges</strong> (<em>TODO</em>) – TODO</p></li>
-<li><p><strong>use_smr</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: False)</p></li>
+<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – the ats object containing band energies</p></li>
+<li><p><strong>band_edges</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – 1D array of band edge frequencies (in Hz)</p></li>
+<li><p><strong>use_smr</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to use smr instead of amplitude for scaling energy across partials (default: False)</p></li>
 </ul>
 </dd>
 </dl>
@@ -1351,22 +1344,21 @@ the average amp, frq, and smr values for the tracks.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyatsyn.atsa.residual.compute_residual">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">compute_residual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_sound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_residual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#compute_residual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.compute_residual" title="Permalink to this definition"></a></dt>
-<dd><p>Function to computes the difference between the ats_snd synthesis and the original sound</p>
-<p>TODO</p>
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">compute_residual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_sound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#compute_residual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.compute_residual" title="Permalink to this definition"></a></dt>
+<dd><p>Function to computes the time domain difference between the sinusoidal synthesis of spectral trajectories in an ats_snd,
+and the original sound data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>residual_file</strong> (<em>str</em>) – TODO</p></li>
-<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – TODO</p></li>
-<li><p><strong>in_sound</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – TODO</p></li>
-<li><p><strong>start_sample</strong> (<em>int</em>) – TODO</p></li>
-<li><p><strong>end_sample</strong> (<em>int</em>) – TODO</p></li>
-<li><p><strong>export_residual</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
+<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – the input ats object to compute the residual for</p></li>
+<li><p><strong>in_sound</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – the original sound signal from which to extract the residual</p></li>
+<li><p><strong>start_sample</strong> (<em>int</em>) – sample in <cite>in_sound</cite> where the <cite>ats_snd</cite> begins</p></li>
+<li><p><strong>end_sample</strong> (<em>int</em>) – sample in <cite>in_sound</cite> where  the <cite>ats_snd</cite> ends</p></li>
+<li><p><strong>residual_file</strong> (<em>str</em><em>, </em><em>optional</em>) – path to audio file to output residual signal to. None if no file output. (Default: None)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>residual</strong> – TODO</p>
+<dd class="field-even"><p><strong>residual</strong> – a 1D array of floats containing the amplitudes of the computed residual in the time domain</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>ndarray[float]</p>
@@ -1377,13 +1369,13 @@ the average amp, frq, and smr values for the tracks.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyatsyn.atsa.residual.remove_bands">
 <span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">remove_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#remove_bands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.remove_bands" title="Permalink to this definition"></a></dt>
-<dd><p>Function TODO</p>
-<p>TODO  remove bands from ats_snd that are below threshold (in dB)</p>
+<dd><p>Function to remove bands and band_energies below a threshold</p>
+<p>NOTE: ats_snd is updated directly</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – TODO</p></li>
-<li><p><strong>threshold</strong> (<em>float</em>) – TODO</p></li>
+<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – the ats object storing band energies to threshold</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – energy threshold used to prune band energies and bands</p></li>
 </ul>
 </dd>
 </dl>
@@ -1392,18 +1384,17 @@ the average amp, frq, and smr values for the tracks.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyatsyn.atsa.residual.residual_N">
 <span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_N" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Function to compute an FFT window size for residual analysis</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>M</strong> (<em>int</em>) – TODO</p></li>
-<li><p><strong>min_fft_size</strong> (<em>int</em>) – TODO</p></li>
-<li><p><strong>factor</strong> (<em>int</em><em>, </em><em>optional</em>) – TODOe)</p></li>
+<li><p><strong>M</strong> (<em>int</em>) – target window size</p></li>
+<li><p><strong>min_fft_size</strong> (<em>int</em>) – restricts the minimum size of the FFT window</p></li>
+<li><p><strong>factor</strong> (<em>int</em><em>, </em><em>optional</em>) – multiplicative window padding relative to <cite>M</cite> for calculating FFT window size(default: 2)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>TODO</p>
+<dd class="field-even"><p>power-of-2 window size</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>int</p>
@@ -1413,20 +1404,27 @@ the average amp, frq, and smr values for the tracks.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyatsyn.atsa.residual.residual_analysis">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_analysis" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_analysis" title="Permalink to this definition"></a></dt>
+<dd><p>Function to compute noise energy in a residual signal across 25 critical bands</p>
+<p>Noise energy in each critical band is evaluated in the following way:</p>
+<p><span class="math notranslate nohighlight">\(E[i] = \frac{1}{K} \sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(i\)</span> is the band number (0 to 24), <span class="math notranslate nohighlight">\(K\)</span> is the number of bins
+of the STFT where the band <span class="math notranslate nohighlight">\(i\)</span> has frequency information. <span class="math notranslate nohighlight">\(k_{i0}\)</span>
+is the lowest STFT bin where band <span class="math notranslate nohighlight">\(i\)</span> has information, and <span class="math notranslate nohighlight">\(X\)</span> is the
+amplitude data for a given bin <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<p>The algorithm evaluates the noise energy at each step of the Bark scale.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>residual</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – TODO</p></li>
-<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – TODO</p></li>
-<li><p><strong>min_fft_size</strong> (<em>int</em><em>, </em><em>optional</em>) – TODO (default: 4096)</p></li>
-<li><p><strong>equalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: False)</p></li>
-<li><p><strong>pad_factor</strong> (<em>int</em><em>, </em><em>optional</em>) – TODO (default: 2)</p></li>
-<li><p><strong>band_edges</strong> (<em>TODO</em>) – TODO (default: None)</p></li>
-<li><p><strong>par_energy</strong> (<em>bool</em>) – TODO (default: False)</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – TODO (default: True)</p></li>
+<li><p><strong>residual</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – a 1D array of floats containing the amplitudes of the residual signal in the time domain</p></li>
+<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – the input ats object to store the residual analysis in</p></li>
+<li><p><strong>min_fft_size</strong> (<em>int</em><em>, </em><em>optional</em>) – restricts the minimum size of the FFT window (default: 4096)</p></li>
+<li><p><strong>equalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – equalize noise energy in the frequency domain to the time domain energy using Parseval’s Theorem (default: False)</p></li>
+<li><p><strong>pad_factor</strong> (<em>int</em><em>, </em><em>optional</em>) – multiplicative window padding relative to <cite>ats_snd.window_size</cite> for calculating FFT window size (default: 2)</p></li>
+<li><p><strong>band_edges</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – 1D array containing 26 frequencies that distinguish the default 25 critical bands.
+If None, will use <code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code> (default: None)</p></li>
+<li><p><strong>par_energy</strong> (<em>bool</em>) – whether to transfer noise energy to partials. NOTE: currently not fully supported; only for legacy support (default: False)</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – increase verbosity (default: False)</p></li>
 </ul>
 </dd>
 </dl>
@@ -1435,15 +1433,21 @@ the average amp, frq, and smr values for the tracks.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyatsyn.atsa.residual.residual_compute_band_energy">
 <span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_compute_band_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fft_mags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_limits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_compute_band_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_compute_band_energy" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Function to compute the band energy</p>
+<p>Energy in each band is evaluated in the following way:</p>
+<p><span class="math notranslate nohighlight">\(E[i] = \frac{1}{K} \sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(i\)</span> is the band number (0 to 24), <span class="math notranslate nohighlight">\(K\)</span> is the number of bins
+of the STFT where the band <span class="math notranslate nohighlight">\(i\)</span> has frequency information. <span class="math notranslate nohighlight">\(k_{i0}\)</span>
+is the lowest STFT bin where band <span class="math notranslate nohighlight">\(i\)</span> has information, and <span class="math notranslate nohighlight">\(X\)</span> is the
+amplitude data for a given bin <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<p>NOTE: band_energy is updated directly</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fft_mags</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – TODO</p></li>
-<li><p><strong>band_limits</strong> (<em>TODO</em>) – TODO</p></li>
-<li><p><strong>band_energy</strong> (<em>TODO</em>) – TODO</p></li>
-<li><p><strong>frame_n</strong> (<em>int</em>) – TODO</p></li>
+<li><p><strong>fft_mags</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – 1D array of frequency domain amplitudes</p></li>
+<li><p><strong>band_limits</strong> (<em>ndarray</em><em>[</em><em>int</em><em>]</em>) – 1D array of bin indicies mapping band edge frequencies to bins in FFT frequency domain</p></li>
+<li><p><strong>band_energy</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – 2D array to store band energies for each band at each frame</p></li>
+<li><p><strong>frame_n</strong> (<em>int</em>) – the current frame</p></li>
 </ul>
 </dd>
 </dl>
@@ -1452,20 +1456,19 @@ the average amp, frq, and smr values for the tracks.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyatsyn.atsa.residual.residual_get_band_limits">
 <span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_get_band_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fft_mag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_get_band_limits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_get_band_limits" title="Permalink to this definition"></a></dt>
-<dd><p>Function to TODO</p>
-<p>TODO</p>
+<dd><p>Function to convert band edges to FFT bin indices</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fft_mag</strong> (<em>float</em>) – TODO</p></li>
-<li><p><strong>band_edges</strong> (<em>TODO</em>) – TODO</p></li>
+<li><p><strong>fft_mag</strong> (<em>float</em>) – FFT magic number - sampling rate / FFT window size</p></li>
+<li><p><strong>band_edges</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – 1D array of band edge frequencies (in Hz)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>band_limits</strong> – TODO</p>
+<dd class="field-even"><p><strong>band_limits</strong> – 1D array of bin indicies mapping band edge frequencies to bins in FFT frequency domain</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>TODO</p>
+<dd class="field-odd"><p>ndarray[int]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1714,10 +1717,7 @@ for interpolation at the end of the soundfile.</p>
 </ul>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>directly updates analysis_frames, pruning peaks corresponding to pruned tracks.</p>
-</div>
+<p>NOTE: directly updates analysis_frames, pruning peaks corresponding to pruned tracks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

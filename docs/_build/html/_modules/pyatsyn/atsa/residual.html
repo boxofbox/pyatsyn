@@ -40,7 +40,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../info.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html">pyatsyn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#pyatsyn-atsa">pyatsyn.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#atsa-module">atsa module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
 </ul>
 
@@ -80,9 +80,12 @@
 <span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
 <span class="c1"># &lt;Oscar Pablo Di Liscia, ,and Juan Pampin&gt;</span>
 
-<span class="sd">&quot;&quot;&quot;TODO Summary</span>
+<span class="sd">&quot;&quot;&quot;Functions to Compute and Analyze Residual Signals</span>
 
-<span class="sd">TODO About</span>
+<span class="sd">The reisidual signal is computed by taking the time-domain difference between the orignal sound </span>
+<span class="sd">and the sinusoidal synthesis of the spectral trajectories. NOTE: this section is under active research.</span>
+<span class="sd">Currently, this noise signal is analyzed using the STFT to obtain time-varying energy at </span>
+<span class="sd">25 critical bands (see :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`)</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -96,42 +99,39 @@
 <span class="kn">from</span> <span class="nn">pyatsyn.atsa.critical_bands</span> <span class="kn">import</span> <span class="n">ATS_CRITICAL_BAND_EDGES</span>
 
 
-<div class="viewcode-block" id="compute_residual"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.compute_residual">[docs]</a><span class="k">def</span> <span class="nf">compute_residual</span><span class="p">(</span>   <span class="n">residual_file</span><span class="p">,</span> 
-                                <span class="n">ats_snd</span><span class="p">,</span> 
-                                <span class="n">in_sound</span><span class="p">,</span>
-                                <span class="n">start_sample</span><span class="p">,</span>
-                                <span class="n">end_sample</span><span class="p">,</span>
-                                <span class="n">export_residual</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="compute_residual"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.compute_residual">[docs]</a><span class="k">def</span> <span class="nf">compute_residual</span><span class="p">(</span>   <span class="n">ats_snd</span><span class="p">,</span> 
+                        <span class="n">in_sound</span><span class="p">,</span>
+                        <span class="n">start_sample</span><span class="p">,</span>
+                        <span class="n">end_sample</span><span class="p">,</span>
+                        <span class="n">residual_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                                 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to computes the difference between the ats_snd synthesis and the original sound</span>
-
-<span class="sd">    TODO </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to computes the time domain difference between the sinusoidal synthesis of spectral trajectories in an ats_snd, </span>
+<span class="sd">    and the original sound data</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    residual_file : str</span>
-<span class="sd">        TODO</span>
+<span class="sd">    </span>
 <span class="sd">    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the input ats object to compute the residual for</span>
 <span class="sd">    in_sound : ndarray[float]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the original sound signal from which to extract the residual</span>
 <span class="sd">    start_sample : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        sample in `in_sound` where the `ats_snd` begins</span>
 <span class="sd">    end_sample : int</span>
-<span class="sd">        TODO</span>
-<span class="sd">    export_residual: bool, optional</span>
-<span class="sd">        TODO (default: True)</span>
+<span class="sd">        sample in `in_sound` where  the `ats_snd` ends</span>
+<span class="sd">    residual_file : str, optional</span>
+<span class="sd">        path to audio file to output residual signal to. None if no file output. (Default: None)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    residual : ndarray[float]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a 1D array of floats containing the amplitudes of the computed residual in the time domain</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">synthesized</span> <span class="o">=</span> <span class="n">synth</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">)</span>
     <span class="n">residual</span> <span class="o">=</span> <span class="n">in_sound</span><span class="p">[</span><span class="n">start_sample</span><span class="p">:</span><span class="n">end_sample</span><span class="p">]</span> <span class="o">-</span> <span class="n">synthesized</span>
 
     <span class="c1"># export residual to audio file</span>
-    <span class="k">if</span> <span class="n">export_residual</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">residual_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">sf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">residual_file</span><span class="p">,</span> <span class="n">residual</span><span class="p">,</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">residual</span></div>
@@ -144,30 +144,40 @@
                         <span class="n">pad_factor</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
                         <span class="n">band_edges</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">par_energy</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>                                               
+                        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                                               
                         <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute noise energy in a residual signal across 25 critical bands</span>
 
-<span class="sd">    TODO </span>
+<span class="sd">    Noise energy in each critical band is evaluated in the following way:</span>
+
+<span class="sd">    :math:`E[i] = \\frac{1}{K} \\sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2`</span>
+
+<span class="sd">    where :math:`i` is the band number (0 to 24), :math:`K` is the number of bins</span>
+<span class="sd">    of the STFT where the band :math:`i` has frequency information. :math:`k_{i0}`</span>
+<span class="sd">    is the lowest STFT bin where band :math:`i` has information, and :math:`X` is the</span>
+<span class="sd">    amplitude data for a given bin :math:`k`.</span>
+
+<span class="sd">    The algorithm evaluates the noise energy at each step of the Bark scale.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    residual : ndarray[float]</span>
-<span class="sd">        TODO</span>
+<span class="sd">        a 1D array of floats containing the amplitudes of the residual signal in the time domain</span>
 <span class="sd">    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the input ats object to store the residual analysis in</span>
 <span class="sd">    min_fft_size : int, optional</span>
-<span class="sd">        TODO (default: 4096)</span>
+<span class="sd">        restricts the minimum size of the FFT window (default: 4096)</span>
 <span class="sd">    equalize : bool, optional</span>
-<span class="sd">        TODO (default: False)</span>
+<span class="sd">        equalize noise energy in the frequency domain to the time domain energy using Parseval&#39;s Theorem (default: False)</span>
 <span class="sd">    pad_factor : int, optional</span>
-<span class="sd">        TODO (default: 2)</span>
-<span class="sd">    band_edges : TODO</span>
-<span class="sd">        TODO (default: None)</span>
+<span class="sd">        multiplicative window padding relative to `ats_snd.window_size` for calculating FFT window size (default: 2)</span>
+<span class="sd">    band_edges : ndarray[float]</span>
+<span class="sd">        1D array containing 26 frequencies that distinguish the default 25 critical bands. </span>
+<span class="sd">        If None, will use :obj:`~pyatsyn.atsa.cricital_bands.ATS_CRITICAL_BAND_EDGES` (default: None)</span>
 <span class="sd">    par_energy : bool</span>
-<span class="sd">        TODO (default: False)</span>
+<span class="sd">        whether to transfer noise energy to partials. NOTE: currently not fully supported; only for legacy support (default: False)</span>
 <span class="sd">    verbose : bool, optional</span>
-<span class="sd">        TODO (default: True)</span>
+<span class="sd">        increase verbosity (default: False)</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">hop</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frame_size</span>
     <span class="n">M</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">window_size</span>
@@ -260,23 +270,21 @@
 
 
 <div class="viewcode-block" id="residual_N"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.residual_N">[docs]</a><span class="k">def</span> <span class="nf">residual_N</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">min_fft_size</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute an FFT window size for residual analysis</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    M : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        target window size</span>
 <span class="sd">    min_fft_size : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        restricts the minimum size of the FFT window </span>
 <span class="sd">    factor : int, optional</span>
-<span class="sd">        TODOe)</span>
+<span class="sd">        multiplicative window padding relative to `M` for calculating FFT window size(default: 2)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        power-of-2 window size</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">if</span> <span class="n">M</span> <span class="o">*</span> <span class="n">factor</span> <span class="o">&gt;</span> <span class="n">min_fft_size</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">next_power_of_2</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span>
@@ -285,43 +293,50 @@
 
 
 <div class="viewcode-block" id="residual_get_band_limits"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.residual_get_band_limits">[docs]</a><span class="k">def</span> <span class="nf">residual_get_band_limits</span><span class="p">(</span><span class="n">fft_mag</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
-
-<span class="sd">    TODO </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to convert band edges to FFT bin indices</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fft_mag : float</span>
-<span class="sd">        TODO</span>
-<span class="sd">    band_edges : TODO</span>
-<span class="sd">        TODO</span>
+<span class="sd">        FFT magic number - sampling rate / FFT window size</span>
+<span class="sd">    band_edges : ndarray[float]</span>
+<span class="sd">        1D array of band edge frequencies (in Hz)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    band_limits : TODO</span>
-<span class="sd">        TODO</span>
+<span class="sd">    band_limits : ndarray[int]</span>
+<span class="sd">        1D array of bin indicies mapping band edge frequencies to bins in FFT frequency domain</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">band_limits</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">band_edges</span><span class="p">),</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">band_edges</span><span class="p">):</span>
         <span class="n">band_limits</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">band</span> <span class="o">/</span> <span class="n">fft_mag</span>
-    <span class="k">return</span> <span class="n">band_limits</span> </div>
+    <span class="k">return</span> <span class="n">band_limits</span></div>
 
 
 <div class="viewcode-block" id="residual_compute_band_energy"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.residual_compute_band_energy">[docs]</a><span class="k">def</span> <span class="nf">residual_compute_band_energy</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">,</span> <span class="n">band_limits</span><span class="p">,</span> <span class="n">band_energy</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute the band energy</span>
 
-<span class="sd">    TODO </span>
+<span class="sd">    Energy in each band is evaluated in the following way:</span>
+
+<span class="sd">    :math:`E[i] = \\frac{1}{K} \\sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2`</span>
+
+<span class="sd">    where :math:`i` is the band number (0 to 24), :math:`K` is the number of bins</span>
+<span class="sd">    of the STFT where the band :math:`i` has frequency information. :math:`k_{i0}`</span>
+<span class="sd">    is the lowest STFT bin where band :math:`i` has information, and :math:`X` is the</span>
+<span class="sd">    amplitude data for a given bin :math:`k`.</span>
+
+<span class="sd">    NOTE: band_energy is updated directly</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    fft_mags : ndarray[float]</span>
-<span class="sd">        TODO</span>
-<span class="sd">    band_limits : TODO</span>
-<span class="sd">        TODO</span>
-<span class="sd">    band_energy : TODO</span>
-<span class="sd">        TODO</span>
+<span class="sd">        1D array of frequency domain amplitudes</span>
+<span class="sd">    band_limits : ndarray[int]</span>
+<span class="sd">        1D array of bin indicies mapping band edge frequencies to bins in FFT frequency domain</span>
+<span class="sd">    band_energy : ndarray[float]</span>
+<span class="sd">        2D array to store band energies for each band at each frame</span>
 <span class="sd">    frame_n : int</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the current frame</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">band_limits</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
         <span class="n">low</span> <span class="o">=</span> <span class="n">band_limits</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
@@ -331,22 +346,22 @@
         <span class="k">if</span> <span class="n">high</span> <span class="o">&gt;</span> <span class="n">fft_mags</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">high</span> <span class="o">=</span> <span class="n">fft_mags</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">2</span>
 
-        <span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">[</span><span class="n">low</span><span class="p">:</span><span class="n">high</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">fft_mags</span><span class="o">.</span><span class="n">size</span></div>
+        <span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">[</span><span class="n">low</span><span class="p">:</span><span class="n">high</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">fft_mags</span><span class="p">[</span><span class="n">low</span><span class="p">:</span><span class="n">high</span><span class="p">]</span><span class="o">.</span><span class="n">size</span></div>
 
 
 <div class="viewcode-block" id="band_to_energy"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.band_to_energy">[docs]</a><span class="k">def</span> <span class="nf">band_to_energy</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">,</span> <span class="n">use_smr</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to TODO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to transfer band energies into partials</span>
 
-<span class="sd">    TODO </span>
+<span class="sd">    NOTE: Currently not fully supported. Included for legacy purposes.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
-<span class="sd">        TODO</span>
-<span class="sd">    band_edges : TODO</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the ats object containing band energies</span>
+<span class="sd">    band_edges : ndarray[float]</span>
+<span class="sd">        1D array of band edge frequencies (in Hz)        </span>
 <span class="sd">    use_smr : bool, optional</span>
-<span class="sd">        TODO (default: False)</span>
+<span class="sd">        whether to use smr instead of amplitude for scaling energy across partials (default: False)</span>
 <span class="sd">    &quot;&quot;&quot;</span>     
     <span class="n">bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_snd</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span>
     <span class="n">partials</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">partials</span>
@@ -399,16 +414,16 @@
             
             
 <div class="viewcode-block" id="remove_bands"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.residual.remove_bands">[docs]</a><span class="k">def</span> <span class="nf">remove_bands</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function TODO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to remove bands and band_energies below a threshold</span>
 
-<span class="sd">    TODO  remove bands from ats_snd that are below threshold (in dB)</span>
+<span class="sd">    NOTE: ats_snd is updated directly</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
-<span class="sd">        TODO</span>
+<span class="sd">        the ats object storing band energies to threshold</span>
 <span class="sd">    threshold : float</span>
-<span class="sd">        TODO</span>
+<span class="sd">        energy threshold used to prune band energies and bands</span>
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="n">frames</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frames</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="n">db_to_amp</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>

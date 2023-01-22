@@ -349,7 +349,7 @@ def tracker (   in_file,
     if residual_file:
         if verbose:
             print("Computing Residual...")
-        residual = compute_residual(residual_file, ats_snd, in_sound, st, nd)
+        residual = compute_residual(ats_snd, in_sound, st, nd, residual_file)
 
         if verbose:
             print("Analyzing Residual...")

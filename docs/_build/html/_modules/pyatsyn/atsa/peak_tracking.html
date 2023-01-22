@@ -40,7 +40,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../info.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html">pyatsyn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#pyatsyn-atsa">pyatsyn.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#atsa-module">atsa module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
 </ul>
 
@@ -123,9 +123,7 @@
 <span class="sd">    Using the list of current tracks, we use `track_length` frames to look back and update, </span>
 <span class="sd">    the average amp, frq, and smr values for the tracks. </span>
 <span class="sd">    </span>
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    Tracks are updated directly without return value.</span>
+<span class="sd">    NOTE: Tracks are updated directly without return value.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -213,9 +211,7 @@
 <span class="sd">    candidates. Linear interpolation is used to fill the gaps for frequency and amplitude,</span>
 <span class="sd">    and a cubic polynomial interpolation for phase.</span>
 <span class="sd">    </span>
-<span class="sd">    NOTE</span>
-<span class="sd">    ----</span>
-<span class="sd">    Tracks, peaks, and analysis_frames are updated directly.</span>
+<span class="sd">    NOTE: Tracks, peaks, and analysis_frames are updated directly.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -386,9 +382,7 @@
 <div class="viewcode-block" id="phase_interp"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.phase_interp">[docs]</a><span class="k">def</span> <span class="nf">phase_interp</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute linear phase interpolation</span>
 
-<span class="sd">    NOTE</span>
-<span class="sd">    ----</span>
-<span class="sd">    currently not used in peak tracking, but supplied for legacy purposes</span>
+<span class="sd">    NOTE: currently not used in peak tracking, but supplied for legacy purposes</span>
 
 <span class="sd">    Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate </span>
 <span class="sd">    from the relative time 0 to time t.</span>

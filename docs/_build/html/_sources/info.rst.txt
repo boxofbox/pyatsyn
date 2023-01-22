@@ -8,7 +8,7 @@ Installation
 | developed/tested on python 3.9.15 using M1 Mac running macOS 13.0.1
 | requires LIBSNDFILE
 
-for Mac: 
+for Mac (assuming Homebrew is installed): 
 
 ::
         
@@ -96,7 +96,7 @@ may need to be run as a package in development mode
 
         $ pip install -e .
 
-If you are a newcomer to the ATS system we recommend you start by looking at :obj:`~pyatsyn.atsa.tracker.tracker`
+If you are a newcomer to the ATS system we recommend you start by looking at :obj:`~pyatsyn.atsa.tracker`
 
 ATS Overview
 ------------
@@ -107,7 +107,7 @@ recorded sounds, transform their spectrum using a wide variety of algorithms and
 resynthesize them both out of time and in real time.
 
 .. image:: _static/img/ats_block.png
-        :width: 350
+        :width: 550
         :alt: graphic depiction of smr calculation
 
 Psychoacoustic processing informs the system's sinusoidal tracking and noise modeling 
@@ -122,15 +122,7 @@ in a compact hybrid representation based on noise modulated sinusoidal trajector
 Other ATS Implementations
 -------------------------
 
-Originally implemented in LISP, using the CLM sound synthesis and processing language, 
-ATS has been ported to C in the form of a spectral modeling library. This library, 
-called ATSA, implements the ATS system API which has served as foundation for the 
-development of the ATSH graphic user interface. Written in GTK+, ATSH not only provides 
-user-friendly access to the ATS analysis/synthesis core but also graphic data editing 
-and transformation tools. ATS interfaces for SuperCollider, Csound and PD have also 
-been developed.
-
-C implementations of ATSA and Qatsh and Lisp archive: `DXARTS Gitlab <https://gitlab.com/dxarts/projects/ats>`_
+C implementations of ATSA and Qatsh and original Lisp version archive: `DXARTS Gitlab <https://gitlab.com/dxarts/projects/ats>`_
 
 SuperCollider Interfaces for ATS (including classes to read ATS files as well ad UGens 
 to do transformation and synthesis) are included in Josh Parmenter's UGen library, JoshUGens, 

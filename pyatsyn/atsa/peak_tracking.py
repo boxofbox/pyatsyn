@@ -52,9 +52,7 @@ def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta =
     Using the list of current tracks, we use `track_length` frames to look back and update, 
     the average amp, frq, and smr values for the tracks. 
     
-    Note
-    ----
-    Tracks are updated directly without return value.
+    NOTE: Tracks are updated directly without return value.
 
     Parameters
     ----------
@@ -142,9 +140,7 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size
     candidates. Linear interpolation is used to fill the gaps for frequency and amplitude,
     and a cubic polynomial interpolation for phase.
     
-    NOTE
-    ----
-    Tracks, peaks, and analysis_frames are updated directly.
+    NOTE: Tracks, peaks, and analysis_frames are updated directly.
 
     Parameters
     ----------
@@ -315,9 +311,7 @@ def peak_dist(pk1, pk2, alpha):
 def phase_interp(freq_0, freq_t, pha_0, t):
     """Function to compute linear phase interpolation
 
-    NOTE
-    ----
-    currently not used in peak tracking, but supplied for legacy purposes
+    NOTE: currently not used in peak tracking, but supplied for legacy purposes
 
     Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate 
     from the relative time 0 to time t.

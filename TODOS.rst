@@ -1,11 +1,6 @@
-1.0.0 TODO
-
-*** residual
-*** ats struct
-*** index page
 * generate html & pdf docs
-* update Readme about section
 * read the docs
+* update readme to include readthedocs.io
 
 * re-run some test cases
 

@@ -12,8 +12,6 @@
 
 """Data Abstraction for ATS
 
-TODO About
-
 """
 
 from numpy import zeros, inf, copy, mean, any, arange

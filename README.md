@@ -28,7 +28,7 @@ developed/tested on python 3.9.15 using M1 Mac running macOS 13.0.1
 
 requires LIBSNDFILE
 
-for Mac: ```$ brew install libsndfile```
+for Mac (assuming Homebrew is installed): ```$ brew install libsndfile```
 for Debian: ```$ apt-get install libsndfile-dev```
 
 install via the PyPi repository
@@ -106,3 +106,5 @@ may need to be run as a package in development mode
 ```
 $ pip install -e .
 ```
+
+If you are a newcomer to ATS, we recommend you start by looking at pyatsn/atsa/tracker.py

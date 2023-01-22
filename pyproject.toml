@@ -35,9 +35,8 @@ pyatsyn-synth = "pyatsyn.ats_synth:synth_CLI"
 pyatsyn-info = "pyatsyn.ats_io:ats_info_CLI"
 
 [project.optional-dependencies]
-docs = ["sphinx"]
+docs = ["sphinx", "sphinx_rtd_theme"]
 
 [project.urls]
 "Homepage" = "https://github.com/boxofbox/pyatsyn"
 "Bug Tracker" = "https://github.com/boxofbox/pyatsyn/issues"
-
