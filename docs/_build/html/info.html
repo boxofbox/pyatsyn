@@ -81,9 +81,11 @@
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading"></a></h1>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
-<p>requires python 3.6+
-developed/tested on python 3.9.15 using M1 Mac running macOS 13.0.1</p>
-<p>requires LIBSNDFILE</p>
+<div class="line-block">
+<div class="line">requires python 3.6+</div>
+<div class="line">developed/tested on python 3.9.15 using M1 Mac running macOS 13.0.1</div>
+<div class="line">requires LIBSNDFILE</div>
+</div>
 <p>for Mac:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ brew install libsndfile
 </pre></div>
@@ -98,11 +100,16 @@ developed/tested on python 3.9.15 using M1 Mac running macOS 13.0.1</p>
 </div>
 <p># included command line utilities</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-atsa --help
+$ pyatsyn-info --help
 $ pyatsyn-synth --help
 </pre></div>
 </div>
 <p>Example command line usage to generate an ats file with residual:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-atsa example.wav example.ats -v -r example-residual.wav
+</pre></div>
+</div>
+<p>Example to print information about a .ats file to stdout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-info example.ats
 </pre></div>
 </div>
 <p>Example to synthesize the result using a sine-generator bank:</p>

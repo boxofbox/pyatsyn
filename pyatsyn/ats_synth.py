@@ -274,14 +274,20 @@ def synth_CLI():
     ------- 
     Display usage details with help flag   
 
+    ::
+
         $ pyatsyn-synth -h
 
     Generate a wav file from a sine generator bank from an ats file
+
+    ::
 
         $ pyatsyn-synth example.ats example.wav
 
     Generate a wav file from a sine generator bank and band-limited noise using from an ats file
 
+    ::
+    
         $ pyatsyn-synth example.ats example.wav --noise 1.0
 
     """

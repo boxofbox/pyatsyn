@@ -54,7 +54,6 @@ from pyatsyn.atsa.residual import compute_residual, residual_analysis
 from pyatsyn.ats_io import ats_save
 
 def tracker (   in_file, 
-                ats_snd_label,
                 start = 0.0, # analysis start point (in seconds)
                 duration = None, # max duration to analyze (in seconds) or 'None' if analyze to end
                 lowest_frequency = 20, # must be > 0
@@ -85,8 +84,6 @@ def tracker (   in_file,
     ----------
     in_file : str
         path to the audio file to analyze (must be single channel/mono)
-    ats_snd_label : str
-        internal name for the :obj:`~pyatsyn.ats_structure.AtsSound`
     start : float
         timepoint (in s) in audiofile to begin analysis (default: 0.0)
     duration : float
@@ -322,7 +319,7 @@ def tracker (   in_file,
 
     if verbose:
         print("Initializing AtsSound object...")
-    ats_snd = AtsSound(ats_snd_label, sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
+    ats_snd = AtsSound(sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
 
     if optimize:
         ats_snd.optimized = True
@@ -370,14 +367,20 @@ def tracker_CLI():
     ------- 
     Display usage details with help flag   
 
+    ::
+
         $ pyatsyn-atsa -h
 
     Analyze a wav file
+
+    ::
 
         $ pyatsyn-atsa example.wav example.ats
 
     Analyze a wav file and compute the residual and increase verbosity
 
+    ::
+    
         $ pyatsyn-atsa example.wav example.ats -v -r example-residual.wav
 
     """
@@ -426,7 +429,6 @@ def tracker_CLI():
     args = parser.parse_args()
 
     ats_save(tracker(   args.audio_file_in,
-                        args.ats_file_out,
                         start = args.start,
                         duration = args.duration,
                         lowest_frequency = args.low_freq,

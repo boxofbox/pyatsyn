@@ -5,7 +5,7 @@
 
 pyatsyn is a python implementation of the Analysis-Transformation-Synthesis (ATS) spectral modeling system.
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TODO
+Analysis, Transformation and Synthesis (ATS) is a spectral modeling system based on a sinusoidal plus critical-band noise decomposition. The system can be used to analyze recorded sounds, transform their spectrum using a wide variety of algorithms and resynthesize them both out of time and in real time.
 
 
 ---
@@ -40,7 +40,8 @@ $ pip install pyatsyn
 # included command line utilities
 
 ```
-$ pyatsyn-atsa --help```
+$ pyatsyn-atsa --help
+$ pyatsyn-info --help
 $ pyatsyn-synth --help
 ```
 
@@ -49,6 +50,12 @@ Example command line usage to generate an ats file with residual:
 ```
 $ pyatsyn-atsa example.wav example.ats -v -r example-residual.wav
 ```
+
+Example to print information about a .ats file to stdout:
+
+```
+$ pyatsyn-info example.ats
+```     
 
 Example to synthesize the result using a sine-generator bank:
 
@@ -90,6 +97,7 @@ optional documentation generation requires:
 
 ```
 $pip install sphinx
+$pip install sphinx_rtd_theme
 ```
 
 may need to be run as a package in development mode

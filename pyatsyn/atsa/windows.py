@@ -257,7 +257,7 @@ def window_norm (window):
     Parameters
     ----------
     window : ndarray[float]
-        TODO    
+        the window from which to calculate a norm
 
     Returns
     -------

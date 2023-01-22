@@ -81,7 +81,8 @@ ATS_MAGIC_NUMBER : float
 """
 
 from struct import pack, unpack, calcsize
-from numpy import zeros, arange
+from numpy import zeros, arange, mean
+import argparse
 
 from pyatsyn.ats_structure import AtsSound
 
@@ -145,8 +146,7 @@ def ats_save(sound, file, save_phase=True, save_noise=True):
                     fil.write(pack('d',sound.band_energy[band][frame_n]))                    
 
 
-def ats_load(   name, 
-                file, 
+def ats_load(   file, 
                 optimize=False, 
                 min_gap_size = None,
                 min_segment_length = None,                     
@@ -160,8 +160,6 @@ def ats_load(   name,
 
     Parameters
     ----------
-    name : str
-        name used for labeling :obj:`~pyatsyn.ats_structure.AtsSound`
     file : str
         filepath to .ats file to load
     optimize : bool, optional
@@ -219,7 +217,7 @@ def ats_load(   name,
         if ats_type == 2 or ats_type == 4:
             has_phase = True
 
-        ats_snd = AtsSound(name, sampling_rate, frame_size, window_size, 
+        ats_snd = AtsSound(sampling_rate, frame_size, window_size, 
                                 partials, frames, dur, has_phase=has_phase)
 
         ats_snd.amp_max = amp_max
@@ -247,9 +245,137 @@ def ats_load(   name,
             if has_noise:
                 for band in range(len(ats_snd.bands)):
                     ats_snd.band_energy[band][frame_n] = unpack(ordered_double, fil.read(DOUBLE_SIZE))[0]
+        
+        # TODO load frq/amp averages
+        for partial in range(ats_snd.partials):
+            ats_snd.frq_av[partial] = mean(ats_snd.frq[partial][ats_snd.frq[partial] > 0.0])
+            ats_snd.amp_av[partial] = mean(ats_snd.amp[partial][ats_snd.amp[partial] > 0.0])
 
         if optimize:
             ats_snd.optimize(min_gap_size, min_segment_length, amp_threshold, highest_frequency, lowest_frequency)
         
         return ats_snd
 
+
+def ats_info(file, partials_info=False):
+    """Function to print information about a .ats to the stdout
+    
+    Parameters
+    ----------
+    file : str
+        an .ats file to print information about
+    partials_info : bool, optional
+        whether to include frq and amp averages about each partial in the output (default: False)    
+    """
+    if not partials_info:
+        with open(file, 'rb') as fil:
+
+            # check ATS_MAGIC_NUMBER and set endian order
+            check_magic_number_raw = fil.read(DOUBLE_SIZE)
+            ordered_double = None        
+            if unpack(DOUBLE_BIG_ENDIAN,check_magic_number_raw)[0] == ATS_MAGIC_NUMBER:
+                ordered_double = DOUBLE_BIG_ENDIAN
+                print(f"BIG ENDIAN: ", ATS_MAGIC_NUMBER)
+            elif unpack(DOUBLE_LIL_ENDIAN,check_magic_number_raw)[0] == ATS_MAGIC_NUMBER:
+                ordered_double = DOUBLE_LIL_ENDIAN
+                print(f"LITTLE ENDIAN: ", ATS_MAGIC_NUMBER)
+            else:
+                print("File is not a compatible ATS format (ATS magic number was not accurate)")
+                return
+            
+            sampling_rate = int(unpack(ordered_double, fil.read(DOUBLE_SIZE))[0])
+            frame_size = int(unpack(ordered_double, fil.read(DOUBLE_SIZE))[0])
+            window_size = int(unpack(ordered_double, fil.read(DOUBLE_SIZE))[0])
+            partials = int(unpack(ordered_double, fil.read(DOUBLE_SIZE))[0])
+            frames = int(unpack(ordered_double, fil.read(DOUBLE_SIZE))[0])
+            amp_max = unpack(ordered_double, fil.read(DOUBLE_SIZE))[0]
+            frq_max = unpack(ordered_double, fil.read(DOUBLE_SIZE))[0]
+            dur = unpack(ordered_double, fil.read(DOUBLE_SIZE))[0]
+            ats_type = int(unpack(ordered_double, fil.read(DOUBLE_SIZE))[0])
+
+            print(f"sampling rate (samples/s):", sampling_rate)
+            print(f"frame size:", frame_size)
+            print(f"window size:", window_size)
+            print(f"n partials:", partials)
+            print(f"n frames:", frames)
+            print(f"maximum amplitude:", amp_max)
+            print(f"maximum frequency (Hz):", frq_max)
+            print(f"duration (s):", dur)
+            print(f"ATS frame type: ", ats_type)            
+    else:
+        with open(file, 'rb') as fil:
+            # check ATS_MAGIC_NUMBER and set endian order
+            check_magic_number_raw = fil.read(DOUBLE_SIZE)
+            ordered_double = None        
+            if unpack(DOUBLE_BIG_ENDIAN,check_magic_number_raw)[0] == ATS_MAGIC_NUMBER:
+                ordered_double = DOUBLE_BIG_ENDIAN
+                print(f"BIG ENDIAN: ", ATS_MAGIC_NUMBER)
+            elif unpack(DOUBLE_LIL_ENDIAN,check_magic_number_raw)[0] == ATS_MAGIC_NUMBER:
+                ordered_double = DOUBLE_LIL_ENDIAN
+                print(f"LITTLE ENDIAN: ", ATS_MAGIC_NUMBER)
+            else:
+                print("File is not a compatible ATS format (ATS magic number was not accurate)")
+                return
+
+        ats_snd = ats_load(file)
+
+        print(f"sampling rate (samples/s):", ats_snd.sampling_rate)
+        print(f"frame size:", ats_snd.frame_size)
+        print(f"window size:", ats_snd.window_size)
+        print(f"n partials:", ats_snd.partials)
+        print(f"n frames:", ats_snd.frames)
+        print(f"maximum amplitude:", ats_snd.amp_max)
+        print(f"maximum frequency (Hz):", ats_snd.frq_max)
+        print(f"duration (s):", ats_snd.dur)
+
+        has_noise = False
+        if len(ats_snd.bands) > 0 and len(ats_snd.band_energy) > 0:
+            has_noise = True
+        has_phase = False
+        if ats_snd.pha is not None:
+            has_phase = True
+
+        ats_type = 1
+        if has_phase and has_noise:
+                ats_type = 4
+        elif not has_phase and has_noise:
+            ats_type = 3
+        elif has_phase and not has_noise:
+            ats_type = 2
+        print(f"ATS frame type: ", ats_type)
+
+        print(f"\nPartial Information:")
+        for partial in range(ats_snd.partials):
+            print(f"\tpartial #{partial}:\t\tfrq_av {ats_snd.frq_av[partial]:.2f}\t\tamp_av {ats_snd.amp_av[partial]:.5f}")
+        
+def ats_info_CLI():
+    """Command line wrapper for :obj:`~pyatsyn.ats_io.ats_info`
+    
+    Example
+    -------
+    Display usage details with help flag
+
+    ::
+
+        $ pyatsyn-info -h
+
+    Print the header information of a .ats file
+
+    ::
+
+        $ pyatsyn-info example.ats
+
+    Print the header information and partials information of a .ats file
+
+    ::
+
+        $ pyatsyn-info example.ats -p
+
+    """
+    parser = argparse.ArgumentParser(
+        description = "Print information about an .ats file"        
+    )
+    parser.add_argument("ats_file", help="the path to the .ats file to print information about")
+    parser.add_argument("-p", "--partials", help="include a summary for each partial in the output", action="store_true")
+    args = parser.parse_args()
+    ats_info(args.ats_file, args.partials)

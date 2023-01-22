@@ -80,7 +80,6 @@
 <span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
 <span class="c1"># &lt;Oscar Pablo Di Liscia, Pete Moss, and Juan Pampin&gt;</span>
 
-
 <span class="sd">&quot;&quot;&quot;Utility Functions for ATS Analysis</span>
 
 <span class="sd">Attributes</span>
@@ -96,6 +95,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">inf</span><span class="p">,</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">log2</span><span class="p">,</span> <span class="n">log10</span>
+
 
 <span class="c1">###################</span>
 <span class="c1"># UTILITY CONSTANTS</span>
@@ -209,7 +209,9 @@
 <span class="sd">        * prune tracks outside frequency constraints</span>
 <span class="sd">        * sort and renumber tracks and peaks in analysis_frames according to average frq    </span>
 
-<span class="sd">    NOTE: directly updates analysis_frames, pruning peaks corresponding to pruned tracks.</span>
+<span class="sd">    NOTE</span>
+<span class="sd">    ----</span>
+<span class="sd">    directly updates analysis_frames, pruning peaks corresponding to pruned tracks.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

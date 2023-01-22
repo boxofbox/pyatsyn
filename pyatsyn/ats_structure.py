@@ -22,11 +22,38 @@ from pyatsyn.atsa.utils import ATS_MIN_SEGMENT_LENGTH
 from pyatsyn.atsa.peak_tracking import phase_interp
 
 class AtsPeak:
-    """TODO
+    """Data abstraction for storing single peak, single timepoint data for peak tracking
+
+    Used primarily as a data-store during the peak tracking phase of analysis.
+
     Attributes
     ----------
-    TODO
-
+    amp : float
+        the amplitude of the peak
+    frq : float
+        the frequency (in Hz) of the peak
+    pha : float
+        the phase (in radians) of the peak
+    smr : float
+        the signal-to-mask ratio (in dB SPL) of the peak
+    track : int
+        the corresponding tracked partial the peak is assigned to
+    db_spl : float
+        peak amplitude in dB SPL (used during SMR evaluation)
+    bark_frq : float
+        frequency in bark scale (used during SMR evaluation)
+    slope_r : float
+        right slope of masking curve (used during SMR evaluation)
+    asleep_for : int
+        sleep counter (in frames) (used during peak tracking)
+    duration : float
+        active counter (in frames) (used during peak tracking)
+    frq_max : float
+        maximum frequency (used in track data during optimization)
+    amp_max : float        
+        maximum amplitude (used in track data during optimization)
+    frq_min : float        
+        minimum frequency (used in track data during optimization)
     """
     def __init__ (self, amp=0.0, frq=0.0, pha=0.0, smr=0.0, track=0, db_spl=0.0, 
                   barkfrq=0.0, slope_r=0.0, asleep_for=None, duration=1):
@@ -59,23 +86,66 @@ class AtsPeak:
         return f"PK: f_{self.frq} at mag_{self.amp} + {self.pha}"
 
 class AtsSound:
-    """TODO
-    main data abstraction
-    amp, frq, and pha contain sinusoidal modeling information as arrays of
-    arrays of data arranged by partial par-energy and band-energy hold
-    noise modeling information (experimental format)
+    """Main data abstraction for ATS
+
+    Parameters
+    ----------
+    sampling_rate : int
+        sampling rate (samples/sec)
+    frame_size : int
+        interframe distance (in samples)
+    window_size : int
+        size (in samples) of the FFT window used to analyze the sound
+    partials : int
+        number of partials/tracks stored
+    frames : int
+        number of frames of analysis
+    dur : float
+        duration (in s) of the sound
+    has_phase : bool, optional
+        whether to initial phase information data structure (default: True)
 
     Attributes
     ----------
-    TODO
-
+    sampling_rate : int
+        sampling rate (samples/sec)
+    frame_size : int
+        interframe distance (in samples)
+    window_size : int
+        size (in samples) of the FFT window used to analyze the sound
+    partials : int
+        number of partials/tracks stored
+    frames : int
+        number of frames of analysis
+    dur : float
+        duration (in s) of the sound
+    optimized : bool
+        whether the object has been through optimization yet
+    amp_max : float
+        maximum amplitude of the sound
+    frq_max : float
+        maximum frequency (in Hz) of the sound
+    frq_av : ndarray[float]
+        1D array of average frequency (in Hz) for each partial
+    amp_av : ndarray[float]
+        1D array of average amplitude for each partial
+    time : float
+        1D array of the time (in s) corresponding to each frame
+    frq : ndarray[float]
+        2D array storing frequency (in Hz) for each partial at each frame
+    amp : ndarray[float]
+        2D array storing amplitude for each partial at each frame
+    pha : ndarray[float]
+        2D array storing phase (in radians) for each partial at each frame. None if no phase information is stored.
+    energy : ndarray[float]
+        2D array for storing noise band energy into each partials at each frame. NOTE: Currently only implemented for legacy purposes. Empty list if no noise information is stored.
+    band_energy : ndarray[float]
+        2D array of noise band energies for each band at each frame. Empty list if no noise information is stored.
+    bands : ndarray[int]
+        1D array of unique indices to label each noise band. Empty list if no noise information is stored.
     """    
-    def __init__ (self, name, sampling_rate, frame_size, window_size, 
+    def __init__ (self, sampling_rate, frame_size, window_size, 
                   partials, frames, dur, has_phase=True):
-        """TODO
-
-        """
-        self.name = name
         self.sampling_rate = sampling_rate
         self.frame_size = frame_size
         self.window_size = window_size
@@ -112,7 +182,7 @@ class AtsSound:
         if self.pha is None:
             has_pha = False
         
-        new_ats_snd = AtsSound(self.name, self.sampling_rate, self.frame_size, self.window_size, 
+        new_ats_snd = AtsSound(self.sampling_rate, self.frame_size, self.window_size, 
                   self.partials, self.frames, self.dur, has_phase=has_pha)
         
         new_ats_snd.optimized = self.optimized

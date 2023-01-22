@@ -93,11 +93,38 @@
 <span class="kn">from</span> <span class="nn">pyatsyn.atsa.peak_tracking</span> <span class="kn">import</span> <span class="n">phase_interp</span>
 
 <div class="viewcode-block" id="AtsPeak"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsPeak">[docs]</a><span class="k">class</span> <span class="nc">AtsPeak</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;TODO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data abstraction for storing single peak, single timepoint data for peak tracking</span>
+
+<span class="sd">    Used primarily as a data-store during the peak tracking phase of analysis.</span>
+
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    TODO</span>
-
+<span class="sd">    amp : float</span>
+<span class="sd">        the amplitude of the peak</span>
+<span class="sd">    frq : float</span>
+<span class="sd">        the frequency (in Hz) of the peak</span>
+<span class="sd">    pha : float</span>
+<span class="sd">        the phase (in radians) of the peak</span>
+<span class="sd">    smr : float</span>
+<span class="sd">        the signal-to-mask ratio (in dB SPL) of the peak</span>
+<span class="sd">    track : int</span>
+<span class="sd">        the corresponding tracked partial the peak is assigned to</span>
+<span class="sd">    db_spl : float</span>
+<span class="sd">        peak amplitude in dB SPL (used during SMR evaluation)</span>
+<span class="sd">    bark_frq : float</span>
+<span class="sd">        frequency in bark scale (used during SMR evaluation)</span>
+<span class="sd">    slope_r : float</span>
+<span class="sd">        right slope of masking curve (used during SMR evaluation)</span>
+<span class="sd">    asleep_for : int</span>
+<span class="sd">        sleep counter (in frames) (used during peak tracking)</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        active counter (in frames) (used during peak tracking)</span>
+<span class="sd">    frq_max : float</span>
+<span class="sd">        maximum frequency (used in track data during optimization)</span>
+<span class="sd">    amp_max : float        </span>
+<span class="sd">        maximum amplitude (used in track data during optimization)</span>
+<span class="sd">    frq_min : float        </span>
+<span class="sd">        minimum frequency (used in track data during optimization)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">frq</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">pha</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">smr</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">track</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">db_spl</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> 
                   <span class="n">barkfrq</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">slope_r</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">asleep_for</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -130,23 +157,66 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;PK: f_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="si">}</span><span class="s2"> at mag_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 <div class="viewcode-block" id="AtsSound"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSound">[docs]</a><span class="k">class</span> <span class="nc">AtsSound</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;TODO</span>
-<span class="sd">    main data abstraction</span>
-<span class="sd">    amp, frq, and pha contain sinusoidal modeling information as arrays of</span>
-<span class="sd">    arrays of data arranged by partial par-energy and band-energy hold</span>
-<span class="sd">    noise modeling information (experimental format)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main data abstraction for ATS</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sampling_rate : int</span>
+<span class="sd">        sampling rate (samples/sec)</span>
+<span class="sd">    frame_size : int</span>
+<span class="sd">        interframe distance (in samples)</span>
+<span class="sd">    window_size : int</span>
+<span class="sd">        size (in samples) of the FFT window used to analyze the sound</span>
+<span class="sd">    partials : int</span>
+<span class="sd">        number of partials/tracks stored</span>
+<span class="sd">    frames : int</span>
+<span class="sd">        number of frames of analysis</span>
+<span class="sd">    dur : float</span>
+<span class="sd">        duration (in s) of the sound</span>
+<span class="sd">    has_phase : bool, optional</span>
+<span class="sd">        whether to initial phase information data structure (default: True)</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    TODO</span>
-
+<span class="sd">    sampling_rate : int</span>
+<span class="sd">        sampling rate (samples/sec)</span>
+<span class="sd">    frame_size : int</span>
+<span class="sd">        interframe distance (in samples)</span>
+<span class="sd">    window_size : int</span>
+<span class="sd">        size (in samples) of the FFT window used to analyze the sound</span>
+<span class="sd">    partials : int</span>
+<span class="sd">        number of partials/tracks stored</span>
+<span class="sd">    frames : int</span>
+<span class="sd">        number of frames of analysis</span>
+<span class="sd">    dur : float</span>
+<span class="sd">        duration (in s) of the sound</span>
+<span class="sd">    optimized : bool</span>
+<span class="sd">        whether the object has been through optimization yet</span>
+<span class="sd">    amp_max : float</span>
+<span class="sd">        maximum amplitude of the sound</span>
+<span class="sd">    frq_max : float</span>
+<span class="sd">        maximum frequency (in Hz) of the sound</span>
+<span class="sd">    frq_av : ndarray[float]</span>
+<span class="sd">        1D array of average frequency (in Hz) for each partial</span>
+<span class="sd">    amp_av : ndarray[float]</span>
+<span class="sd">        1D array of average amplitude for each partial</span>
+<span class="sd">    time : float</span>
+<span class="sd">        1D array of the time (in s) corresponding to each frame</span>
+<span class="sd">    frq : ndarray[float]</span>
+<span class="sd">        2D array storing frequency (in Hz) for each partial at each frame</span>
+<span class="sd">    amp : ndarray[float]</span>
+<span class="sd">        2D array storing amplitude for each partial at each frame</span>
+<span class="sd">    pha : ndarray[float]</span>
+<span class="sd">        2D array storing phase (in radians) for each partial at each frame. None if no phase information is stored.</span>
+<span class="sd">    energy : ndarray[float]</span>
+<span class="sd">        2D array for storing noise band energy into each partials at each frame. NOTE: Currently only implemented for legacy purposes. Empty list if no noise information is stored.</span>
+<span class="sd">    band_energy : ndarray[float]</span>
+<span class="sd">        2D array of noise band energies for each band at each frame. Empty list if no noise information is stored.</span>
+<span class="sd">    bands : ndarray[int]</span>
+<span class="sd">        1D array of unique indices to label each noise band. Empty list if no noise information is stored.</span>
 <span class="sd">    &quot;&quot;&quot;</span>    
-    <span class="k">def</span> <span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">frame_size</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> 
+    <span class="k">def</span> <span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">frame_size</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> 
                   <span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;TODO</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">sampling_rate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">=</span> <span class="n">frame_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="n">window_size</span>
@@ -183,7 +253,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">has_pha</span> <span class="o">=</span> <span class="kc">False</span>
         
-        <span class="n">new_ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">,</span> 
+        <span class="n">new_ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">,</span> 
                   <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="n">has_pha</span><span class="p">)</span>
         
         <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">optimized</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimized</span>

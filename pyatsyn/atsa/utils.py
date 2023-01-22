@@ -9,7 +9,6 @@
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
 # <Oscar Pablo Di Liscia, Pete Moss, and Juan Pampin>
 
-
 """Utility Functions for ATS Analysis
 
 Attributes
@@ -25,6 +24,7 @@ ATS_NOISE_THRESHOLD : float
 """
 
 from numpy import inf, ceil, log2, log10
+
 
 ###################
 # UTILITY CONSTANTS
@@ -138,7 +138,9 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length,
         * prune tracks outside frequency constraints
         * sort and renumber tracks and peaks in analysis_frames according to average frq    
 
-    NOTE: directly updates analysis_frames, pruning peaks corresponding to pruned tracks.
+    NOTE
+    ----
+    directly updates analysis_frames, pruning peaks corresponding to pruned tracks.
 
     Parameters
     ----------
