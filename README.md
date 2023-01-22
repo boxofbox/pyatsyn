@@ -7,6 +7,7 @@ pyatsyn is a python implementation of the Analysis-Transformation-Synthesis (ATS
 
 Analysis, Transformation and Synthesis (ATS) is a spectral modeling system based on a sinusoidal plus critical-band noise decomposition. The system can be used to analyze recorded sounds, transform their spectrum using a wide variety of algorithms and resynthesize them both out of time and in real time.
 
+[pyatsyn Documentation at readthedocs.io](https://pyatsyn.readthedocs.io/)
 
 ---
 
