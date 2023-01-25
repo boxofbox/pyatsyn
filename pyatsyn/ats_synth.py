@@ -265,7 +265,16 @@ def synth(ats_snd, normalize=False, compute_phase=True,
     if export_file is not None:
         sf.write(export_file, synthesized, ats_snd.sampling_rate)
 
-    return synthesized  
+    return synthesized
+
+
+def synth_vfr(ats_snd, normalize=False, compute_phase=True, 
+            export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None, 
+            normalize_sine = False, normalize_noise = False):
+        """TODO
+        """
+        pass
+
 
 def synth_CLI():    
     """Command line wrapper for :obj:`~pyatsyn.ats_synth.synth`

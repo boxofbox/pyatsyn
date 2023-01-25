@@ -322,7 +322,6 @@ def tracker (   in_file,
     ats_snd = AtsSound(sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
 
     if optimize:
-        ats_snd.optimized = True
         amp_max = 0.0
         frq_max = 0.0
         for tk in tracks:
