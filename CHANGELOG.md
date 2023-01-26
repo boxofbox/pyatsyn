@@ -11,5 +11,5 @@ v1.1.0 ADDED FEATURES TRACKER (2023-??-??)
 * i/o updated to account for variable frame rates (adopting .atsv as file extension to distinguish it from .ats, since vfr is not externally supported yet)
 
 
-v1.0.0 INITIAL RELEASE (2023-01-22)
+[https://github.com/boxofbox/pyatsyn/releases/tag/v1.0.0](v1.0.0) INITIAL RELEASE (2023-01-22)
 -----------------------------------
