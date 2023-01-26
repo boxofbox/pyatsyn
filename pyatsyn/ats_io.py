@@ -45,7 +45,7 @@ The expected structure of a .ats is:
 NOTE: when saving/loading :obj:`~pyatsyn.ats_structure.ATSSoundVFR` objects, sampling-rate, 
 frame-size, and window-size will be -1. The file should be saved as a .atsv file by convention, 
 because this is currently not a supported format external to pyatsyn. See :obj:`~pyatsyn.ats_structure.to_cfr` 
-if you would like to save a VFR as an externally compliant format.
+if you would like to save a variable frame rate object to an externally compliant format by converting it to constant frame rate.
 
 The frame data immediately follows the header, 
 again all double floats, frame by frame, with a 
@@ -89,7 +89,7 @@ from struct import pack, unpack, calcsize
 from numpy import zeros, arange, mean
 import argparse
 
-from pyatsyn.ats_structure import AtsSound
+from pyatsyn.ats_structure import AtsSound, AtsSoundVFR
 
 ATS_MAGIC_NUMBER = 123.0
 
@@ -128,9 +128,15 @@ def ats_save(sound, file, save_phase=True, save_noise=True):
     with open(file, 'wb') as fil:
         # write header
         fil.write(pack('d',ATS_MAGIC_NUMBER))
-        fil.write(pack('d',sound.sampling_rate))
-        fil.write(pack('d',sound.frame_size))
-        fil.write(pack('d',sound.window_size))
+        if hasattr(sound, "sampling_rate"):
+            fil.write(pack('d',sound.sampling_rate))
+            fil.write(pack('d',sound.frame_size))
+            fil.write(pack('d',sound.window_size))
+        else:
+            print("WARNING: saving a variable frame rate file (use extensions .atsv)")
+            fil.write(pack('d',-1))
+            fil.write(pack('d',-1))
+            fil.write(pack('d',-1))
         fil.write(pack('d',sound.partials))
         fil.write(pack('d',sound.frames))
         fil.write(pack('d',sound.amp_max))
@@ -222,8 +228,13 @@ def ats_load(   file,
         if ats_type == 2 or ats_type == 4:
             has_phase = True
 
-        ats_snd = AtsSound(sampling_rate, frame_size, window_size, 
-                                partials, frames, dur, has_phase=has_phase)
+        ats_snd = None
+        if sampling_rate == -1:
+            print("WARNING: loading a variable frame rate ats sound")
+            ats_snd = AtsSoundVFR(frames, partials, dur, has_phase)
+        else:
+            ats_snd = AtsSound(sampling_rate, frame_size, window_size, 
+                                    partials, frames, dur, has_phase=has_phase)
 
         ats_snd.amp_max = amp_max
         ats_snd.frq_max = frq_max
