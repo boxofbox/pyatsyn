@@ -21,8 +21,8 @@ import soundfile as sf
 from math import tau
 import argparse
 
-from pyatsyn.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
-from pyatsyn.atsa.utils import compute_frames
+from pyatsyn.analysis.critical_bands import ATS_CRITICAL_BAND_EDGES
+from pyatsyn.analysis.utils import compute_frames
 from pyatsyn.ats_io import ats_load
 
 
@@ -61,7 +61,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
     noise_bands : ndarray[float]
         1D array of band edges to use for noise analysis. Currently using other than 25 bands 
         (i.e. 26 edges) is not fully supported. If None, 
-        :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` will be used. (default: None)
+        :obj:`~pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES` will be used. (default: None)
     normalize_sine : bool
         normalize sine components to ±1 before mixing (default: False)
     normalize_noise : bool

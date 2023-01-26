@@ -14,10 +14,10 @@
 
 """
 
-from numpy import zeros, inf, copy, sum, any, arange
+from numpy import zeros, inf, copy, sum, any, arange, ceil
 
-from pyatsyn.atsa.utils import ATS_MIN_SEGMENT_LENGTH
-from pyatsyn.atsa.peak_tracking import phase_interp
+from pyatsyn.analysis.utils import ATS_MIN_SEGMENT_LENGTH
+from pyatsyn.ats_utils import phase_interp_cubic
 
 class AtsPeak:
     """Data abstraction for storing single peak, single timepoint data for peak tracking
@@ -123,12 +123,8 @@ class AtsSoundVFR():
         print(f"maximum frequency (Hz):", self.frq_max)
         print(f"duration (s):", self.dur)
 
-        has_noise = False
-        if len(self.bands) > 0 and len(self.band_energy) > 0:
-            has_noise = True
-        has_phase = False
-        if self.pha is not None:
-            has_phase = True
+        has_noise = len(self.bands) > 0 and (len(self.band_energy) > 0 or len(self.energy) > 0)         
+        has_phase = self.pha is not None
 
         ats_type = 1
         if has_phase and has_noise:
@@ -153,9 +149,7 @@ class AtsSoundVFR():
         :obj:`~pyatsyn.ats_structure.AtsSoundVBR`
             a deep copy of the calling :obj:`~pyatsyn.ats_structure.AtsSoundVBR` object
         """
-        has_pha = True
-        if self.pha is None:
-            has_pha = False
+        has_pha = self.pha is not None        
         
         new_ats_snd = AtsSoundVFR(self.partials, self.frames, self.dur, has_phase=has_pha)
         
@@ -178,6 +172,7 @@ class AtsSoundVFR():
                 new_ats_snd.energy = copy(self.energy)            
 
         return new_ats_snd
+
 
     def optimize(   self, 
                     min_gap_time = None,
@@ -213,10 +208,7 @@ class AtsSoundVFR():
             lower frequency threshold, tracks with minima below this will be pruned. 
             If None, this sub-optimization will be skipped. (default: None)
         """
-        has_pha = True
-        if self.pha is None:
-            has_pha = False
-
+        has_pha = self.pha is not None        
         if min_gap_time is not None:
             # fill gaps of min_gap_size or shorter
             for partial in range(self.partials):
@@ -245,13 +237,15 @@ class AtsSoundVFR():
                                     self.frq[partial][frame_n - i] = (frq_step * mult) + self.amp[partial][frame_n]
                                     self.amp[partial][frame_n - i] = (amp_step * mult) + self.amp[partial][frame_n]
                                 if has_pha:
-                                    t = asleep_time
                                     for i in range(1, interp_range): # NOTE: we'll walk backward from frame_n
-                                        freq_now = self.frq[partial][frame_n - i]
-                                        freq_then = self.frq[partial][earlier_ind]
-                                        pha_then = self.pha[partial][earlier_ind]
-                                        t -= self.time[frame_n - i + 1] - self.time[frame_n - i]
-                                        self.pha[partial][frame_n - i] = phase_interp(freq_then, freq_now, pha_then, t)
+                                        frq_0 = self.frq[partial][earlier_ind]
+                                        frq_t = self.frq[partial][frame_n]
+                                        pha_0 = self.pha[partial][earlier_ind]
+                                        pha_t = self.pha[partial][frame_n]
+                                        i_samps_from_0 = (self.time[frame_n - i] - self.time[earlier_ind]) * self.sampling_rate
+                                        samps_from_0_to_t = (self.time[frame_n] - self.time[earlier_ind]) * self.sampling_rate 
+                                        self.pha[partial][frame_n - i] = phase_interp_cubic(frq_0, frq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, self.sampling_rate)
+
                         asleep_for = 0
                         asleep_time = 0.0
 
@@ -324,6 +318,7 @@ class AtsSoundVFR():
             self.pha = None
             self.amp_max = 0.0
             self.frq_max = 0.0
+            self.energy = []
             return            
         else:            
             self.frq_av = self.frq_av[keep_partials]
@@ -332,6 +327,8 @@ class AtsSoundVFR():
             self.amp = self.amp[keep_partials,:]
             if has_pha:
                 self.pha = self.pha[keep_partials,:]
+            if len(self.energy) > 0:
+                self.energy = self.energy[keep_partials,:]
 
         # reset amp_max & average # TODO
         amp_max = 0.0
@@ -372,7 +369,6 @@ class AtsSoundVFR():
         self.amp = self.amp[sorted_index,:]
         if has_pha:
             self.pha = self.pha[sorted_index,:]
-
 
 
 class AtsSound(AtsSoundVFR):
@@ -460,9 +456,7 @@ class AtsSound(AtsSoundVFR):
         :obj:`~pyatsyn.ats_structure.AtsSound`
             a deep copy of the calling :obj:`~pyatsyn.ats_structure.AtsSound` object
         """
-        has_pha = True
-        if self.pha is None:
-            has_pha = False
+        has_pha = self.pha is not None
         
         new_ats_snd = AtsSound(self.sampling_rate, self.frame_size, self.window_size, 
                   self.partials, self.frames, self.dur, has_phase=has_pha)
@@ -479,7 +473,7 @@ class AtsSound(AtsSoundVFR):
         if has_pha:
             new_ats_snd.pha = copy(self.pha)
 
-        if self.bands:
+        if len(self.bands) > 0:
             new_ats_snd.bands = copy(self.bands)
             new_ats_snd.band_energy = copy(self.band_energy)
             if self.energy:
@@ -527,9 +521,90 @@ class AtsSound(AtsSoundVFR):
                 min_segment_length = ATS_MIN_SEGMENT_LENGTH
 
         frame_to_t_conversion = self.frame_size / self.sampling_rate
-        super().optimize(   (min_gap_size * frame_to_t_conversion) + (1 / self.sampling_rate), # padding for floating point inaccuracy
-                            (min_segment_length * frame_to_t_conversion) - (1 / self.sampling_rate), # padding for floating point inaccuracy 
+
+        min_gap_time = min_gap_size
+        if min_gap_time is not None:
+            min_gap_time = (min_gap_size * frame_to_t_conversion) + (1 / self.sampling_rate) # padding for floating point inaccuracy
+
+        min_segment_time = min_segment_length
+        if min_segment_time is not None:
+            min_segment_time = (min_segment_length * frame_to_t_conversion) - (1 / self.sampling_rate) # padding for floating point inaccuracy 
+
+        super().optimize(   min_gap_time,
+                            min_segment_time,
                             amp_threshold, 
                             highest_frequency, 
                             lowest_frequency
                             )
+
+
+def to_cfr(ats_snd_vfr, frame_size, sample_rate=44100, window_size=None):
+    """
+    TODO
+    """
+    has_pha = ats_snd_vfr.pha is not None
+    frames = int(ceil((ats_snd_vfr.time[-1] * sample_rate) / frame_size)) + 1
+    if window_size is None:
+        window_size = -1
+
+    ats_cfr = AtsSound(sample_rate, frame_size, window_size, ats_snd_vfr.partials, frames, ats_snd_vfr.dur, has_phase=has_pha)
+
+    if len(ats_snd_vfr.bands) > 0:
+        ats_cfr.bands = copy(ats_snd_vfr.bands)
+        if len(ats_snd_vfr.band_energy) > 0:
+            ats_cfr.band_energy = zeros([ats_cfr.bands.size, frames], "float64")
+    if len(ats_snd_vfr.energy) > 0:
+        ats_cfr.energy = zeros([ats_cfr.partials, frames], "float64")
+
+    vfr_frame_n = 0
+    for frame_n in range(frames):
+        ats_cfr.time[frame_n] = frame_n * frame_size / sample_rate
+
+        while (ats_snd_vfr.time[vfr_frame_n] < ats_cfr.time[frame_n] and vfr_frame_n < ats_snd_vfr.frames - 1):
+            vfr_frame_n += 1
+        
+        # if the old frame is exactly at the current time or at the beginning/end of the input frames, just copy it over
+        if vfr_frame_n == 0 or vfr_frame_n == ats_snd_vfr.frames - 1 or ats_snd_vfr.time[vfr_frame_n] == ats_cfr.time[frame_n]:
+            ats_cfr.frq[:,frame_n] = copy(ats_snd_vfr.frq[:,vfr_frame_n])
+            ats_cfr.amp[:,frame_n] = copy(ats_snd_vfr.amp[:,vfr_frame_n])
+            if has_pha:
+                ats_cfr.pha[:,frame_n] = copy(ats_snd_vfr.pha[:,vfr_frame_n])            
+            if len(ats_snd_vfr.band_energy) > 0:
+                ats_cfr.band_energy[:, frame_n] = copy(ats_snd_vfr.band_energy[:,vfr_frame_n])
+            if len(ats_snd_vfr.energy) > 0:
+                ats_cfr.energy[:, frame_n] = copy(ats_snd_vfr.energy[:,vfr_frame_n])
+                
+        # otherwise interpolate a new frame
+        else:
+            tt = (ats_snd_vfr.time[vfr_frame_n] - ats_snd_vfr.time[vfr_frame_n - 1])
+            ti = (ats_cfr.time[frame_n] - ats_snd_vfr.time[vfr_frame_n - 1])
+            t_interp =  ti / tt
+            i_samps_from_0 = ti * sample_rate
+            samps_from_0_to_t = tt * sample_rate
+            for partial in range(ats_cfr.partials):
+                frq_0 = ats_snd_vfr.frq[partial][vfr_frame_n - 1]
+                frq_t = ats_snd_vfr.frq[partial][vfr_frame_n]
+                ats_cfr.frq[partial][frame_n] = ((frq_t - frq_0) * (t_interp)) + frq_0
+                amp_0 = ats_snd_vfr.amp[partial][vfr_frame_n - 1]
+                amp_t = ats_snd_vfr.amp[partial][vfr_frame_n]
+                ats_cfr.amp[partial][frame_n] = ((amp_t - amp_0) * (t_interp)) + amp_0
+                if has_pha:
+                    pha_0 = ats_snd_vfr.pha[partial][vfr_frame_n - 1]
+                    pha_t = ats_snd_vfr.pha[partial][vfr_frame_n]                  
+                    ats_cfr.pha[partial][frame_n] = phase_interp_cubic(frq_0, frq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sample_rate)
+                if len(ats_cfr.energy) > 0:
+                    eng_0 = ats_snd_vfr.energy[partial][vfr_frame_n - 1]
+                    eng_t = ats_snd_vfr.energy[partial][vfr_frame_n]
+                    ats_cfr.energy[partial][frame_n] = ((eng_t - eng_0) * (t_interp)) + eng_0
+            if len(ats_cfr.band_energy) > 0:
+                for band in range(ats_cfr.bands.size):
+                    noi_0 = ats_snd_vfr.band_energy[band][vfr_frame_n - 1]
+                    noi_t = ats_snd_vfr.band_energy[band][vfr_frame_n]
+                    ats_cfr.band_energy[band][frame_n] = ((noi_t - noi_0) * (t_interp)) + noi_0
+                
+    # optimize with default None parameters to update max/av values and reorder partials if necessary
+    ats_cfr.optimize()
+
+    return ats_cfr
+
+

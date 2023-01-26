@@ -149,7 +149,7 @@ def optimize_tracks(tracks, analysis_frames, min_segment_length,
     min_segment_length : int
         minimal size (in frames) of a valid track segment, otherwise it is pruned
     amp_threshold : float
-        amplitude threshold used to prune tracks. If None, will default to :obj:`~pyatsyn.atsa.utils.ATS_AMP_THRESHOLD` converted to amplitude.
+        amplitude threshold used to prune tracks. If None, will default to :obj:`~pyatsyn.analysis.utils.ATS_AMP_THRESHOLD` converted to amplitude.
     highest_frequency : float
         upper frequency threshold, tracks with maxima above this will be pruned
     lowest_frequency : float

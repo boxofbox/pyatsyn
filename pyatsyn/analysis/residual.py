@@ -14,7 +14,7 @@
 The reisidual signal is computed by taking the time-domain difference between the orignal sound 
 and the sinusoidal synthesis of the spectral trajectories. NOTE: this section is under active research.
 Currently, this noise signal is analyzed using the STFT to obtain time-varying energy at 
-25 critical bands (see :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`)
+25 critical bands (see :obj:`~pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES`)
 
 """
 
@@ -22,10 +22,10 @@ from numpy import zeros, mean, roll, arange, absolute, asarray
 from numpy.fft import fft
 import soundfile as sf
 
-from pyatsyn.ats_synth import synth
+from pyatsyn.synthesis.synth import synth
 
-from pyatsyn.atsa.utils import next_power_of_2, db_to_amp, ATS_NOISE_THRESHOLD
-from pyatsyn.atsa.critical_bands import ATS_CRITICAL_BAND_EDGES
+from pyatsyn.analysis.utils import next_power_of_2, db_to_amp, ATS_NOISE_THRESHOLD
+from pyatsyn.analysis.critical_bands import ATS_CRITICAL_BAND_EDGES
 
 
 def compute_residual(   ats_snd, 
@@ -102,7 +102,7 @@ def residual_analysis(  residual,
         multiplicative window padding relative to `ats_snd.window_size` for calculating FFT window size (default: 2)
     band_edges : ndarray[float]
         1D array containing 26 frequencies that distinguish the default 25 critical bands. 
-        If None, will use :obj:`~pyatsyn.atsa.cricital_bands.ATS_CRITICAL_BAND_EDGES` (default: None)
+        If None, will use :obj:`~pyatsyn.analysis.cricital_bands.ATS_CRITICAL_BAND_EDGES` (default: None)
     par_energy : bool
         whether to transfer noise energy to partials. NOTE: currently not fully supported; only for legacy support (default: False)
     verbose : bool, optional

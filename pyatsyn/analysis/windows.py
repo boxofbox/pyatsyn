@@ -107,7 +107,7 @@ def make_blackman_window(window_type, size):
     Parameters
     ----------
     window_type : str
-        the type of blackman window (supported types are defined in :obj:`~pyatsyn.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS)`
+        the type of blackman window (supported types are defined in :obj:`~pyatsyn.analysis.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS)`
     size : int
         the size of the window to generate
 
@@ -141,7 +141,7 @@ def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
     Parameters
     ----------
     window_type : str
-        the type of window (supported types are defined in :obj:`~pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`)
+        the type of window (supported types are defined in :obj:`~pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS`)
     size : int
         the size of the window to generate
     beta : float, optional
@@ -157,7 +157,7 @@ def make_fft_window(window_type, size, beta=1.0, alpha=0.5):
     Raises
     ------
     ValueError
-        if `window_type` is not one of the supported window types in :obj:`~pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`
+        if `window_type` is not one of the supported window types in :obj:`~pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS`
     """
     if (window_type.startswith('blackman')):
         return make_blackman_window(window_type, size)

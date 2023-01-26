@@ -42,8 +42,7 @@ and tracks which couldn't find continuing peaks are set to sleep.
 
 from heapq import heappop, heappush
 from queue import SimpleQueue
-from math import tau, remainder
-from numpy import zeros, matmul
+from pyatsyn.ats_utils import phase_interp_cubic
 
 
 def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta = 0.0):
@@ -306,94 +305,6 @@ def peak_dist(pk1, pk2, alpha):
         the frequency distance (in Hz) between the peaks
     """ 
     return (abs(pk1.frq - pk2.frq) + (alpha * abs(pk1.smr - pk2.smr))) / (alpha + 1.0)
-
-
-def phase_interp(freq_0, freq_t, pha_0, t):
-    """Function to compute linear phase interpolation
-
-    NOTE: currently not used in peak tracking, but supplied for legacy purposes
-
-    Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate 
-    from the relative time 0 to time t.
-
-    Parameters
-    ----------
-    freq_0 : float
-        initial frequency (in Hz)
-    freq_t : float
-        frequency at time t (in Hz)
-    pha_0 : float
-        initial phase (in radians)
-    t : float
-        time (in s) from freq_0
-
-    Returns
-    -------
-    float
-        the phase (in radians) at relative time t
-    """
-    # assuming smooth linear interpolation the average frequency dictates phase rate estimate
-    freq_est = (freq_t + freq_0) / 2
-    new_phase = pha_0 + (tau * freq_est * t)
-    return remainder(new_phase, tau) # NOTE: IEEE remainder
-
-
-def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sample_rate):
-    """Function to interpolate phase using cubic polynomial interpolation
-
-    Uses cubic interpolation to determine and intermediate phase within the curve linking 
-    a particular frequency and phase at relative time 0, to a frequency and phase at time t. 
-
-    The basis for this method is credited to:
-
-        MR. McAulay and T. Quatieri, "Speech analysis/Synthesis based on a 
-        sinusoidal representation," in IEEE Transactions on Acoustics, 
-        Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754, 
-        August 1986
-        
-        `doi: 10.1109/TASSP.1986.1164910 <https://doi.org/10.1109/TASSP.1986.1164910>`_.
-
-    Parameters
-    ----------
-    freq_0 : float
-        initial frequency (in Hz)
-    freq_t : float
-        frequency at time t (in Hz)
-    pha_0 : float
-        initial phase (in radians)
-    pha_t : float
-        phase at time t (in radians)
-    i_samps_from_0 : int
-        relative sample index `i` to interpolate at
-    samps_from_0_to_t : int
-        distance (in samples) from 0 to t
-    sample_rate : int
-        sampling rate (in samps/s)
-
-    Returns
-    -------
-    float
-        the modeled phase (in radians) at sample `i`
-    """ 
-    freq_to_radians_per_sample = tau / sample_rate
-
-    alpha_beta_coeffs = zeros([2,2], "float64")
-    alpha_beta_coeffs[0][0] = 3 / (samps_from_0_to_t**2)
-    alpha_beta_coeffs[0][1] = -1 / samps_from_0_to_t
-    alpha_beta_coeffs[1][0] = -2 / (samps_from_0_to_t**3)
-    alpha_beta_coeffs[1][1] = 1 / (samps_from_0_to_t**2)
-    alpha_beta_terms = zeros([2,1],"float64")
-
-    half_T = samps_from_0_to_t / 2
-
-    w_0 = freq_0 * freq_to_radians_per_sample
-    w_t = freq_t * freq_to_radians_per_sample
-
-    M = round((((pha_0 + (w_0 * samps_from_0_to_t) - pha_t) + (half_T * (w_t - w_0))) / tau))
-    alpha_beta_terms[0] = pha_t - pha_0 - (w_0 * samps_from_0_to_t) + (tau * M)
-    alpha_beta_terms[1] = w_t - w_0
-    alpha, beta = matmul(alpha_beta_coeffs, alpha_beta_terms)
-    return pha_0 + (w_0 * i_samps_from_0) + (alpha * (i_samps_from_0**2)) + (beta * i_samps_from_0**3)
 
  
 class MatchCost():

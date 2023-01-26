@@ -17,20 +17,20 @@ into the .ats format. The system uses a Short Time Fourier Transform (STFT) as
 is core analysis tool. Sound is analyzed using overlapping time windows and by
 taking the STFT on each window. 
 
-After converting to polar coordinates, a peak detection algorithm (:obj:`~pyatsyn.atsa.peak_detection`)
+After converting to polar coordinates, a peak detection algorithm (:obj:`~pyatsyn.analysis.peak_detection`)
 determines relevant spectral peaks in the data. At this point, pyschoacoustics 
 are considered in the form of masking curve evaluation and computation of the 
 Signal-to-Mask ratio (SMR) for each candidate peak. SMR data is store together with 
 a corrected frequency, magnitude and phase.
 
-The next step involves frame-to-frame tracking of peaks (:obj:`~pyatsyn.atsa.peak_tracking`) to connect peaks that
+The next step involves frame-to-frame tracking of peaks (:obj:`~pyatsyn.analysis.peak_tracking`) to connect peaks that
 follow a similar spectral trajectory using both frequency and SMR data. The system 
 uses a stable matching algorithm to pair candidate peaks, and is capable of interpolating
 gaps in the tracks.
 
-Once valid tracks are assembled, the results can be modeled with sinusoids (:obj:`~pyatsyn.atsa_synth`) and subtracted 
+Once valid tracks are assembled, the results can be modeled with sinusoids (:obj:`~pyatsyn.synthesis.synth`) and subtracted 
 from the origin source sound to compute a residual. NOTE: This part of the ATS system is currently under
-active research. For now, the residual analysis (:obj:`~pyatsyn.atsa.residual`) is modeled using a 
+active research. For now, the residual analysis (:obj:`~pyatsyn.analysis.residual`) is modeled using a 
 25 time-varying critical noise band energy model (consistent with the critical bands used during SMR evaluation). 
 These noise bands can then be resynthesized using 25 correspoding banks of time-enveloped, band-limited noise.
 
@@ -45,12 +45,12 @@ import argparse
 
 from pyatsyn.ats_structure import AtsSound
 
-from pyatsyn.atsa.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
-from pyatsyn.atsa.windows import make_fft_window, normalize_window, window_norm, VALID_FFT_WINDOW_DEFINITIONS
-from pyatsyn.atsa.peak_detect import peak_detection
-from pyatsyn.atsa.critical_bands import evaluate_smr
-from pyatsyn.atsa.peak_tracking import update_track_averages, peak_tracking
-from pyatsyn.atsa.residual import compute_residual, residual_analysis
+from pyatsyn.analysis.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
+from pyatsyn.analysis.windows import make_fft_window, normalize_window, window_norm, VALID_FFT_WINDOW_DEFINITIONS
+from pyatsyn.analysis.peak_detect import peak_detection
+from pyatsyn.analysis.critical_bands import evaluate_smr
+from pyatsyn.analysis.peak_tracking import update_track_averages, peak_tracking
+from pyatsyn.analysis.residual import compute_residual, residual_analysis
 from pyatsyn.ats_io import ats_save
 
 def tracker (   in_file, 
@@ -97,7 +97,7 @@ def tracker (   in_file,
     window_cycles : int
         lowest frequency to fit in analysis window; used to determine window size (default: 4)
     window_type : str
-        type of window to use for FFT analysis (default: 'blackman-harris-4-1'). See :obj:`~pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`
+        type of window to use for FFT analysis (default: 'blackman-harris-4-1'). See :obj:`~pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS`
     hop_size : float
         fraction of window size to shift from frame-to-frame (default: 0.25)
     fft_size : int
@@ -360,7 +360,7 @@ def tracker (   in_file,
 
 
 def tracker_CLI():
-    """Command line wrapper for :obj:`~pyatsyn.atsa.tracker.tracker`
+    """Command line wrapper for :obj:`~pyatsyn.analysis.tracker.tracker`
 
     Example
     ------- 

@@ -20,7 +20,7 @@ from numpy import pi
 from math import tau
 
 from pyatsyn.ats_structure import AtsPeak
-from pyatsyn.atsa.utils import amp_to_db, db_to_amp
+from pyatsyn.analysis.utils import amp_to_db, db_to_amp
 
 
 def peak_detection (fftfreqs, fftmags, fftphases, 

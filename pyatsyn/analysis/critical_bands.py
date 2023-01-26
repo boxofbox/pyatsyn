@@ -22,7 +22,7 @@ ATS_CRITICAL_BAND_EDGES : ndarray[float]
 
 from numpy import log10, array
 
-from pyatsyn.atsa.utils import amp_to_db_spl
+from pyatsyn.analysis.utils import amp_to_db_spl
 
 
 ATS_CRITICAL_BAND_EDGES = array([0.0,100.0,200.0,300.0, 400.0,
@@ -122,22 +122,22 @@ def frq_to_bark(freq):
 
 
 def find_band(freq):
-    """Function to retrieve lower band edge in :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`
+    """Function to retrieve lower band edge in :obj:`~pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES`
 
     Parameters
     ----------
     freq : float
-        A frequency (in Hz) to find the related band in :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` for
+        A frequency (in Hz) to find the related band in :obj:`~pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES` for
     
     Returns
     ----------
     int
-        index into :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES` that marks the lower band edge for the given freq
+        index into :obj:`~pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES` that marks the lower band edge for the given freq
 
     Raises
     ----------
     LookupError
-        if the frequency given is outside the range of the lowest or highest edge in :obj:`~pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES`
+        if the frequency given is outside the range of the lowest or highest edge in :obj:`~pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES`
 
     """
     if freq < ATS_CRITICAL_BAND_EDGES[0]:

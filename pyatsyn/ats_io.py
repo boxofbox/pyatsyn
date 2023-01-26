@@ -42,6 +42,11 @@ The expected structure of a .ats is:
 | type (# specifying frame type, see below) |
 +-------------------------------------------+
 
+NOTE: when saving/loading :obj:`~pyatsyn.ats_structure.ATSSoundVFR` objects, sampling-rate, 
+frame-size, and window-size will be -1. The file should be saved as a .atsv file by convention, 
+because this is currently not a supported format external to pyatsyn. See :obj:`~pyatsyn.ats_structure.to_cfr` 
+if you would like to save a VFR as an externally compliant format.
+
 The frame data immediately follows the header, 
 again all double floats, frame by frame, with a 
 format matching the `type` (int) as specified in the header
@@ -97,7 +102,7 @@ def ats_save(sound, file, save_phase=True, save_noise=True):
 
     Parameters
     ----------
-    sound : :obj:`~pyatsyn.ats_structure.AtsSound`
+    sound : :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR`
         ats sound object to save
     file : str
         file path to save to
@@ -180,7 +185,7 @@ def ats_load(   file,
     
     Returns
     -------
-    :obj:`~pyatsyn.ats_structure.AtsSound`
+    :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR`
         the loaded ats data
 
     Raises

@@ -96,7 +96,7 @@ may need to be run as a package in development mode
 
         $ pip install -e .
 
-If you are a newcomer to the ATS system we recommend you start by looking at :obj:`~pyatsyn.atsa.tracker`
+If you are a newcomer to the ATS system we recommend you start by looking at :obj:`~pyatsyn.analysis.tracker`
 
 ATS Overview
 ------------
