@@ -42,7 +42,7 @@ The expected structure of a .ats is:
 | type (# specifying frame type, see below) |
 +-------------------------------------------+
 
-NOTE: when saving/loading :obj:`~pyatsyn.ats_structure.ATSSoundVFR` objects, sampling-rate, 
+NOTE: when saving/loading :obj:`~pyatsyn.ats_structure.AtsSoundVFR` objects, sampling-rate, 
 frame-size, and window-size will be -1. The file should be saved as a .atsv file by convention, 
 because this is currently not a supported format external to pyatsyn. See :obj:`~pyatsyn.ats_structure.to_cfr` 
 if you would like to save a variable frame rate object to an externally compliant format by converting it to constant frame rate.
@@ -98,7 +98,7 @@ DOUBLE_BIG_ENDIAN = '>d'
 DOUBLE_LIL_ENDIAN = '<d'
 
 def ats_save(sound, file, save_phase=True, save_noise=True):
-    """Function to save an :obj:`~pyatsyn.ats_structure.AtsSound` to a file
+    """Function to save an :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR` to a file
 
     Parameters
     ----------
@@ -167,14 +167,14 @@ def ats_load(   file,
     """Function to load a .ats file into python
 
     Loads a .ats file into python and provides routines to re-optimize the 
-    :obj:`~pyatsyn.ats_structure.AtsSound` data if required.
+    ats sound data if required.
 
     Parameters
     ----------
     file : str
         filepath to .ats file to load
     optimize : bool, optional
-        determined whether to call :obj:`~pyatsyn.ats_structure.AtsSound.optimize` upon load (default: True)
+        determined whether to call :obj:`~pyatsyn.ats_structure.AtsSound.optimize` (or :obj:`~pyatsyn.ats_structure.AtsSoundVFR.optimize`) upon load (default: True)
     min_gap_size : int, optional
         when optimizing, tracked partial gaps smaller than or equal to this (in frames) will be 
         interpolated and filled. If None, no gap filling will occur (default: None)

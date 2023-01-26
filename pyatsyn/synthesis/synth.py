@@ -24,12 +24,12 @@ import argparse
 from pyatsyn.analysis.critical_bands import ATS_CRITICAL_BAND_EDGES
 from pyatsyn.analysis.utils import compute_frames
 from pyatsyn.ats_io import ats_load
-
+from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE
 
 def synth(ats_snd, normalize=False, compute_phase=True, 
             export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None, 
             normalize_sine = False, normalize_noise = False):    
-    """Function to synthesize audio from :obj:`~pyatsyn.ats_structure.AtsSound`
+    """Function to synthesize audio from :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR`
 
     Sine generator bank and band-limited noise synthesizer for .ats files. When
     phase information is ignored phase is linearly interpolated between consecutive
@@ -46,7 +46,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
 
     Parameters
     ----------
-    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`
+    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR`
         the .ats file used to synthesize
     normalize : bool, optional
         normalize sound to ±1 before output (default: False)
@@ -72,43 +72,47 @@ def synth(ats_snd, normalize=False, compute_phase=True,
     ndarray[float]
         A 1D array of amplitudes representing the synthesized sound
     """
-    sample_rate = ats_snd.sampling_rate
+    sample_rate = ATS_DEFAULT_SAMPLING_RATE
+    if hasattr(ats_snd, "sampling_rate"):
+        sample_rate = ats_snd.sampling_rate
     out_size = int(ats_snd.dur * sample_rate)
-    frame_size = ats_snd.frame_size
     frames = ats_snd.frames
 
     synthesized = zeros(out_size,"float64")
-
-    frame_size_range = frame_size
     
     if sine_pct > 0.0:
         n_partials = ats_snd.partials    
         freq_to_radians_per_sample = tau / sample_rate
         
         has_pha = compute_phase and len(ats_snd.pha) > 0
+
         """
         for cubic polynomial interpolation of phase
         credit: McAulay & Quatieri (1986)
         """
         alpha_beta_coeffs = zeros([2,2], "float64")
-        alpha_beta_coeffs[0][0] = 3 / (frame_size**2)
-        alpha_beta_coeffs[0][1] = -1 / frame_size
-        alpha_beta_coeffs[1][0] = -2 / (frame_size**3)
-        alpha_beta_coeffs[1][1] = 1 / (frame_size**2)
         alpha_beta_terms = zeros([2,1],"float64")
-
-        half_T = frame_size / 2
-
-        samps = arange(frame_size, dtype='int64')
-        samps_squared = samps ** 2
-        samps_cubed = samps ** 3
 
         prior_partial_phases = None
         if not has_pha:
             prior_partial_phases = zeros(n_partials,"float64")
 
         fil_ptr = 0
-        for frame_n in range(frames):
+        for frame_n in range(frames - 1):
+
+            frame_size = round((ats_snd.time[frame_n + 1] - ats_snd.time[frame_n]) * sample_rate)
+            frame_size_range = frame_size
+
+            alpha_beta_coeffs[0][0] = 3 / (frame_size**2)
+            alpha_beta_coeffs[0][1] = -1 / frame_size
+            alpha_beta_coeffs[1][0] = -2 / (frame_size**3)
+            alpha_beta_coeffs[1][1] = 1 / (frame_size**2)
+
+            half_T = frame_size / 2
+
+            samps = arange(frame_size, dtype='int64')
+            samps_squared = samps ** 2
+            samps_cubed = samps ** 3
             
             # constrain number of samples we write at tail end of sound
             if fil_ptr + frame_size_range > out_size:
@@ -263,17 +267,9 @@ def synth(ats_snd, normalize=False, compute_phase=True,
 
     # export synthesized version to audio file
     if export_file is not None:
-        sf.write(export_file, synthesized, ats_snd.sampling_rate)
+        sf.write(export_file, synthesized, sample_rate)
 
     return synthesized
-
-
-def synth_vfr(ats_snd, normalize=False, compute_phase=True, 
-            export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None, 
-            normalize_sine = False, normalize_noise = False):
-        """TODO
-        """
-        pass
 
 
 def synth_CLI():    

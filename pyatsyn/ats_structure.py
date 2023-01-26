@@ -17,7 +17,7 @@
 from numpy import zeros, inf, copy, sum, any, arange, ceil
 
 from pyatsyn.analysis.utils import ATS_MIN_SEGMENT_LENGTH
-from pyatsyn.ats_utils import phase_interp_cubic
+from pyatsyn.ats_utils import phase_interp_cubic, ATS_DEFAULT_SAMPLING_RATE
 
 class AtsPeak:
     """Data abstraction for storing single peak, single timepoint data for peak tracking
@@ -538,12 +538,14 @@ class AtsSound(AtsSoundVFR):
                             )
 
 
-def to_cfr(ats_snd_vfr, frame_size, sample_rate=44100, window_size=None):
+def to_cfr(ats_snd_vfr, frame_size, sample_rate=None, window_size=None):
     """
     TODO
-    """
+    """    
     has_pha = ats_snd_vfr.pha is not None
     frames = int(ceil((ats_snd_vfr.time[-1] * sample_rate) / frame_size)) + 1
+    if sample_rate is None:
+        sample_rate = ATS_DEFAULT_SAMPLING_RATE
     if window_size is None:
         window_size = -1
 

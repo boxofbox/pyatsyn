@@ -12,10 +12,16 @@
 
 """
 TODO
+
+Attributes
+----------
+TODO
 """
 
 from math import remainder, tau
 from numpy import zeros, matmul
+
+ATS_DEFAULT_SAMPLING_RATE = 44100
 
 def phase_interp_linear(freq_0, freq_t, pha_0, t):
     """Function to compute linear phase interpolation
