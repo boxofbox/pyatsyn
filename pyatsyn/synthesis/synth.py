@@ -266,7 +266,6 @@ def synth(ats_snd, normalize=False, compute_phase=True,
             synthesized /= gain
 
     # export synthesized version to audio file
-    print(sampling_rate)
     if export_file is not None:
         sf.write(export_file, synthesized, int(sampling_rate))
 

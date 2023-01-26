@@ -1,6 +1,3 @@
-
-
-
 # ABOUT pyatsyn
 
 pyatsyn is a python implementation of the Analysis-Transformation-Synthesis (ATS) spectral modeling system.

@@ -48,7 +48,7 @@ from pyatsyn.ats_structure import AtsSound
 from pyatsyn.analysis.utils import db_to_amp, next_power_of_2, compute_frames, optimize_tracks
 from pyatsyn.analysis.windows import make_fft_window, normalize_window, window_norm, VALID_FFT_WINDOW_DEFINITIONS
 from pyatsyn.analysis.peak_detect import peak_detection
-from pyatsyn.analysis.critical_bands import evaluate_smr
+from pyatsyn.analysis.critical_bands import evaluate_smr, ATS_CRITICAL_BAND_EDGES
 from pyatsyn.analysis.peak_tracking import update_track_averages, peak_tracking
 from pyatsyn.analysis.residual import compute_residual, residual_analysis
 from pyatsyn.ats_io import ats_save
@@ -346,6 +346,8 @@ def tracker (   in_file,
     #####################
 
     if residual_file:
+        if ats_snd.sampling_rate < ATS_CRITICAL_BAND_EDGES[-1] * 2:
+            raise ValueError(f"Residual analysis is currently not supported for sampling rates less than {ATS_CRITICAL_BAND_EDGES[-1]*2}")
         if verbose:
             print("Computing Residual...")
         residual = compute_residual(ats_snd, in_sound, st, nd, residual_file)
