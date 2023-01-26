@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyatsyn.analysis.residual &mdash; pyatsyn 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> pyatsyn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../info.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html">pyatsyn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#analysis-module">analysis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#transformation-module">transformation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#synthesis-module">synthesis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">pyatsyn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyatsyn.analysis.residual</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyatsyn.analysis.residual</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># This source code is licensed under the BSD-style license found in the</span>
+<span class="c1"># LICENSE.rst file in the root directory of this source tree. </span>
+
+<span class="c1"># pyatsyn Copyright (c) &lt;2023&gt;, &lt;Johnathan G Lyon&gt;</span>
+<span class="c1"># All rights reserved.</span>
+
+<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
+<span class="c1"># &lt;Oscar Pablo Di Liscia, ,and Juan Pampin&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;Functions to Compute and Analyze Residual Signals</span>
+
+<span class="sd">The reisidual signal is computed by taking the time-domain difference between the orignal sound </span>
+<span class="sd">and the sinusoidal synthesis of the spectral trajectories. NOTE: this section is under active research.</span>
+<span class="sd">Currently, this noise signal is analyzed using the STFT to obtain time-varying energy at </span>
+<span class="sd">25 critical bands (see :obj:`~pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES`)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">roll</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">absolute</span><span class="p">,</span> <span class="n">asarray</span>
+<span class="kn">from</span> <span class="nn">numpy.fft</span> <span class="kn">import</span> <span class="n">fft</span>
+<span class="kn">import</span> <span class="nn">soundfile</span> <span class="k">as</span> <span class="nn">sf</span>
+
+<span class="kn">from</span> <span class="nn">pyatsyn.synthesis.synth</span> <span class="kn">import</span> <span class="n">synth</span>
+
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.utils</span> <span class="kn">import</span> <span class="n">next_power_of_2</span><span class="p">,</span> <span class="n">db_to_amp</span><span class="p">,</span> <span class="n">ATS_NOISE_THRESHOLD</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.critical_bands</span> <span class="kn">import</span> <span class="n">ATS_CRITICAL_BAND_EDGES</span>
+
+
+<div class="viewcode-block" id="compute_residual"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.residual.compute_residual">[docs]</a><span class="k">def</span> <span class="nf">compute_residual</span><span class="p">(</span>   <span class="n">ats_snd</span><span class="p">,</span> 
+                        <span class="n">in_sound</span><span class="p">,</span>
+                        <span class="n">start_sample</span><span class="p">,</span>
+                        <span class="n">end_sample</span><span class="p">,</span>
+                        <span class="n">residual_file</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to computes the time domain difference between the sinusoidal synthesis of spectral trajectories in an ats_snd, </span>
+<span class="sd">    and the original sound data</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    </span>
+<span class="sd">    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+<span class="sd">        the input ats object to compute the residual for</span>
+<span class="sd">    in_sound : ndarray[float]</span>
+<span class="sd">        the original sound signal from which to extract the residual</span>
+<span class="sd">    start_sample : int</span>
+<span class="sd">        sample in `in_sound` where the `ats_snd` begins</span>
+<span class="sd">    end_sample : int</span>
+<span class="sd">        sample in `in_sound` where  the `ats_snd` ends</span>
+<span class="sd">    residual_file : str, optional</span>
+<span class="sd">        path to audio file to output residual signal to. None if no file output. (Default: None)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    residual : ndarray[float]</span>
+<span class="sd">        a 1D array of floats containing the amplitudes of the computed residual in the time domain</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">synthesized</span> <span class="o">=</span> <span class="n">synth</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">)</span>
+    <span class="n">residual</span> <span class="o">=</span> <span class="n">in_sound</span><span class="p">[</span><span class="n">start_sample</span><span class="p">:</span><span class="n">end_sample</span><span class="p">]</span> <span class="o">-</span> <span class="n">synthesized</span>
+
+    <span class="c1"># export residual to audio file</span>
+    <span class="k">if</span> <span class="n">residual_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">residual_file</span><span class="p">,</span> <span class="n">residual</span><span class="p">,</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">residual</span></div>
+
+
+<div class="viewcode-block" id="residual_analysis"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.residual.residual_analysis">[docs]</a><span class="k">def</span> <span class="nf">residual_analysis</span><span class="p">(</span>  <span class="n">residual</span><span class="p">,</span> 
+                        <span class="n">ats_snd</span><span class="p">,</span> 
+                        <span class="n">min_fft_size</span> <span class="o">=</span> <span class="mi">4096</span><span class="p">,</span>
+                        <span class="n">equalize</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="n">pad_factor</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="n">band_edges</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">par_energy</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                                               
+                        <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute noise energy in a residual signal across 25 critical bands</span>
+
+<span class="sd">    Noise energy in each critical band is evaluated in the following way:</span>
+
+<span class="sd">    :math:`E[i] = \\frac{1}{K} \\sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2`</span>
+
+<span class="sd">    where :math:`i` is the band number (0 to 24), :math:`K` is the number of bins</span>
+<span class="sd">    of the STFT where the band :math:`i` has frequency information. :math:`k_{i0}`</span>
+<span class="sd">    is the lowest STFT bin where band :math:`i` has information, and :math:`X` is the</span>
+<span class="sd">    amplitude data for a given bin :math:`k`.</span>
+
+<span class="sd">    The algorithm evaluates the noise energy at each step of the Bark scale.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    residual : ndarray[float]</span>
+<span class="sd">        a 1D array of floats containing the amplitudes of the residual signal in the time domain</span>
+<span class="sd">    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+<span class="sd">        the input ats object to store the residual analysis in</span>
+<span class="sd">    min_fft_size : int, optional</span>
+<span class="sd">        restricts the minimum size of the FFT window (default: 4096)</span>
+<span class="sd">    equalize : bool, optional</span>
+<span class="sd">        equalize noise energy in the frequency domain to the time domain energy using Parseval&#39;s Theorem (default: False)</span>
+<span class="sd">    pad_factor : int, optional</span>
+<span class="sd">        multiplicative window padding relative to `ats_snd.window_size` for calculating FFT window size (default: 2)</span>
+<span class="sd">    band_edges : ndarray[float]</span>
+<span class="sd">        1D array containing 26 frequencies that distinguish the default 25 critical bands. </span>
+<span class="sd">        If None, will use :obj:`~pyatsyn.analysis.cricital_bands.ATS_CRITICAL_BAND_EDGES` (default: None)</span>
+<span class="sd">    par_energy : bool</span>
+<span class="sd">        whether to transfer noise energy to partials. NOTE: currently not fully supported; only for legacy support (default: False)</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        increase verbosity (default: False)</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">hop</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frame_size</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">window_size</span>
+    <span class="n">M_over_2</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="n">threshold</span> <span class="o">=</span> <span class="n">db_to_amp</span><span class="p">(</span><span class="n">ATS_NOISE_THRESHOLD</span><span class="p">)</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="n">residual_N</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">min_fft_size</span><span class="p">,</span> <span class="n">pad_factor</span><span class="p">)</span>
+
+    <span class="n">frames</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frames</span>
+    <span class="n">fft_mag</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">sampling_rate</span> <span class="o">/</span> <span class="n">N</span>
+
+    <span class="c1"># sub band limits</span>
+    <span class="k">if</span> <span class="n">band_edges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">band_edges</span> <span class="o">=</span> <span class="n">ATS_CRITICAL_BAND_EDGES</span>
+    <span class="n">band_limits</span> <span class="o">=</span> <span class="n">residual_get_band_limits</span><span class="p">(</span><span class="n">fft_mag</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">)</span>
+    <span class="n">n_bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">band_limits</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">band_energy</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">n_bands</span><span class="p">,</span><span class="n">frames</span><span class="p">],</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beginning Residual FFT... [frames = </span><span class="si">{</span><span class="n">frames</span><span class="si">}</span><span class="s2">; M = </span><span class="si">{</span><span class="n">M</span><span class="si">}</span><span class="s2">; N = </span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">report_every_x_percent</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">report_flag</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">fft_mags</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">t_domain_energy</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">fil_ptr</span> <span class="o">=</span> <span class="o">-</span><span class="n">M_over_2</span>
+
+    <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="n">frame_n</span> <span class="o">*</span> <span class="mf">100.0</span> <span class="o">/</span> <span class="n">frames</span>
+            <span class="k">if</span> <span class="n">done</span> <span class="o">&gt;</span> <span class="n">report_flag</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">done</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">% complete (residual analysis)&quot;</span><span class="p">)</span>
+                <span class="n">report_flag</span> <span class="o">+=</span> <span class="n">report_every_x_percent</span>
+        
+        <span class="c1"># padding for window ranges that are out of the input file</span>
+        <span class="n">front_pad</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">back_pad</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">fil_ptr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">front_pad</span> <span class="o">=</span> <span class="o">-</span><span class="n">fil_ptr</span>
+        <span class="k">if</span> <span class="n">fil_ptr</span> <span class="o">+</span> <span class="n">M</span> <span class="o">&gt;=</span> <span class="n">residual</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">back_pad</span> <span class="o">=</span> <span class="n">fil_ptr</span> <span class="o">+</span> <span class="n">M</span> <span class="o">-</span> <span class="n">residual</span><span class="o">.</span><span class="n">size</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+        <span class="c1"># pull in data</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">front_pad</span><span class="p">:</span><span class="n">M</span><span class="o">-</span><span class="n">back_pad</span><span class="p">]</span> <span class="o">=</span> <span class="n">residual</span><span class="p">[</span><span class="n">fil_ptr</span><span class="o">+</span><span class="n">front_pad</span><span class="p">:</span><span class="n">fil_ptr</span><span class="o">+</span><span class="n">M</span><span class="o">-</span><span class="n">back_pad</span><span class="p">]</span>                    
+        <span class="k">if</span> <span class="n">equalize</span><span class="p">:</span>
+            <span class="c1"># store the time domain energy for equalization</span>
+            <span class="n">t_domain_energy</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">front_pad</span><span class="p">:</span><span class="n">M</span><span class="o">-</span><span class="n">back_pad</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c1"># shift window by half of M so that phases in `data` are relatively accurate to midpoints</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">roll</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">-</span><span class="n">M_over_2</span><span class="p">)</span>
+        
+        <span class="c1"># update file pointer</span>
+        <span class="n">fil_ptr</span> <span class="o">+=</span> <span class="n">hop</span>
+
+        <span class="c1"># DC Block</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># FFT</span>
+        <span class="n">fd</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">fft_mags</span> <span class="o">=</span> <span class="n">absolute</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span>
+
+        <span class="n">residual_compute_band_energy</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">,</span> <span class="n">band_limits</span><span class="p">,</span> <span class="n">band_energy</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">equalize</span><span class="p">:</span>
+            <span class="c1"># re-scale frequency band energy to the energy in the time domain                 </span>
+            <span class="n">f_domain_energy</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">band_energy</span><span class="p">[:,</span><span class="n">frame_n</span><span class="p">])</span>
+            
+            <span class="n">eq_ratio</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="k">if</span> <span class="n">f_domain_energy</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">eq_ratio</span> <span class="o">=</span> <span class="n">t_domain_energy</span> <span class="o">/</span> <span class="n">f_domain_energy</span>
+            <span class="n">band_energy</span><span class="p">[:,</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">*=</span> <span class="n">eq_ratio</span>
+            
+    <span class="c1"># apply noise threshold</span>
+    <span class="n">band_energy</span><span class="p">[</span><span class="n">band_energy</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    
+    <span class="c1"># store in ats object</span>
+    <span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span> <span class="o">=</span> <span class="n">band_energy</span>
+    <span class="n">ats_snd</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">n_bands</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">par_energy</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transferring noise band energy to partials...&quot;</span><span class="p">)</span>
+        <span class="n">band_to_energy</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">)</span>
+        <span class="n">remove_bands</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">ATS_NOISE_THRESHOLD</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="residual_N"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.residual.residual_N">[docs]</a><span class="k">def</span> <span class="nf">residual_N</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">min_fft_size</span><span class="p">,</span> <span class="n">factor</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute an FFT window size for residual analysis</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M : int</span>
+<span class="sd">        target window size</span>
+<span class="sd">    min_fft_size : int</span>
+<span class="sd">        restricts the minimum size of the FFT window </span>
+<span class="sd">    factor : int, optional</span>
+<span class="sd">        multiplicative window padding relative to `M` for calculating FFT window size(default: 2)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        power-of-2 window size</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="k">if</span> <span class="n">M</span> <span class="o">*</span> <span class="n">factor</span> <span class="o">&gt;</span> <span class="n">min_fft_size</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">next_power_of_2</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">next_power_of_2</span><span class="p">(</span><span class="n">min_fft_size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="residual_get_band_limits"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.residual.residual_get_band_limits">[docs]</a><span class="k">def</span> <span class="nf">residual_get_band_limits</span><span class="p">(</span><span class="n">fft_mag</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to convert band edges to FFT bin indices</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fft_mag : float</span>
+<span class="sd">        FFT magic number - sampling rate / FFT window size</span>
+<span class="sd">    band_edges : ndarray[float]</span>
+<span class="sd">        1D array of band edge frequencies (in Hz)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    band_limits : ndarray[int]</span>
+<span class="sd">        1D array of bin indicies mapping band edge frequencies to bins in FFT frequency domain</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">band_limits</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">band_edges</span><span class="p">),</span><span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ind</span><span class="p">,</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">band_edges</span><span class="p">):</span>
+        <span class="n">band_limits</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">band</span> <span class="o">/</span> <span class="n">fft_mag</span>
+    <span class="k">return</span> <span class="n">band_limits</span></div>
+
+
+<div class="viewcode-block" id="residual_compute_band_energy"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.residual.residual_compute_band_energy">[docs]</a><span class="k">def</span> <span class="nf">residual_compute_band_energy</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">,</span> <span class="n">band_limits</span><span class="p">,</span> <span class="n">band_energy</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute the band energy</span>
+
+<span class="sd">    Energy in each band is evaluated in the following way:</span>
+
+<span class="sd">    :math:`E[i] = \\frac{1}{K} \\sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2`</span>
+
+<span class="sd">    where :math:`i` is the band number (0 to 24), :math:`K` is the number of bins</span>
+<span class="sd">    of the STFT where the band :math:`i` has frequency information. :math:`k_{i0}`</span>
+<span class="sd">    is the lowest STFT bin where band :math:`i` has information, and :math:`X` is the</span>
+<span class="sd">    amplitude data for a given bin :math:`k`.</span>
+
+<span class="sd">    NOTE: band_energy is updated directly</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fft_mags : ndarray[float]</span>
+<span class="sd">        1D array of frequency domain amplitudes</span>
+<span class="sd">    band_limits : ndarray[int]</span>
+<span class="sd">        1D array of bin indicies mapping band edge frequencies to bins in FFT frequency domain</span>
+<span class="sd">    band_energy : ndarray[float]</span>
+<span class="sd">        2D array to store band energies for each band at each frame</span>
+<span class="sd">    frame_n : int</span>
+<span class="sd">        the current frame</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">band_limits</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">low</span> <span class="o">=</span> <span class="n">band_limits</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">low</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="n">band_limits</span><span class="p">[</span><span class="n">band</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">high</span> <span class="o">&gt;</span> <span class="n">fft_mags</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">high</span> <span class="o">=</span> <span class="n">fft_mags</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">fft_mags</span><span class="p">[</span><span class="n">low</span><span class="p">:</span><span class="n">high</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">fft_mags</span><span class="p">[</span><span class="n">low</span><span class="p">:</span><span class="n">high</span><span class="p">]</span><span class="o">.</span><span class="n">size</span></div>
+
+
+<div class="viewcode-block" id="band_to_energy"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.residual.band_to_energy">[docs]</a><span class="k">def</span> <span class="nf">band_to_energy</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">band_edges</span><span class="p">,</span> <span class="n">use_smr</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to transfer band energies into partials</span>
+
+<span class="sd">    NOTE: Currently not fully supported. Included for legacy purposes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+<span class="sd">        the ats object containing band energies</span>
+<span class="sd">    band_edges : ndarray[float]</span>
+<span class="sd">        1D array of band edge frequencies (in Hz)        </span>
+<span class="sd">    use_smr : bool, optional</span>
+<span class="sd">        whether to use smr instead of amplitude for scaling energy across partials (default: False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>     
+    <span class="n">bands</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_snd</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span>
+    <span class="n">partials</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">partials</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frames</span>
+    <span class="n">par_energy</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">partials</span><span class="p">,</span><span class="n">frames</span><span class="p">],</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+    <span class="n">partial_ind</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bands</span><span class="p">):</span>
+
+            <span class="c1"># get frame&#39;s partials that are within the subband</span>
+            <span class="n">lo_frq</span> <span class="o">=</span> <span class="n">band_edges</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+            <span class="n">hi_frq</span> <span class="o">=</span> <span class="n">band_edges</span><span class="p">[</span><span class="n">band</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">par</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">partial_ind</span> <span class="o">&lt;</span> <span class="n">partials</span><span class="p">):</span>
+                <span class="n">check</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial_ind</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">check</span> <span class="o">&lt;</span> <span class="n">lo_frq</span><span class="p">:</span>
+                    <span class="n">partial_ind</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">check</span> <span class="o">&gt;=</span> <span class="n">lo_frq</span> <span class="ow">and</span> <span class="n">check</span> <span class="o">&lt;=</span> <span class="n">hi_frq</span><span class="p">:</span>
+                    <span class="n">par</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">partial_ind</span><span class="p">)</span>
+                    <span class="n">partial_ind</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            
+            <span class="k">if</span> <span class="n">par</span> <span class="ow">and</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                
+                <span class="n">amp_source</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">amp</span>
+                <span class="k">if</span> <span class="n">use_smr</span><span class="p">:</span>
+                    <span class="n">amp_source</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">smr</span>
+
+                <span class="c1"># get the current energy of the subband</span>
+                <span class="n">par_amp_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">for</span> <span class="n">p_ind</span> <span class="ow">in</span> <span class="n">par</span><span class="p">:</span>
+                    <span class="n">par_amp_sum</span> <span class="o">+=</span> <span class="n">amp_source</span><span class="p">[</span><span class="n">p_ind</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
+                
+                <span class="k">if</span> <span class="n">par_amp_sum</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                    <span class="c1"># if the sub-band is active store band energy proportionally among activate partials</span>
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">par</span><span class="p">:</span>
+                        <span class="n">par_energy</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">amp_source</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">*</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">/</span> <span class="n">par_amp_sum</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># otherwise spread the energy across the inactive partials</span>
+                    <span class="n">energy_per_partial</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">par</span><span class="p">:</span>
+                        <span class="n">par_energy</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">energy_per_partial</span>
+        
+                <span class="c1"># clear energy redistributed to partials from band</span>
+                <span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="n">ats_snd</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="n">par_energy</span></div>
+            
+            
+<div class="viewcode-block" id="remove_bands"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.residual.remove_bands">[docs]</a><span class="k">def</span> <span class="nf">remove_bands</span><span class="p">(</span><span class="n">ats_snd</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to remove bands and band_energies below a threshold</span>
+
+<span class="sd">    NOTE: ats_snd is updated directly</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ats_snd : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+<span class="sd">        the ats object storing band energies to threshold</span>
+<span class="sd">    threshold : float</span>
+<span class="sd">        energy threshold used to prune band energies and bands</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">frames</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">frames</span>
+    <span class="n">threshold</span> <span class="o">=</span> <span class="n">db_to_amp</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
+    
+    <span class="n">valid_bands</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">bands</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mean</span><span class="p">(</span><span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">:</span>
+            <span class="n">valid_bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">valid_bands</span><span class="p">:</span>
+        <span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span> <span class="o">=</span> <span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">valid_bands</span><span class="p">,:]</span>
+        <span class="n">ats_snd</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">valid_bands</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ats_snd</span><span class="o">.</span><span class="n">band_energy</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ats_snd</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="p">[]</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Johnathan G Lyon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

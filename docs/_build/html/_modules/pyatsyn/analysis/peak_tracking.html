@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyatsyn.atsa.peak_tracking &mdash; pyatsyn 1.0.0 documentation</title>
+  <title>pyatsyn.analysis.peak_tracking &mdash; pyatsyn 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -40,7 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../info.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html">pyatsyn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#atsa-module">atsa module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#analysis-module">analysis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#transformation-module">transformation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#synthesis-module">synthesis module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
 </ul>
 
@@ -59,7 +61,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">pyatsyn.atsa.peak_tracking</li>
+      <li class="breadcrumb-item active">pyatsyn.analysis.peak_tracking</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -68,7 +70,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for pyatsyn.atsa.peak_tracking</h1><div class="highlight"><pre>
+  <h1>Source code for pyatsyn.analysis.peak_tracking</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="c1"># This source code is licensed under the BSD-style license found in the</span>
@@ -113,11 +115,10 @@
 
 <span class="kn">from</span> <span class="nn">heapq</span> <span class="kn">import</span> <span class="n">heappop</span><span class="p">,</span> <span class="n">heappush</span>
 <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">SimpleQueue</span>
-<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">tau</span><span class="p">,</span> <span class="n">remainder</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">matmul</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.ats_utils</span> <span class="kn">import</span> <span class="n">phase_interp_cubic</span>
 
 
-<div class="viewcode-block" id="update_track_averages"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.update_track_averages">[docs]</a><span class="k">def</span> <span class="nf">update_track_averages</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">track_length</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
+<div class="viewcode-block" id="update_track_averages"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.peak_tracking.update_track_averages">[docs]</a><span class="k">def</span> <span class="nf">update_track_averages</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">track_length</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to update running averages of recent peaks</span>
 
 <span class="sd">    Using the list of current tracks, we use `track_length` frames to look back and update, </span>
@@ -180,7 +181,7 @@
             <span class="n">tk</span><span class="o">.</span><span class="n">smr</span> <span class="o">=</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">smr_acc</span> <span class="o">/</span> <span class="n">s</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">last_smr</span><span class="p">)</span>    </div>
 
 
-<div class="viewcode-block" id="find_track_in_peaks"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.find_track_in_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_track_in_peaks</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">peaks</span><span class="p">):</span>
+<div class="viewcode-block" id="find_track_in_peaks"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.peak_tracking.find_track_in_peaks">[docs]</a><span class="k">def</span> <span class="nf">find_track_in_peaks</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">peaks</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to search a the first peak found tagged a given track ind</span>
 
 <span class="sd">    Parameters</span>
@@ -202,7 +203,7 @@
     <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="peak_tracking"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.peak_tracking">[docs]</a><span class="k">def</span> <span class="nf">peak_tracking</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">hop_size</span><span class="p">,</span> <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">min_gap_length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="peak_tracking"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.peak_tracking.peak_tracking">[docs]</a><span class="k">def</span> <span class="nf">peak_tracking</span><span class="p">(</span><span class="n">tracks</span><span class="p">,</span> <span class="n">peaks</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">,</span> <span class="n">analysis_frames</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">hop_size</span><span class="p">,</span> <span class="n">frequency_deviation</span> <span class="o">=</span> <span class="mf">0.45</span><span class="p">,</span> <span class="n">SMR_continuity</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">min_gap_length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Core function to coordinate peak tracking</span>
 
 <span class="sd">    This function coordinates the matching of new peaks with existing tracks using </span>
@@ -223,7 +224,7 @@
 <span class="sd">        the current frame</span>
 <span class="sd">    analysis_frames : Iterable[Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]]</span>
 <span class="sd">        a running collection storing the :obj:`~pyatsyn.ats_structure.AtsPeak` objects at each frame in time</span>
-<span class="sd">    sampling_rate : int </span>
+<span class="sd">    sampling_rate : float</span>
 <span class="sd">        the sampling rate (in samples / s)</span>
 <span class="sd">    hop_size : int </span>
 <span class="sd">        the inter-frame distance (in samples)</span>
@@ -327,7 +328,7 @@
             <span class="n">tracks</span><span class="p">[</span><span class="n">tk_ind</span><span class="p">]</span><span class="o">.</span><span class="n">asleep_for</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
-<div class="viewcode-block" id="are_valid_candidates"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.are_valid_candidates">[docs]</a><span class="k">def</span> <span class="nf">are_valid_candidates</span><span class="p">(</span><span class="n">candidate1</span><span class="p">,</span> <span class="n">candidate2</span><span class="p">,</span> <span class="n">deviation</span><span class="p">):</span>
+<div class="viewcode-block" id="are_valid_candidates"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.peak_tracking.are_valid_candidates">[docs]</a><span class="k">def</span> <span class="nf">are_valid_candidates</span><span class="p">(</span><span class="n">candidate1</span><span class="p">,</span> <span class="n">candidate2</span><span class="p">,</span> <span class="n">deviation</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to determine if the distance between two peaks are within the relative deviation constraint</span>
 
 <span class="sd">    Peaks are valid candidates for pair if their absolute distance is smaller than the frequency deviation </span>
@@ -351,7 +352,7 @@
     <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">candidate1</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">candidate2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">min_frq</span> <span class="o">*</span> <span class="n">deviation</span></div>
 
 
-<div class="viewcode-block" id="peak_dist"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.peak_dist">[docs]</a><span class="k">def</span> <span class="nf">peak_dist</span><span class="p">(</span><span class="n">pk1</span><span class="p">,</span> <span class="n">pk2</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+<div class="viewcode-block" id="peak_dist"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.peak_tracking.peak_dist">[docs]</a><span class="k">def</span> <span class="nf">peak_dist</span><span class="p">(</span><span class="n">pk1</span><span class="p">,</span> <span class="n">pk2</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to calculate peak frequency distance</span>
 
 <span class="sd">    This function is used to calculate the cost for the peak matching algorithm </span>
@@ -378,96 +379,8 @@
 <span class="sd">    &quot;&quot;&quot;</span> 
     <span class="k">return</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">pk1</span><span class="o">.</span><span class="n">frq</span> <span class="o">-</span> <span class="n">pk2</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pk1</span><span class="o">.</span><span class="n">smr</span> <span class="o">-</span> <span class="n">pk2</span><span class="o">.</span><span class="n">smr</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="phase_interp"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.phase_interp">[docs]</a><span class="k">def</span> <span class="nf">phase_interp</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute linear phase interpolation</span>
-
-<span class="sd">    NOTE: currently not used in peak tracking, but supplied for legacy purposes</span>
-
-<span class="sd">    Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate </span>
-<span class="sd">    from the relative time 0 to time t.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    freq_0 : float</span>
-<span class="sd">        initial frequency (in Hz)</span>
-<span class="sd">    freq_t : float</span>
-<span class="sd">        frequency at time t (in Hz)</span>
-<span class="sd">    pha_0 : float</span>
-<span class="sd">        initial phase (in radians)</span>
-<span class="sd">    t : float</span>
-<span class="sd">        time (in s) from freq_0</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    float</span>
-<span class="sd">        the phase (in radians) at relative time t</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># assuming smooth linear interpolation the average frequency dictates phase rate estimate</span>
-    <span class="n">freq_est</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq_t</span> <span class="o">+</span> <span class="n">freq_0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
-    <span class="n">new_phase</span> <span class="o">=</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">freq_est</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">remainder</span><span class="p">(</span><span class="n">new_phase</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span> <span class="c1"># NOTE: IEEE remainder</span></div>
-
-
-<div class="viewcode-block" id="phase_interp_cubic"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.phase_interp_cubic">[docs]</a><span class="k">def</span> <span class="nf">phase_interp_cubic</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">pha_t</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to interpolate phase using cubic polynomial interpolation</span>
-
-<span class="sd">    Uses cubic interpolation to determine and intermediate phase within the curve linking </span>
-<span class="sd">    a particular frequency and phase at relative time 0, to a frequency and phase at time t. </span>
-
-<span class="sd">    The basis for this method is credited to:</span>
-
-<span class="sd">        MR. McAulay and T. Quatieri, &quot;Speech analysis/Synthesis based on a </span>
-<span class="sd">        sinusoidal representation,&quot; in IEEE Transactions on Acoustics, </span>
-<span class="sd">        Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754, </span>
-<span class="sd">        August 1986</span>
-<span class="sd">        </span>
-<span class="sd">        `doi: 10.1109/TASSP.1986.1164910 &lt;https://doi.org/10.1109/TASSP.1986.1164910&gt;`_.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    freq_0 : float</span>
-<span class="sd">        initial frequency (in Hz)</span>
-<span class="sd">    freq_t : float</span>
-<span class="sd">        frequency at time t (in Hz)</span>
-<span class="sd">    pha_0 : float</span>
-<span class="sd">        initial phase (in radians)</span>
-<span class="sd">    pha_t : float</span>
-<span class="sd">        phase at time t (in radians)</span>
-<span class="sd">    i_samps_from_0 : int</span>
-<span class="sd">        relative sample index `i` to interpolate at</span>
-<span class="sd">    samps_from_0_to_t : int</span>
-<span class="sd">        distance (in samples) from 0 to t</span>
-<span class="sd">    sampling_rate : int</span>
-<span class="sd">        sampling rate (in samps/s)</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    float</span>
-<span class="sd">        the modeled phase (in radians) at sample `i`</span>
-<span class="sd">    &quot;&quot;&quot;</span> 
-    <span class="n">freq_to_radians_per_sample</span> <span class="o">=</span> <span class="n">tau</span> <span class="o">/</span> <span class="n">sampling_rate</span>
-
-    <span class="n">alpha_beta_coeffs</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
-    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">samps_from_0_to_t</span>
-    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
-    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">alpha_beta_terms</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
-
-    <span class="n">half_T</span> <span class="o">=</span> <span class="n">samps_from_0_to_t</span> <span class="o">/</span> <span class="mi">2</span>
-
-    <span class="n">w_0</span> <span class="o">=</span> <span class="n">freq_0</span> <span class="o">*</span> <span class="n">freq_to_radians_per_sample</span>
-    <span class="n">w_t</span> <span class="o">=</span> <span class="n">freq_t</span> <span class="o">*</span> <span class="n">freq_to_radians_per_sample</span>
-
-    <span class="n">M</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((((</span><span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">samps_from_0_to_t</span><span class="p">)</span> <span class="o">-</span> <span class="n">pha_t</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">half_T</span> <span class="o">*</span> <span class="p">(</span><span class="n">w_t</span> <span class="o">-</span> <span class="n">w_0</span><span class="p">)))</span> <span class="o">/</span> <span class="n">tau</span><span class="p">))</span>
-    <span class="n">alpha_beta_terms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">pha_t</span> <span class="o">-</span> <span class="n">pha_0</span> <span class="o">-</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">samps_from_0_to_t</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">M</span><span class="p">)</span>
-    <span class="n">alpha_beta_terms</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">w_t</span> <span class="o">-</span> <span class="n">w_0</span>
-    <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">matmul</span><span class="p">(</span><span class="n">alpha_beta_coeffs</span><span class="p">,</span> <span class="n">alpha_beta_terms</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
-
  
-<div class="viewcode-block" id="MatchCost"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.peak_tracking.MatchCost">[docs]</a><span class="k">class</span> <span class="nc">MatchCost</span><span class="p">():</span>
+<div class="viewcode-block" id="MatchCost"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.peak_tracking.MatchCost">[docs]</a><span class="k">class</span> <span class="nc">MatchCost</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Object to abstract cost for comparisons</span>
 
 <span class="sd">    Attributes</span>

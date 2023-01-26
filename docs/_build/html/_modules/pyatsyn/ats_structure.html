@@ -40,7 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../info.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html">pyatsyn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#pyatsyn-atsa">pyatsyn.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#analysis-module">analysis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#transformation-module">transformation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#synthesis-module">synthesis module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
 </ul>
 
@@ -85,10 +87,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">inf</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="nb">any</span><span class="p">,</span> <span class="n">arange</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">inf</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="nb">sum</span><span class="p">,</span> <span class="nb">any</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">ceil</span>
 
-<span class="kn">from</span> <span class="nn">pyatsyn.atsa.utils</span> <span class="kn">import</span> <span class="n">ATS_MIN_SEGMENT_LENGTH</span>
-<span class="kn">from</span> <span class="nn">pyatsyn.atsa.peak_tracking</span> <span class="kn">import</span> <span class="n">phase_interp</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.utils</span> <span class="kn">import</span> <span class="n">ATS_MIN_SEGMENT_LENGTH</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.ats_utils</span> <span class="kn">import</span> <span class="n">phase_interp_cubic</span><span class="p">,</span> <span class="n">ATS_DEFAULT_SAMPLING_RATE</span>
 
 <div class="viewcode-block" id="AtsPeak"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsPeak">[docs]</a><span class="k">class</span> <span class="nc">AtsPeak</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Data abstraction for storing single peak, single timepoint data for peak tracking</span>
@@ -154,12 +156,347 @@
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;PK: f_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="si">}</span><span class="s2"> at mag_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
-<div class="viewcode-block" id="AtsSound"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSound">[docs]</a><span class="k">class</span> <span class="nc">AtsSound</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main data abstraction for ATS</span>
+
+<div class="viewcode-block" id="AtsSoundVFR"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSoundVFR">[docs]</a><span class="k">class</span> <span class="nc">AtsSoundVFR</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data abstraction for ATS sounds with variable frame rates</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sampling_rate : int</span>
+<span class="sd">    partials : int</span>
+<span class="sd">        number of partials/tracks stored</span>
+<span class="sd">    frames : int</span>
+<span class="sd">        number of frames of analysis</span>
+<span class="sd">    dur : float</span>
+<span class="sd">        duration (in s) of the sound</span>
+<span class="sd">    has_phase : bool, optional</span>
+<span class="sd">        whether to initial phase information data structure (default: True)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    partials : int</span>
+<span class="sd">        number of partials/tracks stored</span>
+<span class="sd">    frames : int</span>
+<span class="sd">        number of frames of analysis</span>
+<span class="sd">    dur : float</span>
+<span class="sd">        duration (in s) of the sound</span>
+<span class="sd">    amp_max : float</span>
+<span class="sd">        maximum amplitude of the sound</span>
+<span class="sd">    frq_max : float</span>
+<span class="sd">        maximum frequency (in Hz) of the sound</span>
+<span class="sd">    frq_av : ndarray[float]</span>
+<span class="sd">        1D array of average frequency (in Hz) for each partial</span>
+<span class="sd">    amp_av : ndarray[float]</span>
+<span class="sd">        1D array of average amplitude for each partial</span>
+<span class="sd">    time : float</span>
+<span class="sd">        1D array of the time (in s) corresponding to each frame</span>
+<span class="sd">    frq : ndarray[float]</span>
+<span class="sd">        2D array storing frequency (in Hz) for each partial at each frame</span>
+<span class="sd">    amp : ndarray[float]</span>
+<span class="sd">        2D array storing amplitude for each partial at each frame</span>
+<span class="sd">    pha : ndarray[float]</span>
+<span class="sd">        2D array storing phase (in radians) for each partial at each frame. None if no phase information is stored.</span>
+<span class="sd">    energy : ndarray[float]</span>
+<span class="sd">        2D array for storing noise band energy into each partials at each frame. NOTE: Currently only implemented for legacy purposes. Empty list if no noise information is stored.</span>
+<span class="sd">    band_energy : ndarray[float]</span>
+<span class="sd">        2D array of noise band energies for each band at each frame. Empty list if no noise information is stored.</span>
+<span class="sd">    bands : ndarray[int]</span>
+<span class="sd">        1D array of unique indices to label each noise band. Empty list if no noise information is stored.</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="k">def</span>  <span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">partials</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>        
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">partials</span> <span class="o">=</span> <span class="n">partials</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dur</span> <span class="o">=</span> <span class="n">dur</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frames</span> <span class="o">=</span> <span class="n">frames</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="mf">0.0</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">partials</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">partials</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">has_phase</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+        <span class="c1"># Noise Data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="p">[]</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">band_energy</span> <span class="o">=</span> <span class="p">[]</span>        
+        <span class="bp">self</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<div class="viewcode-block" id="AtsSoundVFR.info"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSoundVFR.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partials_info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to print information about this object to the stdout</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        partials_info : bool, optional</span>
+<span class="sd">            whether to include frq and amp averages about each partial in the output (default: False)    </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n partials:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n frames:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;maximum amplitude:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;maximum frequency (Hz):&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;duration (s):&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dur</span><span class="p">)</span>
+
+        <span class="n">has_noise</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">band_energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>         
+        <span class="n">has_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="n">ats_type</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">has_phase</span> <span class="ow">and</span> <span class="n">has_noise</span><span class="p">:</span>
+                <span class="n">ats_type</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">has_phase</span> <span class="ow">and</span> <span class="n">has_noise</span><span class="p">:</span>
+            <span class="n">ats_type</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">elif</span> <span class="n">has_phase</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">has_noise</span><span class="p">:</span>
+            <span class="n">ats_type</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ATS frame type: &quot;</span><span class="p">,</span> <span class="n">ats_type</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">partials_info</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Partial Information:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">partial #</span><span class="si">{</span><span class="n">partial</span><span class="si">}</span><span class="s2">:</span><span class="se">\t\t</span><span class="s2">frq_av </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="se">\t\t</span><span class="s2">amp_av </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        
+
+<div class="viewcode-block" id="AtsSoundVFR.clone"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSoundVFR.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to return a deep copy of an :obj:`~pyatsyn.ats_structure.AtsSoundVBR`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :obj:`~pyatsyn.ats_structure.AtsSoundVBR`</span>
+<span class="sd">            a deep copy of the calling :obj:`~pyatsyn.ats_structure.AtsSoundVBR` object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">has_pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>        
+        
+        <span class="n">new_ats_snd</span> <span class="o">=</span> <span class="n">AtsSoundVFR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="n">has_pha</span><span class="p">)</span>
+        
+        <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span>
+        <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span>
+        
+        <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">)</span>
+        <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">)</span>
+        <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">)</span>
+        <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
+            <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bands</span><span class="p">:</span>
+            <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span>
+            <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">band_energy</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">band_energy</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">:</span>
+                <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span>            
+
+        <span class="k">return</span> <span class="n">new_ats_snd</span></div>
+
+
+<div class="viewcode-block" id="AtsSoundVFR.optimize"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSoundVFR.optimize">[docs]</a>    <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span>   <span class="bp">self</span><span class="p">,</span> 
+                    <span class="n">min_gap_time</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">min_segment_time</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>                     
+                    <span class="n">amp_threshold</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># in amplitude</span>
+                    <span class="n">highest_frequency</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">lowest_frequency</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to run optimization routines on the frames of partial data stored in the object.</span>
+
+<span class="sd">        The optimizations performed are:</span>
+<span class="sd">            * fill gaps of min_gap_time or shorter</span>
+<span class="sd">            * trim short partials</span>
+<span class="sd">            * calculate and store maximum and average frq and amp</span>
+<span class="sd">            * prune partials below amplitude threshold</span>
+<span class="sd">            * prune partials outside frequency constraints</span>
+<span class="sd">            * re-order partials according to average frq  </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        min_gap_time : float, optional</span>
+<span class="sd">            partial gaps longer than this (in s) will not be interpolated and filled in.</span>
+<span class="sd">            If None, this sub-optimization will be skipped.  (default: None)</span>
+<span class="sd">        min_segment_time : float, optional</span>
+<span class="sd">            minimal size (in s) of a valid partial segment, otherwise it is pruned. </span>
+<span class="sd">            If None, this sub-optimization will be skipped. (default: None)</span>
+<span class="sd">        amp_threshold : float, optional</span>
+<span class="sd">            amplitude threshold used to prune partials. </span>
+<span class="sd">            If None, this sub-optimization will be skipped. (default: None)</span>
+<span class="sd">        highest_frequency : float</span>
+<span class="sd">            upper frequency threshold, tracks with maxima above this will be pruned. </span>
+<span class="sd">            If None, this sub-optimization will be skipped. (default: None)</span>
+<span class="sd">        lowest_frequency : float</span>
+<span class="sd">            lower frequency threshold, tracks with minima below this will be pruned. </span>
+<span class="sd">            If None, this sub-optimization will be skipped. (default: None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">has_pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>        
+        <span class="k">if</span> <span class="n">min_gap_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># fill gaps of min_gap_size or shorter</span>
+            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
+                <span class="n">asleep_for</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">asleep_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                        <span class="n">asleep_for</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">asleep_for</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">asleep_time</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">asleep_for</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">asleep_time</span> <span class="o">&lt;=</span> <span class="n">min_gap_time</span><span class="p">:</span>
+                            <span class="n">fell_asleep_at</span> <span class="o">=</span> <span class="n">frame_n</span> <span class="o">-</span> <span class="n">asleep_for</span>
+                            <span class="k">if</span> <span class="n">fell_asleep_at</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># skip if waking up for the first time</span>
+                                <span class="c1"># interpolate the gap</span>
+                                <span class="n">interp_range</span> <span class="o">=</span> <span class="n">asleep_for</span> <span class="o">+</span> <span class="mi">1</span>
+                                <span class="n">earlier_ind</span> <span class="o">=</span> <span class="n">fell_asleep_at</span> <span class="o">-</span> <span class="mi">1</span>                                                  
+                                <span class="n">asleep_time</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">fell_asleep_at</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">fell_asleep_at</span><span class="p">]</span>
+                                <span class="n">asleep_time</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                                <span class="n">t</span> <span class="o">=</span> <span class="n">asleep_time</span>
+                                <span class="n">frq_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">earlier_ind</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
+                                <span class="n">amp_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">earlier_ind</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
+                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">interp_range</span><span class="p">):</span> <span class="c1"># NOTE: we&#39;ll walk backward from frame_n</span>
+                                    <span class="n">t</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span>
+                                    <span class="n">mult</span> <span class="o">=</span> <span class="n">t</span> <span class="o">/</span> <span class="n">asleep_time</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">frq_step</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">amp_step</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
+                                <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
+                                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">interp_range</span><span class="p">):</span> <span class="c1"># NOTE: we&#39;ll walk backward from frame_n</span>
+                                        <span class="n">frq_0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">earlier_ind</span><span class="p">]</span>
+                                        <span class="n">frq_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
+                                        <span class="n">pha_0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">earlier_ind</span><span class="p">]</span>
+                                        <span class="n">pha_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
+                                        <span class="n">i_samps_from_0</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">earlier_ind</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span>
+                                        <span class="n">samps_from_0_to_t</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">earlier_ind</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span> 
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase_interp_cubic</span><span class="p">(</span><span class="n">frq_0</span><span class="p">,</span> <span class="n">frq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">pha_t</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span>
+
+                        <span class="n">asleep_for</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">asleep_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">keep_partials</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">min_segment_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>                    
+            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
+                <span class="n">n_segments</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">segment_frames</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">segment_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+                        <span class="n">segment_frames</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">frame_n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">segment_time</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.5</span>
+                        <span class="k">if</span> <span class="n">frame_n</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">segment_time</span> <span class="o">+=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.5</span>
+                    <span class="k">elif</span> <span class="n">segment_frames</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># we&#39;ve reached the end of a segment</span>
+                        <span class="k">if</span> <span class="n">segment_time</span> <span class="o">&gt;=</span> <span class="n">min_segment_time</span><span class="p">:</span>
+                            <span class="n">n_segments</span> <span class="o">+=</span> <span class="mi">1</span>                            
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># remove the segment</span>
+                            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">segment_frames</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">):</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                                <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="c1"># reset the segment counter</span>
+                        <span class="n">segment_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+                        <span class="n">segment_frames</span> <span class="o">=</span> <span class="mi">0</span>               
+                <span class="c1"># handle last segment        </span>
+                <span class="k">if</span> <span class="n">segment_frames</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">segment_time</span> <span class="o">&gt;=</span> <span class="n">min_segment_time</span><span class="p">:</span>
+                        <span class="n">n_segments</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># remove the segment</span>
+                        <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span> <span class="o">-</span> <span class="n">segment_frames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                            <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">if</span> <span class="n">n_segments</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
+        <span class="c1"># process amp and/or frequency thresholds</span>
+        <span class="k">if</span> <span class="n">amp_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">,:])</span> <span class="o">&lt;</span> <span class="n">amp_threshold</span><span class="p">:</span>
+                    <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">highest_frequency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">,:])</span> <span class="o">&gt;</span> <span class="n">highest_frequency</span><span class="p">:</span>
+                    <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">lowest_frequency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
+                <span class="n">selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">selection</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">selection</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">lowest_frequency</span><span class="p">:</span>
+                        <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
+        <span class="c1"># keep only unfiltered partials </span>
+        <span class="n">keep_partials</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">keep_partials</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partials</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keep_partials</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">partials</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: optimization has removed all partials from AtsSound&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span>            
+        <span class="k">else</span><span class="p">:</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">,:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">,:]</span>
+            <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">,:]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">,:]</span>
+
+        <span class="c1"># reset amp_max &amp; average</span>
+        <span class="n">amp_max</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">frq_max</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
+            <span class="n">frq_selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+            <span class="n">amp_selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
+            
+            <span class="n">any_f</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">frq_selection</span><span class="p">)</span>
+            <span class="n">any_a</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">amp_selection</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">any_f</span> <span class="ow">or</span> <span class="n">any_a</span><span class="p">:</span>
+                <span class="c1"># built durations for each frame for averaging</span>
+                <span class="n">frame_times</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+                <span class="n">half_frame_time_diffs</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="mf">0.5</span>
+                <span class="n">frame_times</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">half_frame_time_diffs</span>
+                <span class="n">frame_times</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="n">half_frame_time_diffs</span>
+                <span class="k">if</span> <span class="n">any_f</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frq_selection</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frq_selection</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frq_selection</span><span class="p">])))</span>                    
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">if</span> <span class="n">any_a</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">amp_selection</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">amp_selection</span><span class="p">]</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">amp_selection</span><span class="p">])))</span>                    
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">frq_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">frq_max</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]))</span>
+            <span class="n">amp_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">amp_max</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]))</span>            
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="n">amp_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="n">frq_max</span>
+
+        <span class="c1"># re-sort tracks by frq_av</span>
+        <span class="n">partial_av_tuples</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">)]</span>
+        <span class="n">sorted_tuples</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">partial_av_tuples</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tp</span><span class="p">:</span> <span class="n">tp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">sorted_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">tp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">sorted_tuples</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">,:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">,:]</span>
+        <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">,:]</span></div></div>
+
+
+<div class="viewcode-block" id="AtsSound"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSound">[docs]</a><span class="k">class</span> <span class="nc">AtsSound</span><span class="p">(</span><span class="n">AtsSoundVFR</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main data abstraction for ATS</span>
+
+<span class="sd">    subclass of :obj:`~pyatsyn.ats_structure.AtsSoundVFR` with a constant frame size</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sampling_rate : float</span>
 <span class="sd">        sampling rate (samples/sec)</span>
 <span class="sd">    frame_size : int</span>
 <span class="sd">        interframe distance (in samples)</span>
@@ -176,7 +513,7 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sampling_rate : int</span>
+<span class="sd">    sampling_rate : float</span>
 <span class="sd">        sampling rate (samples/sec)</span>
 <span class="sd">    frame_size : int</span>
 <span class="sd">        interframe distance (in samples)</span>
@@ -188,8 +525,6 @@
 <span class="sd">        number of frames of analysis</span>
 <span class="sd">    dur : float</span>
 <span class="sd">        duration (in s) of the sound</span>
-<span class="sd">    optimized : bool</span>
-<span class="sd">        whether the object has been through optimization yet</span>
 <span class="sd">    amp_max : float</span>
 <span class="sd">        maximum amplitude of the sound</span>
 <span class="sd">    frq_max : float</span>
@@ -215,30 +550,28 @@
 <span class="sd">    &quot;&quot;&quot;</span>    
     <span class="k">def</span> <span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">frame_size</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> 
                   <span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">partials</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">sampling_rate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">=</span> <span class="n">frame_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="n">window_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">partials</span> <span class="o">=</span> <span class="n">partials</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">frames</span> <span class="o">=</span> <span class="n">frames</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dur</span> <span class="o">=</span> <span class="n">dur</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimized</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">partials</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">partials</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">has_phase</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
-        <span class="c1"># Noise Data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="p">[]</span>        
-        <span class="bp">self</span><span class="o">.</span><span class="n">band_energy</span> <span class="o">=</span> <span class="p">[]</span>        
-        <span class="bp">self</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="p">[]</span>
 
-    
+<div class="viewcode-block" id="AtsSound.info"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSound.info">[docs]</a>    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">partials_info</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to print information about this object to the stdout</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        partials_info : bool, optional</span>
+<span class="sd">            whether to include frq and amp averages about each partial in the output (default: False)    </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sampling rate (samples/s):&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;frame size:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;window size:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">partials_info</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="AtsSound.clone"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.AtsSound.clone">[docs]</a>    <span class="k">def</span> <span class="nf">clone</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Function to return a deep copy of an :obj:`~pyatsyn.ats_structure.AtsSound`</span>
 
@@ -247,14 +580,11 @@
 <span class="sd">        :obj:`~pyatsyn.ats_structure.AtsSound`</span>
 <span class="sd">            a deep copy of the calling :obj:`~pyatsyn.ats_structure.AtsSound` object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">has_pha</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">has_pha</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">has_pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         
         <span class="n">new_ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">,</span> 
                   <span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="n">has_pha</span><span class="p">)</span>
-        
-        <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">optimized</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimized</span>
+                  
         <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span>
         <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span>
         
@@ -267,7 +597,7 @@
         <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
             <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bands</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span>
             <span class="n">new_ats_snd</span><span class="o">.</span><span class="n">band_energy</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">band_energy</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">energy</span><span class="p">:</span>
@@ -310,139 +640,117 @@
 <span class="sd">            lower frequency threshold, tracks with minima below this will be pruned. </span>
 <span class="sd">            If None, this sub-optimization will be skipped. (default: None)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">has_pha</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">has_pha</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="k">if</span> <span class="n">min_gap_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># fill gaps of min_gap_size or shorter</span>
-            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
-                <span class="n">asleep_for</span> <span class="o">=</span> <span class="mi">0</span>            
-                <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-                        <span class="n">asleep_for</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">asleep_for</span> <span class="o">&lt;=</span> <span class="n">min_gap_size</span><span class="p">:</span>
-                            <span class="n">fell_asleep_at</span> <span class="o">=</span> <span class="n">frame_n</span> <span class="o">-</span> <span class="n">asleep_for</span>
-                            <span class="k">if</span> <span class="n">fell_asleep_at</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># skip if waking up for the first time</span>
-                                <span class="c1"># interpolate the gap</span>
-                                <span class="n">interp_range</span> <span class="o">=</span> <span class="n">asleep_for</span> <span class="o">+</span> <span class="mi">1</span>
-                                <span class="n">earlier_ind</span> <span class="o">=</span> <span class="n">fell_asleep_at</span> <span class="o">-</span> <span class="mi">1</span>
-                                <span class="n">frq_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">earlier_ind</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
-                                <span class="n">amp_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">earlier_ind</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
-                                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">interp_range</span><span class="p">):</span> <span class="c1"># NOTE: we&#39;ll walk backward from frame_n</span>
-                                    <span class="n">mult</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="n">interp_range</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">frq_step</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">amp_step</span> <span class="o">*</span> <span class="n">mult</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span>
-                                <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
-                                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">interp_range</span><span class="p">):</span> <span class="c1"># NOTE: we&#39;ll walk backward from frame_n</span>
-                                        <span class="n">freq_now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span>
-                                        <span class="n">freq_then</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">earlier_ind</span><span class="p">]</span>
-                                        <span class="n">pha_then</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">earlier_ind</span><span class="p">]</span>
-                                        <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">interp_range</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span>
-                                        <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase_interp</span><span class="p">(</span><span class="n">freq_then</span><span class="p">,</span> <span class="n">freq_now</span><span class="p">,</span> <span class="n">pha_then</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
-                        <span class="n">asleep_for</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="n">keep_partials</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="n">min_segment_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>            
-            <span class="c1"># trim short partials</span>
+        <span class="k">if</span> <span class="n">min_segment_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">min_segment_length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">min_segment_length</span> <span class="o">=</span> <span class="n">ATS_MIN_SEGMENT_LENGTH</span>
-            
-            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
-                <span class="n">n_segments</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">segment_dur</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
-                        <span class="n">segment_dur</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">elif</span> <span class="n">segment_dur</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="c1"># we&#39;ve reached the end of a segment</span>
-                        <span class="k">if</span> <span class="n">segment_dur</span> <span class="o">&gt;=</span> <span class="n">min_segment_length</span><span class="p">:</span>
-                            <span class="n">n_segments</span> <span class="o">+=</span> <span class="mi">1</span>                            
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="c1"># remove the segment</span>
-                            <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frame_n</span> <span class="o">-</span> <span class="n">segment_dur</span><span class="p">,</span> <span class="n">frame_n</span><span class="p">):</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-                                <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">ind</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-                        <span class="c1"># reset the segment counter</span>
-                        <span class="n">segment_dur</span> <span class="o">=</span> <span class="mi">0</span>                       
 
-                <span class="k">if</span> <span class="n">n_segments</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
-                            
-        <span class="c1"># process amp and/or frequency thresholds</span>
-        <span class="k">if</span> <span class="n">amp_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">,:])</span> <span class="o">&lt;</span> <span class="n">amp_threshold</span><span class="p">:</span>
-                    <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">highest_frequency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">,:])</span> <span class="o">&gt;</span> <span class="n">highest_frequency</span><span class="p">:</span>
-                    <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">lowest_frequency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
-                <span class="n">selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
-                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">selection</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">selection</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">lowest_frequency</span><span class="p">:</span>
-                        <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">keep_partials</span> <span class="o">=</span> <span class="n">keep_partials</span> <span class="o">-</span> <span class="p">{</span><span class="n">partial</span><span class="p">}</span>
+        <span class="n">frame_to_t_conversion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_size</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span>
 
-        <span class="c1"># keep only unfiltered partials </span>
-        <span class="n">keep_partials</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">keep_partials</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">partials</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keep_partials</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">partials</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: optimization has removed all partials from AtsSound&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="k">return</span>            
-        <span class="k">else</span><span class="p">:</span>            
-            <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">,:]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">,:]</span>
-            <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">keep_partials</span><span class="p">,:]</span>
+        <span class="n">min_gap_time</span> <span class="o">=</span> <span class="n">min_gap_size</span>
+        <span class="k">if</span> <span class="n">min_gap_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">min_gap_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_gap_size</span> <span class="o">*</span> <span class="n">frame_to_t_conversion</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span> <span class="c1"># padding for floating point inaccuracy</span>
 
-        <span class="c1"># reset amp_max &amp; average</span>
-        <span class="n">amp_max</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="n">frq_max</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
-            <span class="n">frq_selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">frq_selection</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="n">amp_selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]</span> <span class="o">&gt;</span> <span class="mf">0.0</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">amp_selection</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">])</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">partial</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="n">frq_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">frq_max</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]))</span>
-            <span class="n">amp_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">amp_max</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">,:]))</span>            
-        <span class="bp">self</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="n">amp_max</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="n">frq_max</span>
+        <span class="n">min_segment_time</span> <span class="o">=</span> <span class="n">min_segment_length</span>
+        <span class="k">if</span> <span class="n">min_segment_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">min_segment_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">min_segment_length</span> <span class="o">*</span> <span class="n">frame_to_t_conversion</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span> <span class="c1"># padding for floating point inaccuracy </span>
 
-        <span class="c1"># re-sort tracks by frq_av</span>
-        <span class="n">partial_av_tuples</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partials</span><span class="p">)]</span>
-        <span class="n">sorted_tuples</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">partial_av_tuples</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tp</span><span class="p">:</span> <span class="n">tp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">sorted_index</span> <span class="o">=</span> <span class="p">[</span><span class="n">tp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">sorted_tuples</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>   <span class="n">min_gap_time</span><span class="p">,</span>
+                            <span class="n">min_segment_time</span><span class="p">,</span>
+                            <span class="n">amp_threshold</span><span class="p">,</span> 
+                            <span class="n">highest_frequency</span><span class="p">,</span> 
+                            <span class="n">lowest_frequency</span>
+                            <span class="p">)</span></div></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq_av</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_av</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">frq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">,:]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">,:]</span>
-        <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">,:]</span></div></div>
+
+<div class="viewcode-block" id="to_cfr"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_structure.to_cfr">[docs]</a><span class="k">def</span> <span class="nf">to_cfr</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="p">,</span> <span class="n">frame_size</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to convert :obj:`~pyatsyn.ats_structure.AtsSoundVFR` to constant frame rate :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+
+<span class="sd">    Can also be used to resample a :obj:`~pyatsyn.ats_structure.AtsSound` at another frame rate.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ats_snd_vfr : :obj:`~pyatsyn.ats_structure.AtsSoundVFR` or :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+<span class="sd">        the ats sound object to resample</span>
+<span class="sd">    frame_size : int</span>
+<span class="sd">        interframe distance (in samples) to be used to dictate the new constant frame rate</span>
+<span class="sd">    sampling_rate : float, optional</span>
+<span class="sd">        sampling rate (samples/sec). If None, will be assigned to :obj:`~pyatsyn.ats_utils.ATS_DEFAULT_SAMPLING_RATE` (Default: None)</span>
+<span class="sd">    window_size : int, optional</span>
+<span class="sd">        size (in samples) of the FFT window used to analyze the sound. If None, will be assigned to -1 (Default: None)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+<span class="sd">        an interpolated or resamples ats sound object with constant frame rate</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">has_pha</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">pha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">frames</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ceil</span><span class="p">((</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sampling_rate</span><span class="p">)</span> <span class="o">/</span> <span class="n">frame_size</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">sampling_rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sampling_rate</span> <span class="o">=</span> <span class="n">ATS_DEFAULT_SAMPLING_RATE</span>
+    <span class="k">if</span> <span class="n">window_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">window_size</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">ats_cfr</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="n">frame_size</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="n">has_pha</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ats_cfr</span><span class="o">.</span><span class="n">bands</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">bands</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">band_energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ats_cfr</span><span class="o">.</span><span class="n">band_energy</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">ats_cfr</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">frames</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ats_cfr</span><span class="o">.</span><span class="n">energy</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="n">ats_cfr</span><span class="o">.</span><span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+    <span class="n">vfr_frame_n</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">frame_n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">frames</span><span class="p">):</span>
+        <span class="n">ats_cfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">frame_n</span> <span class="o">*</span> <span class="n">frame_size</span> <span class="o">/</span> <span class="n">sampling_rate</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">vfr_frame_n</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ats_cfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="ow">and</span> <span class="n">vfr_frame_n</span> <span class="o">&lt;</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">vfr_frame_n</span> <span class="o">+=</span> <span class="mi">1</span>
         
+        <span class="c1"># if the old frame is exactly at the current time or at the beginning/end of the input frames, just copy it over</span>
+        <span class="k">if</span> <span class="n">vfr_frame_n</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">vfr_frame_n</span> <span class="o">==</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">frames</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">vfr_frame_n</span><span class="p">]</span> <span class="o">==</span> <span class="n">ats_cfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]:</span>
+            <span class="n">ats_cfr</span><span class="o">.</span><span class="n">frq</span><span class="p">[:,</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">frq</span><span class="p">[:,</span><span class="n">vfr_frame_n</span><span class="p">])</span>
+            <span class="n">ats_cfr</span><span class="o">.</span><span class="n">amp</span><span class="p">[:,</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">amp</span><span class="p">[:,</span><span class="n">vfr_frame_n</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
+                <span class="n">ats_cfr</span><span class="o">.</span><span class="n">pha</span><span class="p">[:,</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">pha</span><span class="p">[:,</span><span class="n">vfr_frame_n</span><span class="p">])</span>            
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">band_energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ats_cfr</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[:,</span> <span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[:,</span><span class="n">vfr_frame_n</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ats_cfr</span><span class="o">.</span><span class="n">energy</span><span class="p">[:,</span> <span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">energy</span><span class="p">[:,</span><span class="n">vfr_frame_n</span><span class="p">])</span>
+                
+        <span class="c1"># otherwise interpolate a new frame</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tt</span> <span class="o">=</span> <span class="p">(</span><span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">vfr_frame_n</span><span class="p">]</span> <span class="o">-</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">vfr_frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">ti</span> <span class="o">=</span> <span class="p">(</span><span class="n">ats_cfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">-</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">time</span><span class="p">[</span><span class="n">vfr_frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">t_interp</span> <span class="o">=</span>  <span class="n">ti</span> <span class="o">/</span> <span class="n">tt</span>
+            <span class="n">i_samps_from_0</span> <span class="o">=</span> <span class="n">ti</span> <span class="o">*</span> <span class="n">sampling_rate</span>
+            <span class="n">samps_from_0_to_t</span> <span class="o">=</span> <span class="n">tt</span> <span class="o">*</span> <span class="n">sampling_rate</span>
+            <span class="k">for</span> <span class="n">partial</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ats_cfr</span><span class="o">.</span><span class="n">partials</span><span class="p">):</span>
+                <span class="n">frq_0</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">vfr_frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">frq_t</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">vfr_frame_n</span><span class="p">]</span>
+                <span class="n">ats_cfr</span><span class="o">.</span><span class="n">frq</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">frq_t</span> <span class="o">-</span> <span class="n">frq_0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_interp</span><span class="p">))</span> <span class="o">+</span> <span class="n">frq_0</span>
+                <span class="n">amp_0</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">vfr_frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">amp_t</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">vfr_frame_n</span><span class="p">]</span>
+                <span class="n">ats_cfr</span><span class="o">.</span><span class="n">amp</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">amp_t</span> <span class="o">-</span> <span class="n">amp_0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_interp</span><span class="p">))</span> <span class="o">+</span> <span class="n">amp_0</span>
+                <span class="k">if</span> <span class="n">has_pha</span><span class="p">:</span>
+                    <span class="n">pha_0</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">vfr_frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">pha_t</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">vfr_frame_n</span><span class="p">]</span>                  
+                    <span class="n">ats_cfr</span><span class="o">.</span><span class="n">pha</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="n">phase_interp_cubic</span><span class="p">(</span><span class="n">frq_0</span><span class="p">,</span> <span class="n">frq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">pha_t</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_cfr</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">eng_0</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">vfr_frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">eng_t</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">vfr_frame_n</span><span class="p">]</span>
+                    <span class="n">ats_cfr</span><span class="o">.</span><span class="n">energy</span><span class="p">[</span><span class="n">partial</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">eng_t</span> <span class="o">-</span> <span class="n">eng_0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_interp</span><span class="p">))</span> <span class="o">+</span> <span class="n">eng_0</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ats_cfr</span><span class="o">.</span><span class="n">band_energy</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ats_cfr</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                    <span class="n">noi_0</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">vfr_frame_n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="n">noi_t</span> <span class="o">=</span> <span class="n">ats_snd_vfr</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">vfr_frame_n</span><span class="p">]</span>
+                    <span class="n">ats_cfr</span><span class="o">.</span><span class="n">band_energy</span><span class="p">[</span><span class="n">band</span><span class="p">][</span><span class="n">frame_n</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">noi_t</span> <span class="o">-</span> <span class="n">noi_0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_interp</span><span class="p">))</span> <span class="o">+</span> <span class="n">noi_0</span>
+                
+    <span class="c1"># optimize with default None parameters to update max/av values and reorder partials if necessary</span>
+    <span class="n">ats_cfr</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">ats_cfr</span></div>
+
+
 </pre></div>
 
            </div>

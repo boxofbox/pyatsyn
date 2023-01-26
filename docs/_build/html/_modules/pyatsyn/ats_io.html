@@ -40,7 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../info.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html">pyatsyn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#pyatsyn-atsa">pyatsyn.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#analysis-module">analysis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#transformation-module">transformation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#synthesis-module">synthesis module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
 </ul>
 
@@ -113,6 +115,11 @@
 <span class="sd">| type (# specifying frame type, see below) |</span>
 <span class="sd">+-------------------------------------------+</span>
 
+<span class="sd">NOTE: when saving/loading :obj:`~pyatsyn.ats_structure.AtsSoundVFR` objects, sampling-rate, </span>
+<span class="sd">frame-size, and window-size will be -1. The file should be saved as a .atsv file by convention, </span>
+<span class="sd">because this is currently not a supported format external to pyatsyn. See :obj:`~pyatsyn.ats_structure.to_cfr` </span>
+<span class="sd">if you would like to save a variable frame rate object to an externally compliant format by converting it to constant frame rate.</span>
+
 <span class="sd">The frame data immediately follows the header, </span>
 <span class="sd">again all double floats, frame by frame, with a </span>
 <span class="sd">format matching the `type` (int) as specified in the header</span>
@@ -155,7 +162,7 @@
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">mean</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="kn">from</span> <span class="nn">pyatsyn.ats_structure</span> <span class="kn">import</span> <span class="n">AtsSound</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.ats_structure</span> <span class="kn">import</span> <span class="n">AtsSound</span><span class="p">,</span> <span class="n">AtsSoundVFR</span>
 
 <span class="n">ATS_MAGIC_NUMBER</span> <span class="o">=</span> <span class="mf">123.0</span>
 
@@ -164,11 +171,11 @@
 <span class="n">DOUBLE_LIL_ENDIAN</span> <span class="o">=</span> <span class="s1">&#39;&lt;d&#39;</span>
 
 <div class="viewcode-block" id="ats_save"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_io.ats_save">[docs]</a><span class="k">def</span> <span class="nf">ats_save</span><span class="p">(</span><span class="n">sound</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">save_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to save an :obj:`~pyatsyn.ats_structure.AtsSound` to a file</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to save an :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR` to a file</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    sound : :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+<span class="sd">    sound : :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR`</span>
 <span class="sd">        ats sound object to save</span>
 <span class="sd">    file : str</span>
 <span class="sd">        file path to save to</span>
@@ -194,9 +201,15 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fil</span><span class="p">:</span>
         <span class="c1"># write header</span>
         <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">ATS_MAGIC_NUMBER</span><span class="p">))</span>
-        <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">))</span>
-        <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">frame_size</span><span class="p">))</span>
-        <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">window_size</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sound</span><span class="p">,</span> <span class="s2">&quot;sampling_rate&quot;</span><span class="p">):</span>
+            <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">))</span>
+            <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">frame_size</span><span class="p">))</span>
+            <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">window_size</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: saving a variable frame rate file (use extensions .atsv)&quot;</span><span class="p">)</span>
+            <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
         <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">partials</span><span class="p">))</span>
         <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">frames</span><span class="p">))</span>
         <span class="n">fil</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="n">sound</span><span class="o">.</span><span class="n">amp_max</span><span class="p">))</span>
@@ -227,14 +240,14 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to load a .ats file into python</span>
 
 <span class="sd">    Loads a .ats file into python and provides routines to re-optimize the </span>
-<span class="sd">    :obj:`~pyatsyn.ats_structure.AtsSound` data if required.</span>
+<span class="sd">    ats sound data if required.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    file : str</span>
 <span class="sd">        filepath to .ats file to load</span>
 <span class="sd">    optimize : bool, optional</span>
-<span class="sd">        determined whether to call :obj:`~pyatsyn.ats_structure.AtsSound.optimize` upon load (default: True)</span>
+<span class="sd">        determined whether to call :obj:`~pyatsyn.ats_structure.AtsSound.optimize` (or :obj:`~pyatsyn.ats_structure.AtsSoundVFR.optimize`) upon load (default: True)</span>
 <span class="sd">    min_gap_size : int, optional</span>
 <span class="sd">        when optimizing, tracked partial gaps smaller than or equal to this (in frames) will be </span>
 <span class="sd">        interpolated and filled. If None, no gap filling will occur (default: None)</span>
@@ -251,7 +264,7 @@
 <span class="sd">    </span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :obj:`~pyatsyn.ats_structure.AtsSound`</span>
+<span class="sd">    :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR`</span>
 <span class="sd">        the loaded ats data</span>
 
 <span class="sd">    Raises</span>
@@ -288,8 +301,13 @@
         <span class="k">if</span> <span class="n">ats_type</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">ats_type</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
             <span class="n">has_phase</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="n">ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="n">frame_size</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> 
-                                <span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="n">has_phase</span><span class="p">)</span>
+        <span class="n">ats_snd</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">sampling_rate</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: loading a variable frame rate ats sound&quot;</span><span class="p">)</span>
+            <span class="n">ats_snd</span> <span class="o">=</span> <span class="n">AtsSoundVFR</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">partials</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="n">frame_size</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> 
+                                    <span class="n">partials</span><span class="p">,</span> <span class="n">frames</span><span class="p">,</span> <span class="n">dur</span><span class="p">,</span> <span class="n">has_phase</span><span class="o">=</span><span class="n">has_phase</span><span class="p">)</span>
 
         <span class="n">ats_snd</span><span class="o">.</span><span class="n">amp_max</span> <span class="o">=</span> <span class="n">amp_max</span>
         <span class="n">ats_snd</span><span class="o">.</span><span class="n">frq_max</span> <span class="o">=</span> <span class="n">frq_max</span>

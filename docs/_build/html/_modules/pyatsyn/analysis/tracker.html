@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyatsyn.atsa.tracker &mdash; pyatsyn 1.0.0 documentation</title>
+  <title>pyatsyn.analysis.tracker &mdash; pyatsyn 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -40,7 +40,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../info.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html">pyatsyn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#pyatsyn-atsa">pyatsyn.atsa</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#analysis-module">analysis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#transformation-module">transformation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyatsyn.html#synthesis-module">synthesis module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Index</a></li>
 </ul>
 
@@ -59,7 +61,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">pyatsyn.atsa.tracker</li>
+      <li class="breadcrumb-item active">pyatsyn.analysis.tracker</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -68,7 +70,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for pyatsyn.atsa.tracker</h1><div class="highlight"><pre>
+  <h1>Source code for pyatsyn.analysis.tracker</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
 <span class="c1"># This source code is licensed under the BSD-style license found in the</span>
@@ -88,20 +90,20 @@
 <span class="sd">is core analysis tool. Sound is analyzed using overlapping time windows and by</span>
 <span class="sd">taking the STFT on each window. </span>
 
-<span class="sd">After converting to polar coordinates, a peak detection algorithm (:obj:`~pyatsyn.atsa.peak_detection`)</span>
+<span class="sd">After converting to polar coordinates, a peak detection algorithm (:obj:`~pyatsyn.analysis.peak_detection`)</span>
 <span class="sd">determines relevant spectral peaks in the data. At this point, pyschoacoustics </span>
 <span class="sd">are considered in the form of masking curve evaluation and computation of the </span>
 <span class="sd">Signal-to-Mask ratio (SMR) for each candidate peak. SMR data is store together with </span>
 <span class="sd">a corrected frequency, magnitude and phase.</span>
 
-<span class="sd">The next step involves frame-to-frame tracking of peaks (:obj:`~pyatsyn.atsa.peak_tracking`) to connect peaks that</span>
+<span class="sd">The next step involves frame-to-frame tracking of peaks (:obj:`~pyatsyn.analysis.peak_tracking`) to connect peaks that</span>
 <span class="sd">follow a similar spectral trajectory using both frequency and SMR data. The system </span>
 <span class="sd">uses a stable matching algorithm to pair candidate peaks, and is capable of interpolating</span>
 <span class="sd">gaps in the tracks.</span>
 
-<span class="sd">Once valid tracks are assembled, the results can be modeled with sinusoids (:obj:`~pyatsyn.atsa_synth`) and subtracted </span>
+<span class="sd">Once valid tracks are assembled, the results can be modeled with sinusoids (:obj:`~pyatsyn.synthesis.synth`) and subtracted </span>
 <span class="sd">from the origin source sound to compute a residual. NOTE: This part of the ATS system is currently under</span>
-<span class="sd">active research. For now, the residual analysis (:obj:`~pyatsyn.atsa.residual`) is modeled using a </span>
+<span class="sd">active research. For now, the residual analysis (:obj:`~pyatsyn.analysis.residual`) is modeled using a </span>
 <span class="sd">25 time-varying critical noise band energy model (consistent with the critical bands used during SMR evaluation). </span>
 <span class="sd">These noise bands can then be resynthesized using 25 correspoding banks of time-enveloped, band-limited noise.</span>
 
@@ -116,15 +118,15 @@
 
 <span class="kn">from</span> <span class="nn">pyatsyn.ats_structure</span> <span class="kn">import</span> <span class="n">AtsSound</span>
 
-<span class="kn">from</span> <span class="nn">pyatsyn.atsa.utils</span> <span class="kn">import</span> <span class="n">db_to_amp</span><span class="p">,</span> <span class="n">next_power_of_2</span><span class="p">,</span> <span class="n">compute_frames</span><span class="p">,</span> <span class="n">optimize_tracks</span>
-<span class="kn">from</span> <span class="nn">pyatsyn.atsa.windows</span> <span class="kn">import</span> <span class="n">make_fft_window</span><span class="p">,</span> <span class="n">normalize_window</span><span class="p">,</span> <span class="n">window_norm</span><span class="p">,</span> <span class="n">VALID_FFT_WINDOW_DEFINITIONS</span>
-<span class="kn">from</span> <span class="nn">pyatsyn.atsa.peak_detect</span> <span class="kn">import</span> <span class="n">peak_detection</span>
-<span class="kn">from</span> <span class="nn">pyatsyn.atsa.critical_bands</span> <span class="kn">import</span> <span class="n">evaluate_smr</span>
-<span class="kn">from</span> <span class="nn">pyatsyn.atsa.peak_tracking</span> <span class="kn">import</span> <span class="n">update_track_averages</span><span class="p">,</span> <span class="n">peak_tracking</span>
-<span class="kn">from</span> <span class="nn">pyatsyn.atsa.residual</span> <span class="kn">import</span> <span class="n">compute_residual</span><span class="p">,</span> <span class="n">residual_analysis</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.utils</span> <span class="kn">import</span> <span class="n">db_to_amp</span><span class="p">,</span> <span class="n">next_power_of_2</span><span class="p">,</span> <span class="n">compute_frames</span><span class="p">,</span> <span class="n">optimize_tracks</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.windows</span> <span class="kn">import</span> <span class="n">make_fft_window</span><span class="p">,</span> <span class="n">normalize_window</span><span class="p">,</span> <span class="n">window_norm</span><span class="p">,</span> <span class="n">VALID_FFT_WINDOW_DEFINITIONS</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.peak_detect</span> <span class="kn">import</span> <span class="n">peak_detection</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.critical_bands</span> <span class="kn">import</span> <span class="n">evaluate_smr</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.peak_tracking</span> <span class="kn">import</span> <span class="n">update_track_averages</span><span class="p">,</span> <span class="n">peak_tracking</span>
+<span class="kn">from</span> <span class="nn">pyatsyn.analysis.residual</span> <span class="kn">import</span> <span class="n">compute_residual</span><span class="p">,</span> <span class="n">residual_analysis</span>
 <span class="kn">from</span> <span class="nn">pyatsyn.ats_io</span> <span class="kn">import</span> <span class="n">ats_save</span>
 
-<div class="viewcode-block" id="tracker"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.tracker.tracker">[docs]</a><span class="k">def</span> <span class="nf">tracker</span> <span class="p">(</span>   <span class="n">in_file</span><span class="p">,</span> 
+<div class="viewcode-block" id="tracker"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.tracker.tracker">[docs]</a><span class="k">def</span> <span class="nf">tracker</span> <span class="p">(</span>   <span class="n">in_file</span><span class="p">,</span> 
                 <span class="n">start</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="c1"># analysis start point (in seconds)</span>
                 <span class="n">duration</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># max duration to analyze (in seconds) or &#39;None&#39; if analyze to end</span>
                 <span class="n">lowest_frequency</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="c1"># must be &gt; 0</span>
@@ -168,7 +170,7 @@
 <span class="sd">    window_cycles : int</span>
 <span class="sd">        lowest frequency to fit in analysis window; used to determine window size (default: 4)</span>
 <span class="sd">    window_type : str</span>
-<span class="sd">        type of window to use for FFT analysis (default: &#39;blackman-harris-4-1&#39;). See :obj:`~pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS`</span>
+<span class="sd">        type of window to use for FFT analysis (default: &#39;blackman-harris-4-1&#39;). See :obj:`~pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS`</span>
 <span class="sd">    hop_size : float</span>
 <span class="sd">        fraction of window size to shift from frame-to-frame (default: 0.25)</span>
 <span class="sd">    fft_size : int</span>
@@ -393,7 +395,6 @@
     <span class="n">ats_snd</span> <span class="o">=</span> <span class="n">AtsSound</span><span class="p">(</span><span class="n">sampling_rate</span><span class="p">,</span> <span class="n">hop</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">),</span> <span class="n">frames</span><span class="p">,</span> <span class="n">analysis_duration</span><span class="p">,</span> <span class="n">has_phase</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">optimize</span><span class="p">:</span>
-        <span class="n">ats_snd</span><span class="o">.</span><span class="n">optimized</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">amp_max</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="n">frq_max</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">tk</span> <span class="ow">in</span> <span class="n">tracks</span><span class="p">:</span>
@@ -431,8 +432,8 @@
     <span class="k">return</span> <span class="n">ats_snd</span></div>
 
 
-<div class="viewcode-block" id="tracker_CLI"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.atsa.tracker.tracker_CLI">[docs]</a><span class="k">def</span> <span class="nf">tracker_CLI</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Command line wrapper for :obj:`~pyatsyn.atsa.tracker.tracker`</span>
+<div class="viewcode-block" id="tracker_CLI"><a class="viewcode-back" href="../../../pyatsyn.html#pyatsyn.analysis.tracker.tracker_CLI">[docs]</a><span class="k">def</span> <span class="nf">tracker_CLI</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Command line wrapper for :obj:`~pyatsyn.analysis.tracker.tracker`</span>
 
 <span class="sd">    Example</span>
 <span class="sd">    ------- </span>

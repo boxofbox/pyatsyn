@@ -72,17 +72,17 @@ def synth(ats_snd, normalize=False, compute_phase=True,
     ndarray[float]
         A 1D array of amplitudes representing the synthesized sound
     """
-    sample_rate = ATS_DEFAULT_SAMPLING_RATE
+    sampling_rate = ATS_DEFAULT_SAMPLING_RATE
     if hasattr(ats_snd, "sampling_rate"):
-        sample_rate = ats_snd.sampling_rate
-    out_size = int(ats_snd.dur * sample_rate)
+        sampling_rate = ats_snd.sampling_rate
+    out_size = int(ats_snd.dur * sampling_rate)
     frames = ats_snd.frames
 
     synthesized = zeros(out_size,"float64")
     
     if sine_pct > 0.0:
         n_partials = ats_snd.partials    
-        freq_to_radians_per_sample = tau / sample_rate
+        freq_to_radians_per_sample = tau / sampling_rate
         
         has_pha = compute_phase and len(ats_snd.pha) > 0
 
@@ -100,7 +100,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
         fil_ptr = 0
         for frame_n in range(frames - 1):
 
-            frame_size = round((ats_snd.time[frame_n + 1] - ats_snd.time[frame_n]) * sample_rate)
+            frame_size = round((ats_snd.time[frame_n + 1] - ats_snd.time[frame_n]) * sampling_rate)
             frame_size_range = frame_size
 
             alpha_beta_coeffs[0][0] = 3 / (frame_size**2)
@@ -179,18 +179,18 @@ def synth(ats_snd, normalize=False, compute_phase=True,
         # using white noise -> band-limited noise fft resynthesis method
         noise = zeros(out_size,"float64")
         
-        window = sin(arange(sample_rate) * pi / sample_rate)**2 # using Hann window
+        window = sin(arange(sampling_rate) * pi / sampling_rate)**2 # using Hann window
         overlap = 0.5
 
-        noise_hop = int(overlap * sample_rate)
-        noise_M_over_2 = sample_rate // 2
+        noise_hop = int(overlap * sampling_rate)
+        noise_M_over_2 = sampling_rate // 2
         noise_frames = compute_frames(out_size, noise_hop)
         
-        white_noise = uniform(-1,1, int(noise_frames * sample_rate / overlap) + 1)
+        white_noise = uniform(-1,1, int(noise_frames * sampling_rate / overlap) + 1)
         banded_noise = zeros([len(ats_snd.bands), out_size])
 
         # indices for refolding a symmetric fft after clearing freq bins
-        bin_indices = zeros(sample_rate, "int64")
+        bin_indices = zeros(sampling_rate, "int64")
         for i in range(noise_M_over_2):
             bin_indices[i] = i
             bin_indices[-(i + 1)] = i
@@ -205,7 +205,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
             in_ptr = 0
             out_ptr = -noise_M_over_2
             for frame_n in range(noise_frames):
-                time_bins = white_noise[in_ptr:in_ptr+sample_rate] * window
+                time_bins = white_noise[in_ptr:in_ptr+sampling_rate] * window
                 freq_bins = fft(time_bins)
                 freq_bins[:lo] = 0.0
                 freq_bins[hi+1:] = 0.0
@@ -215,13 +215,13 @@ def synth(ats_snd, normalize=False, compute_phase=True,
                 back_pad = 0
                 if out_ptr < 0:
                     front_pad = -out_ptr
-                if out_ptr + sample_rate >= out_size:
-                    back_pad = out_ptr + sample_rate - out_size
+                if out_ptr + sampling_rate >= out_size:
+                    back_pad = out_ptr + sampling_rate - out_size
 
                 if not front_pad and not back_pad:    
-                    banded_noise[band][out_ptr:out_ptr+sample_rate] += rev_fft
+                    banded_noise[band][out_ptr:out_ptr+sampling_rate] += rev_fft
                 else:
-                    banded_noise[band][out_ptr+front_pad:out_ptr+sample_rate-back_pad] += rev_fft[front_pad:sample_rate-back_pad] 
+                    banded_noise[band][out_ptr+front_pad:out_ptr+sampling_rate-back_pad] += rev_fft[front_pad:sampling_rate-back_pad] 
 
                 in_ptr += noise_hop
                 out_ptr += noise_hop
@@ -266,8 +266,9 @@ def synth(ats_snd, normalize=False, compute_phase=True,
             synthesized /= gain
 
     # export synthesized version to audio file
+    print(sampling_rate)
     if export_file is not None:
-        sf.write(export_file, synthesized, sample_rate)
+        sf.write(export_file, synthesized, int(sampling_rate))
 
     return synthesized
 

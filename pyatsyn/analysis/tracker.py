@@ -147,21 +147,21 @@ def tracker (   in_file,
         if `highest_frequency` is < `lowest_frequency`
     """
     # read input audio file
-    in_sound, sample_rate = sf.read(in_file)
+    in_sound, sampling_rate = sf.read(in_file)
 
     if in_sound.ndim > 1:
         raise ValueError("Input audio file must be mono")
     
     # get first and last sample indices
-    st = int(start * sample_rate)
+    st = int(start * sampling_rate)
     nd = in_sound.size
     if duration is not None:
-        nd = st + int(duration * sample_rate)
+        nd = st + int(duration * sampling_rate)
     
     # calculate windowing parameters
     total_samps = nd - st
-    analysis_duration = total_samps / sample_rate
-    cycle_samps = int((1 / lowest_frequency) * window_cycles * sample_rate)
+    analysis_duration = total_samps / sampling_rate
+    cycle_samps = int((1 / lowest_frequency) * window_cycles * sampling_rate)
 
     M = force_M
     if M is None:
@@ -190,16 +190,16 @@ def tracker (   in_file,
     frames = compute_frames(total_samps, hop)    
 
     # magic number for fft frequencies (frequency resolution)
-    fft_mag = sample_rate / N
+    fft_mag = sampling_rate / N
 
     l_frq = lowest_frequency
     if l_frq <= 0.0:
         raise ValueError('Lowest frequency must be greater than 0.0')
     
     h_frq = highest_frequency
-    if h_frq > (sample_rate / 2.0):
+    if h_frq > (sampling_rate / 2.0):
         if verbose: print('WARNING: Capping highest frequency to Nyquist Frequency')
-        h_frq = int(sample_rate / 2.0)
+        h_frq = int(sampling_rate / 2.0)
     if h_frq < l_frq:
         raise ValueError('Highest frequency must be greater than lowest frequency')
 
@@ -269,7 +269,7 @@ def tracker (   in_file,
         # PEAK DETECTION #
         ##################
 
-        fftfreqs = fftfreq(fd.size, 1 / sample_rate)                
+        fftfreqs = fftfreq(fd.size, 1 / sampling_rate)                
         
         if front_pad or back_pad:
             # apply correction for frames that hang off the edge of the input file, thus downscaling the actual amplitude            
@@ -293,7 +293,7 @@ def tracker (   in_file,
 
         if len(tracks) > 0:
             update_track_averages(tracks, track_length, frame_n, analysis_frames, last_peak_contribution)
-            peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop, frequency_deviation, SMR_continuity, min_gap_length)
+            peak_tracking(tracks, peaks, frame_n, analysis_frames, sampling_rate, hop, frequency_deviation, SMR_continuity, min_gap_length)
         else:
             # otherwise instantiate tracks with the current frame's peaks, if any
             for pk_ind, pk in enumerate(peaks):
@@ -319,7 +319,7 @@ def tracker (   in_file,
 
     if verbose:
         print("Initializing AtsSound object...")
-    ats_snd = AtsSound(sample_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
+    ats_snd = AtsSound(sampling_rate, hop, M, len(tracks), frames, analysis_duration, has_phase = True)
 
     if optimize:
         amp_max = 0.0
@@ -334,7 +334,7 @@ def tracker (   in_file,
 
     # fill up with data
     for frame_n in range(frames):
-        frame_time = (win_samps[frame_n] - st) / sample_rate
+        frame_time = (win_samps[frame_n] - st) / sampling_rate
         ats_snd.time[frame_n] = frame_time
         for pk in analysis_frames[frame_n]:
             ats_snd.frq[pk.track][frame_n] = pk.frq

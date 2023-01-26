@@ -85,9 +85,50 @@ class AtsPeak:
 
 
 class AtsSoundVFR():
-    """
-    TODO a compressed and variable frame rate format for ats objects
-    """
+    """Data abstraction for ATS sounds with variable frame rates
+
+    Parameters
+    ----------
+    partials : int
+        number of partials/tracks stored
+    frames : int
+        number of frames of analysis
+    dur : float
+        duration (in s) of the sound
+    has_phase : bool, optional
+        whether to initial phase information data structure (default: True)
+
+    Attributes
+    ----------
+    partials : int
+        number of partials/tracks stored
+    frames : int
+        number of frames of analysis
+    dur : float
+        duration (in s) of the sound
+    amp_max : float
+        maximum amplitude of the sound
+    frq_max : float
+        maximum frequency (in Hz) of the sound
+    frq_av : ndarray[float]
+        1D array of average frequency (in Hz) for each partial
+    amp_av : ndarray[float]
+        1D array of average amplitude for each partial
+    time : float
+        1D array of the time (in s) corresponding to each frame
+    frq : ndarray[float]
+        2D array storing frequency (in Hz) for each partial at each frame
+    amp : ndarray[float]
+        2D array storing amplitude for each partial at each frame
+    pha : ndarray[float]
+        2D array storing phase (in radians) for each partial at each frame. None if no phase information is stored.
+    energy : ndarray[float]
+        2D array for storing noise band energy into each partials at each frame. NOTE: Currently only implemented for legacy purposes. Empty list if no noise information is stored.
+    band_energy : ndarray[float]
+        2D array of noise band energies for each band at each frame. Empty list if no noise information is stored.
+    bands : ndarray[int]
+        1D array of unique indices to label each noise band. Empty list if no noise information is stored.
+    """ 
     def  __init__ (self, frames, partials, dur, has_phase=True):        
         
         self.partials = partials
@@ -114,8 +155,12 @@ class AtsSoundVFR():
 
 
     def info(self, partials_info=False):
-        """
-        TODO
+        """Function to print information about this object to the stdout
+        
+        Parameters
+        ----------
+        partials_info : bool, optional
+            whether to include frq and amp averages about each partial in the output (default: False)    
         """
         print(f"n partials:", self.partials)
         print(f"n frames:", self.frames)
@@ -330,7 +375,7 @@ class AtsSoundVFR():
             if len(self.energy) > 0:
                 self.energy = self.energy[keep_partials,:]
 
-        # reset amp_max & average # TODO
+        # reset amp_max & average
         amp_max = 0.0
         frq_max = 0.0
         for partial in range(self.partials):
@@ -374,9 +419,11 @@ class AtsSoundVFR():
 class AtsSound(AtsSoundVFR):
     """Main data abstraction for ATS
 
+    subclass of :obj:`~pyatsyn.ats_structure.AtsSoundVFR` with a constant frame size
+
     Parameters
     ----------
-    sampling_rate : int
+    sampling_rate : float
         sampling rate (samples/sec)
     frame_size : int
         interframe distance (in samples)
@@ -391,9 +438,9 @@ class AtsSound(AtsSoundVFR):
     has_phase : bool, optional
         whether to initial phase information data structure (default: True)
 
-    Attributes TODO correct after refactor
+    Attributes
     ----------
-    sampling_rate : int
+    sampling_rate : float
         sampling rate (samples/sec)
     frame_size : int
         interframe distance (in samples)
@@ -439,8 +486,12 @@ class AtsSound(AtsSoundVFR):
 
 
     def info(self, partials_info=False):
-        """
-        TODO
+        """Function to print information about this object to the stdout
+        
+        Parameters
+        ----------
+        partials_info : bool, optional
+            whether to include frq and amp averages about each partial in the output (default: False)    
         """
         print(f"sampling rate (samples/s):", self.sampling_rate)
         print(f"frame size:", self.frame_size)
@@ -538,18 +589,36 @@ class AtsSound(AtsSoundVFR):
                             )
 
 
-def to_cfr(ats_snd_vfr, frame_size, sample_rate=None, window_size=None):
-    """
-    TODO
+def to_cfr(ats_snd_vfr, frame_size, sampling_rate=None, window_size=None):
+    """Function to convert :obj:`~pyatsyn.ats_structure.AtsSoundVFR` to constant frame rate :obj:`~pyatsyn.ats_structure.AtsSound`
+
+    Can also be used to resample a :obj:`~pyatsyn.ats_structure.AtsSound` at another frame rate.
+
+    Parameters
+    ----------
+    ats_snd_vfr : :obj:`~pyatsyn.ats_structure.AtsSoundVFR` or :obj:`~pyatsyn.ats_structure.AtsSound`
+        the ats sound object to resample
+    frame_size : int
+        interframe distance (in samples) to be used to dictate the new constant frame rate
+    sampling_rate : float, optional
+        sampling rate (samples/sec). If None, will be assigned to :obj:`~pyatsyn.ats_utils.ATS_DEFAULT_SAMPLING_RATE` (Default: None)
+    window_size : int, optional
+        size (in samples) of the FFT window used to analyze the sound. If None, will be assigned to -1 (Default: None)
+
+    Returns
+    -------
+    :obj:`~pyatsyn.ats_structure.AtsSound`
+        an interpolated or resamples ats sound object with constant frame rate
     """    
     has_pha = ats_snd_vfr.pha is not None
-    frames = int(ceil((ats_snd_vfr.time[-1] * sample_rate) / frame_size)) + 1
-    if sample_rate is None:
-        sample_rate = ATS_DEFAULT_SAMPLING_RATE
+    if sampling_rate is None:
+        sampling_rate = ATS_DEFAULT_SAMPLING_RATE
     if window_size is None:
         window_size = -1
 
-    ats_cfr = AtsSound(sample_rate, frame_size, window_size, ats_snd_vfr.partials, frames, ats_snd_vfr.dur, has_phase=has_pha)
+    frames = int(ceil((ats_snd_vfr.time[-1] * sampling_rate) / frame_size)) + 1
+
+    ats_cfr = AtsSound(sampling_rate, frame_size, window_size, ats_snd_vfr.partials, frames, ats_snd_vfr.dur, has_phase=has_pha)
 
     if len(ats_snd_vfr.bands) > 0:
         ats_cfr.bands = copy(ats_snd_vfr.bands)
@@ -560,7 +629,7 @@ def to_cfr(ats_snd_vfr, frame_size, sample_rate=None, window_size=None):
 
     vfr_frame_n = 0
     for frame_n in range(frames):
-        ats_cfr.time[frame_n] = frame_n * frame_size / sample_rate
+        ats_cfr.time[frame_n] = frame_n * frame_size / sampling_rate
 
         while (ats_snd_vfr.time[vfr_frame_n] < ats_cfr.time[frame_n] and vfr_frame_n < ats_snd_vfr.frames - 1):
             vfr_frame_n += 1
@@ -581,8 +650,8 @@ def to_cfr(ats_snd_vfr, frame_size, sample_rate=None, window_size=None):
             tt = (ats_snd_vfr.time[vfr_frame_n] - ats_snd_vfr.time[vfr_frame_n - 1])
             ti = (ats_cfr.time[frame_n] - ats_snd_vfr.time[vfr_frame_n - 1])
             t_interp =  ti / tt
-            i_samps_from_0 = ti * sample_rate
-            samps_from_0_to_t = tt * sample_rate
+            i_samps_from_0 = ti * sampling_rate
+            samps_from_0_to_t = tt * sampling_rate
             for partial in range(ats_cfr.partials):
                 frq_0 = ats_snd_vfr.frq[partial][vfr_frame_n - 1]
                 frq_t = ats_snd_vfr.frq[partial][vfr_frame_n]
@@ -593,7 +662,7 @@ def to_cfr(ats_snd_vfr, frame_size, sample_rate=None, window_size=None):
                 if has_pha:
                     pha_0 = ats_snd_vfr.pha[partial][vfr_frame_n - 1]
                     pha_t = ats_snd_vfr.pha[partial][vfr_frame_n]                  
-                    ats_cfr.pha[partial][frame_n] = phase_interp_cubic(frq_0, frq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sample_rate)
+                    ats_cfr.pha[partial][frame_n] = phase_interp_cubic(frq_0, frq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sampling_rate)
                 if len(ats_cfr.energy) > 0:
                     eng_0 = ats_snd_vfr.energy[partial][vfr_frame_n - 1]
                     eng_t = ats_snd_vfr.energy[partial][vfr_frame_n]

@@ -17,21 +17,21 @@ ats\_structure
    :undoc-members:
    :show-inheritance:
 
-ats\_synth
+ats\_utils
 -----------------------
 
-.. automodule:: pyatsyn.ats_synth
+.. automodule:: pyatsyn.ats_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-atsa module
+analysis module
 ===================
 
 critical\_bands
 ---------------------------------
 
-.. automodule:: pyatsyn.atsa.critical_bands
+.. automodule:: pyatsyn.analysis.critical_bands
    :members:
    :undoc-members:
    :show-inheritance:
@@ -39,7 +39,7 @@ critical\_bands
 peak\_detect
 ------------------------------
 
-.. automodule:: pyatsyn.atsa.peak_detect
+.. automodule:: pyatsyn.analysis.peak_detect
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ peak\_detect
 peak\_tracking
 --------------------------------
 
-.. automodule:: pyatsyn.atsa.peak_tracking
+.. automodule:: pyatsyn.analysis.peak_tracking
    :members:
    :undoc-members:
    :show-inheritance:
@@ -55,7 +55,7 @@ peak\_tracking
 residual
 --------------------------
 
-.. automodule:: pyatsyn.atsa.residual
+.. automodule:: pyatsyn.analysis.residual
    :members:
    :undoc-members:
    :show-inheritance:
@@ -63,7 +63,7 @@ residual
 tracker
 -------------------------
 
-.. automodule:: pyatsyn.atsa.tracker
+.. automodule:: pyatsyn.analysis.tracker
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,7 +71,7 @@ tracker
 utils
 -----------------------
 
-.. automodule:: pyatsyn.atsa.utils
+.. automodule:: pyatsyn.analysis.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -79,7 +79,21 @@ utils
 windows
 -------------------------
 
-.. automodule:: pyatsyn.atsa.windows
+.. automodule:: pyatsyn.analysis.windows
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+transformation module
+=======================
+
+synthesis module
+=================
+
+synth
+-----------------------
+
+.. automodule:: pyatsyn.synthesis.synth
    :members:
    :undoc-members:
    :show-inheritance:

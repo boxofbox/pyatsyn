@@ -130,7 +130,7 @@ def find_track_in_peaks(track, peaks):
     return None
 
 
-def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size, frequency_deviation = 0.45, SMR_continuity = 0.0, min_gap_length = 1):
+def peak_tracking(tracks, peaks, frame_n, analysis_frames, sampling_rate, hop_size, frequency_deviation = 0.45, SMR_continuity = 0.0, min_gap_length = 1):
     """Core function to coordinate peak tracking
 
     This function coordinates the matching of new peaks with existing tracks using 
@@ -151,7 +151,7 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size
         the current frame
     analysis_frames : Iterable[Iterable[:obj:`~pyatsyn.ats_structure.AtsPeak`]]
         a running collection storing the :obj:`~pyatsyn.ats_structure.AtsPeak` objects at each frame in time
-    sample_rate : int 
+    sampling_rate : float
         the sampling rate (in samples / s)
     hop_size : int 
         the inter-frame distance (in samples)
@@ -234,7 +234,7 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sample_rate, hop_size
                     new_pk.smr = (smr_step * mult) + pk.smr
                     samps_from_0_to_t = (interp_range + 1) * hop_size
                     i_samps_from_0 = hop_size * (interp_range - i)                   
-                    new_pk.pha = phase_interp_cubic(tk.frq, pk.frq, tk.pha, pk.pha, i_samps_from_0, samps_from_0_to_t, sample_rate)
+                    new_pk.pha = phase_interp_cubic(tk.frq, pk.frq, tk.pha, pk.pha, i_samps_from_0, samps_from_0_to_t, sampling_rate)
                     new_pk.duration -= i
                     analysis_frames[frame_n - i].append(new_pk)
                 tk.asleep_for = None                

@@ -11,17 +11,19 @@
 
 
 """
-TODO
+Utility Functions for ATS
 
 Attributes
 ----------
-TODO
+ATS_DEFAULT_SAMPLING_RATE : float
+    default sampling rate (in samps / s) when one is not available/provided
+
 """
 
 from math import remainder, tau
 from numpy import zeros, matmul
 
-ATS_DEFAULT_SAMPLING_RATE = 44100
+ATS_DEFAULT_SAMPLING_RATE = 44100.0
 
 def phase_interp_linear(freq_0, freq_t, pha_0, t):
     """Function to compute linear phase interpolation
@@ -51,7 +53,7 @@ def phase_interp_linear(freq_0, freq_t, pha_0, t):
     return remainder(new_phase, tau) # NOTE: IEEE remainder
 
 
-def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sample_rate):
+def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_0_to_t, sampling_rate):
     """Function to interpolate phase using cubic polynomial interpolation
 
     Uses cubic interpolation to determine and intermediate phase within the curve linking 
@@ -80,7 +82,7 @@ def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_
         relative sample index `i` to interpolate at
     samps_from_0_to_t : int
         distance (in samples) from 0 to t
-    sample_rate : int
+    sampling_rate : flot
         sampling rate (in samps/s)
 
     Returns
@@ -88,7 +90,7 @@ def phase_interp_cubic(freq_0, freq_t, pha_0, pha_t, i_samps_from_0, samps_from_
     float
         the modeled phase (in radians) at sample `i`
     """ 
-    freq_to_radians_per_sample = tau / sample_rate
+    freq_to_radians_per_sample = tau / sampling_rate
 
     alpha_beta_coeffs = zeros([2,2], "float64")
     alpha_beta_coeffs[0][0] = 3 / (samps_from_0_to_t**2)

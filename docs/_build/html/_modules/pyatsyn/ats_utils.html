@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyatsyn.ats_utils &mdash; pyatsyn 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> pyatsyn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../info.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html">pyatsyn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#analysis-module">analysis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#transformation-module">transformation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyatsyn.html#synthesis-module">synthesis module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyatsyn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyatsyn.ats_utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyatsyn.ats_utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># This source code is licensed under the BSD-style license found in the</span>
+<span class="c1"># LICENSE.rst file in the root directory of this source tree. </span>
+
+<span class="c1"># pyatsyn Copyright (c) &lt;2023&gt;, &lt;Johnathan G Lyon&gt;</span>
+<span class="c1"># All rights reserved.</span>
+
+<span class="c1"># Except where otherwise noted, ATSA and ATSH is Copyright (c) &lt;2002-2004&gt;</span>
+<span class="c1"># &lt;Oscar Pablo Di Liscia, Pete Moss, and Juan Pampin&gt;</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utility Functions for ATS</span>
+
+<span class="sd">Attributes</span>
+<span class="sd">----------</span>
+<span class="sd">ATS_DEFAULT_SAMPLING_RATE : float</span>
+<span class="sd">    default sampling rate (in samps / s) when one is not available/provided</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">remainder</span><span class="p">,</span> <span class="n">tau</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">matmul</span>
+
+<span class="n">ATS_DEFAULT_SAMPLING_RATE</span> <span class="o">=</span> <span class="mf">44100.0</span>
+
+<div class="viewcode-block" id="phase_interp_linear"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_utils.phase_interp_linear">[docs]</a><span class="k">def</span> <span class="nf">phase_interp_linear</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to compute linear phase interpolation</span>
+
+<span class="sd">    Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate </span>
+<span class="sd">    from the relative time 0 to time t.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freq_0 : float</span>
+<span class="sd">        initial frequency (in Hz)</span>
+<span class="sd">    freq_t : float</span>
+<span class="sd">        frequency at time t (in Hz)</span>
+<span class="sd">    pha_0 : float</span>
+<span class="sd">        initial phase (in radians)</span>
+<span class="sd">    t : float</span>
+<span class="sd">        time (in s) from freq_0</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        the phase (in radians) at relative time t</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># assuming smooth linear interpolation the average frequency dictates phase rate estimate</span>
+    <span class="n">freq_est</span> <span class="o">=</span> <span class="p">(</span><span class="n">freq_t</span> <span class="o">+</span> <span class="n">freq_0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">new_phase</span> <span class="o">=</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">freq_est</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">remainder</span><span class="p">(</span><span class="n">new_phase</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span> <span class="c1"># NOTE: IEEE remainder</span></div>
+
+
+<div class="viewcode-block" id="phase_interp_cubic"><a class="viewcode-back" href="../../pyatsyn.html#pyatsyn.ats_utils.phase_interp_cubic">[docs]</a><span class="k">def</span> <span class="nf">phase_interp_cubic</span><span class="p">(</span><span class="n">freq_0</span><span class="p">,</span> <span class="n">freq_t</span><span class="p">,</span> <span class="n">pha_0</span><span class="p">,</span> <span class="n">pha_t</span><span class="p">,</span> <span class="n">i_samps_from_0</span><span class="p">,</span> <span class="n">samps_from_0_to_t</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to interpolate phase using cubic polynomial interpolation</span>
+
+<span class="sd">    Uses cubic interpolation to determine and intermediate phase within the curve linking </span>
+<span class="sd">    a particular frequency and phase at relative time 0, to a frequency and phase at time t. </span>
+
+<span class="sd">    The basis for this method is credited to:</span>
+
+<span class="sd">        MR. McAulay and T. Quatieri, &quot;Speech analysis/Synthesis based on a </span>
+<span class="sd">        sinusoidal representation,&quot; in IEEE Transactions on Acoustics, </span>
+<span class="sd">        Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754, </span>
+<span class="sd">        August 1986</span>
+<span class="sd">        </span>
+<span class="sd">        `doi: 10.1109/TASSP.1986.1164910 &lt;https://doi.org/10.1109/TASSP.1986.1164910&gt;`_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    freq_0 : float</span>
+<span class="sd">        initial frequency (in Hz)</span>
+<span class="sd">    freq_t : float</span>
+<span class="sd">        frequency at time t (in Hz)</span>
+<span class="sd">    pha_0 : float</span>
+<span class="sd">        initial phase (in radians)</span>
+<span class="sd">    pha_t : float</span>
+<span class="sd">        phase at time t (in radians)</span>
+<span class="sd">    i_samps_from_0 : int</span>
+<span class="sd">        relative sample index `i` to interpolate at</span>
+<span class="sd">    samps_from_0_to_t : int</span>
+<span class="sd">        distance (in samples) from 0 to t</span>
+<span class="sd">    sampling_rate : flot</span>
+<span class="sd">        sampling rate (in samps/s)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        the modeled phase (in radians) at sample `i`</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="n">freq_to_radians_per_sample</span> <span class="o">=</span> <span class="n">tau</span> <span class="o">/</span> <span class="n">sampling_rate</span>
+
+    <span class="n">alpha_beta_coeffs</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">samps_from_0_to_t</span>
+    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">alpha_beta_coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">samps_from_0_to_t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">alpha_beta_terms</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+
+    <span class="n">half_T</span> <span class="o">=</span> <span class="n">samps_from_0_to_t</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="n">w_0</span> <span class="o">=</span> <span class="n">freq_0</span> <span class="o">*</span> <span class="n">freq_to_radians_per_sample</span>
+    <span class="n">w_t</span> <span class="o">=</span> <span class="n">freq_t</span> <span class="o">*</span> <span class="n">freq_to_radians_per_sample</span>
+
+    <span class="n">M</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((((</span><span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">samps_from_0_to_t</span><span class="p">)</span> <span class="o">-</span> <span class="n">pha_t</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">half_T</span> <span class="o">*</span> <span class="p">(</span><span class="n">w_t</span> <span class="o">-</span> <span class="n">w_0</span><span class="p">)))</span> <span class="o">/</span> <span class="n">tau</span><span class="p">))</span>
+    <span class="n">alpha_beta_terms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">pha_t</span> <span class="o">-</span> <span class="n">pha_0</span> <span class="o">-</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">samps_from_0_to_t</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">tau</span> <span class="o">*</span> <span class="n">M</span><span class="p">)</span>
+    <span class="n">alpha_beta_terms</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">w_t</span> <span class="o">-</span> <span class="n">w_0</span>
+    <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">matmul</span><span class="p">(</span><span class="n">alpha_beta_coeffs</span><span class="p">,</span> <span class="n">alpha_beta_terms</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pha_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">w_0</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">*</span> <span class="n">i_samps_from_0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Johnathan G Lyon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

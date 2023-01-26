@@ -9,6 +9,7 @@ Changelog
 * ATSSoundVFR -> ATSSound (CFR) conversion
 * NOTE: API breaking change! Folder and module naming refactoring to adopt more declarative structure -> analysis-transformation-synthesis
 * i/o updated to account for variable frame rates (adopting .atsv as file extension to distinguish it from .ats, since vfr is not externally supported yet)
+* synth support for variable frame rates
 
 
 [v1.0.0](https://github.com/boxofbox/pyatsyn/releases/tag/v1.0.0) Initial Release (2023-01-22)

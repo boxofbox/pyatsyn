@@ -76,7 +76,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.partials"><code class="docutils literal notranslate"><span class="pre">AtsSound.partials</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.frames"><code class="docutils literal notranslate"><span class="pre">AtsSound.frames</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.dur"><code class="docutils literal notranslate"><span class="pre">AtsSound.dur</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.optimized"><code class="docutils literal notranslate"><span class="pre">AtsSound.optimized</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.amp_max"><code class="docutils literal notranslate"><span class="pre">AtsSound.amp_max</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.frq_max"><code class="docutils literal notranslate"><span class="pre">AtsSound.frq_max</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.frq_av"><code class="docutils literal notranslate"><span class="pre">AtsSound.frq_av</span></code></a></li>
@@ -89,84 +88,114 @@
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.band_energy"><code class="docutils literal notranslate"><span class="pre">AtsSound.band_energy</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.bands"><code class="docutils literal notranslate"><span class="pre">AtsSound.bands</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.clone"><code class="docutils literal notranslate"><span class="pre">AtsSound.clone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.info"><code class="docutils literal notranslate"><span class="pre">AtsSound.info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.optimize"><code class="docutils literal notranslate"><span class="pre">AtsSound.optimize()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.partials"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.partials</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.frames"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.frames</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.dur"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.dur</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.amp_max"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.amp_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.frq_max"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.frq_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.frq_av"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.frq_av</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.amp_av"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.amp_av</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.time"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.frq"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.frq</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.amp"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.amp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.pha"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.pha</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.energy"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.energy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.band_energy"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.band_energy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.bands"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.bands</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.clone"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.clone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.info"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.optimize"><code class="docutils literal notranslate"><span class="pre">AtsSoundVFR.optimize()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.ats_synth">ats_synth</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.ats_synth.synth"><code class="docutils literal notranslate"><span class="pre">synth()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.ats_synth.synth_CLI"><code class="docutils literal notranslate"><span class="pre">synth_CLI()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.ats_structure.to_cfr"><code class="docutils literal notranslate"><span class="pre">to_cfr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.ats_utils">ats_utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.ats_utils.ATS_DEFAULT_SAMPLING_RATE"><code class="docutils literal notranslate"><span class="pre">ATS_DEFAULT_SAMPLING_RATE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.ats_utils.phase_interp_cubic"><code class="docutils literal notranslate"><span class="pre">phase_interp_cubic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.ats_utils.phase_interp_linear"><code class="docutils literal notranslate"><span class="pre">phase_interp_linear()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#atsa-module">atsa module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.critical_bands">critical_bands</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.critical_bands.compute_slope_r"><code class="docutils literal notranslate"><span class="pre">compute_slope_r()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.critical_bands.evaluate_smr"><code class="docutils literal notranslate"><span class="pre">evaluate_smr()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.critical_bands.find_band"><code class="docutils literal notranslate"><span class="pre">find_band()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.critical_bands.frq_to_bark"><code class="docutils literal notranslate"><span class="pre">frq_to_bark()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="#analysis-module">analysis module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.analysis.critical_bands">critical_bands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.critical_bands.compute_slope_r"><code class="docutils literal notranslate"><span class="pre">compute_slope_r()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.critical_bands.evaluate_smr"><code class="docutils literal notranslate"><span class="pre">evaluate_smr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.critical_bands.find_band"><code class="docutils literal notranslate"><span class="pre">find_band()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.critical_bands.frq_to_bark"><code class="docutils literal notranslate"><span class="pre">frq_to_bark()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.peak_detect">peak_detect</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_detect.parabolic_interp"><code class="docutils literal notranslate"><span class="pre">parabolic_interp()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_detect.peak_detection"><code class="docutils literal notranslate"><span class="pre">peak_detection()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_detect.phase_correct"><code class="docutils literal notranslate"><span class="pre">phase_correct()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.analysis.peak_detect">peak_detect</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_detect.parabolic_interp"><code class="docutils literal notranslate"><span class="pre">parabolic_interp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_detect.peak_detection"><code class="docutils literal notranslate"><span class="pre">peak_detection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_detect.phase_correct"><code class="docutils literal notranslate"><span class="pre">phase_correct()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.peak_tracking">peak_tracking</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.MatchCost"><code class="docutils literal notranslate"><span class="pre">MatchCost</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.MatchCost.cost"><code class="docutils literal notranslate"><span class="pre">MatchCost.cost</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.MatchCost.index"><code class="docutils literal notranslate"><span class="pre">MatchCost.index</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.analysis.peak_tracking">peak_tracking</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_tracking.MatchCost"><code class="docutils literal notranslate"><span class="pre">MatchCost</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.analysis.peak_tracking.MatchCost.cost"><code class="docutils literal notranslate"><span class="pre">MatchCost.cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pyatsyn.analysis.peak_tracking.MatchCost.index"><code class="docutils literal notranslate"><span class="pre">MatchCost.index</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.are_valid_candidates"><code class="docutils literal notranslate"><span class="pre">are_valid_candidates()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.find_track_in_peaks"><code class="docutils literal notranslate"><span class="pre">find_track_in_peaks()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.peak_dist"><code class="docutils literal notranslate"><span class="pre">peak_dist()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.peak_tracking"><code class="docutils literal notranslate"><span class="pre">peak_tracking()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.phase_interp"><code class="docutils literal notranslate"><span class="pre">phase_interp()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.phase_interp_cubic"><code class="docutils literal notranslate"><span class="pre">phase_interp_cubic()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.peak_tracking.update_track_averages"><code class="docutils literal notranslate"><span class="pre">update_track_averages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_tracking.are_valid_candidates"><code class="docutils literal notranslate"><span class="pre">are_valid_candidates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_tracking.find_track_in_peaks"><code class="docutils literal notranslate"><span class="pre">find_track_in_peaks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_tracking.peak_dist"><code class="docutils literal notranslate"><span class="pre">peak_dist()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_tracking.peak_tracking"><code class="docutils literal notranslate"><span class="pre">peak_tracking()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.peak_tracking.update_track_averages"><code class="docutils literal notranslate"><span class="pre">update_track_averages()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.residual">residual</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.residual.band_to_energy"><code class="docutils literal notranslate"><span class="pre">band_to_energy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.residual.compute_residual"><code class="docutils literal notranslate"><span class="pre">compute_residual()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.residual.remove_bands"><code class="docutils literal notranslate"><span class="pre">remove_bands()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.residual.residual_N"><code class="docutils literal notranslate"><span class="pre">residual_N()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.residual.residual_analysis"><code class="docutils literal notranslate"><span class="pre">residual_analysis()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.residual.residual_compute_band_energy"><code class="docutils literal notranslate"><span class="pre">residual_compute_band_energy()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.residual.residual_get_band_limits"><code class="docutils literal notranslate"><span class="pre">residual_get_band_limits()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.analysis.residual">residual</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.residual.band_to_energy"><code class="docutils literal notranslate"><span class="pre">band_to_energy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.residual.compute_residual"><code class="docutils literal notranslate"><span class="pre">compute_residual()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.residual.remove_bands"><code class="docutils literal notranslate"><span class="pre">remove_bands()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.residual.residual_N"><code class="docutils literal notranslate"><span class="pre">residual_N()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.residual.residual_analysis"><code class="docutils literal notranslate"><span class="pre">residual_analysis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.residual.residual_compute_band_energy"><code class="docutils literal notranslate"><span class="pre">residual_compute_band_energy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.residual.residual_get_band_limits"><code class="docutils literal notranslate"><span class="pre">residual_get_band_limits()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.tracker">tracker</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.tracker.tracker"><code class="docutils literal notranslate"><span class="pre">tracker()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.tracker.tracker_CLI"><code class="docutils literal notranslate"><span class="pre">tracker_CLI()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.analysis.tracker">tracker</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.tracker.tracker"><code class="docutils literal notranslate"><span class="pre">tracker()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.tracker.tracker_CLI"><code class="docutils literal notranslate"><span class="pre">tracker_CLI()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.utils">utils</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.MAX_DB_SPL"><code class="docutils literal notranslate"><span class="pre">MAX_DB_SPL</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.ATS_MIN_SEGMENT_LENGTH"><code class="docutils literal notranslate"><span class="pre">ATS_MIN_SEGMENT_LENGTH</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.ATS_AMP_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_AMP_THRESHOLD</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.ATS_NOISE_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_NOISE_THRESHOLD</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.amp_to_db"><code class="docutils literal notranslate"><span class="pre">amp_to_db()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.amp_to_db_spl"><code class="docutils literal notranslate"><span class="pre">amp_to_db_spl()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.compute_frames"><code class="docutils literal notranslate"><span class="pre">compute_frames()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.db_to_amp"><code class="docutils literal notranslate"><span class="pre">db_to_amp()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.next_power_of_2"><code class="docutils literal notranslate"><span class="pre">next_power_of_2()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.utils.optimize_tracks"><code class="docutils literal notranslate"><span class="pre">optimize_tracks()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.analysis.utils">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.MAX_DB_SPL"><code class="docutils literal notranslate"><span class="pre">MAX_DB_SPL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.ATS_MIN_SEGMENT_LENGTH"><code class="docutils literal notranslate"><span class="pre">ATS_MIN_SEGMENT_LENGTH</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.ATS_AMP_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_AMP_THRESHOLD</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.ATS_NOISE_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">ATS_NOISE_THRESHOLD</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.amp_to_db"><code class="docutils literal notranslate"><span class="pre">amp_to_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.amp_to_db_spl"><code class="docutils literal notranslate"><span class="pre">amp_to_db_spl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.compute_frames"><code class="docutils literal notranslate"><span class="pre">compute_frames()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.db_to_amp"><code class="docutils literal notranslate"><span class="pre">db_to_amp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.next_power_of_2"><code class="docutils literal notranslate"><span class="pre">next_power_of_2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.utils.optimize_tracks"><code class="docutils literal notranslate"><span class="pre">optimize_tracks()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.atsa.windows">windows</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS"><code class="docutils literal notranslate"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.windows.bes_i0"><code class="docutils literal notranslate"><span class="pre">bes_i0()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.windows.make_blackman_window"><code class="docutils literal notranslate"><span class="pre">make_blackman_window()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.windows.make_fft_window"><code class="docutils literal notranslate"><span class="pre">make_fft_window()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.windows.normalize_window"><code class="docutils literal notranslate"><span class="pre">normalize_window()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.atsa.windows.window_norm"><code class="docutils literal notranslate"><span class="pre">window_norm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.analysis.windows">windows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS"><code class="docutils literal notranslate"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.windows.bes_i0"><code class="docutils literal notranslate"><span class="pre">bes_i0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.windows.make_blackman_window"><code class="docutils literal notranslate"><span class="pre">make_blackman_window()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.windows.make_fft_window"><code class="docutils literal notranslate"><span class="pre">make_fft_window()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.windows.normalize_window"><code class="docutils literal notranslate"><span class="pre">normalize_window()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.analysis.windows.window_norm"><code class="docutils literal notranslate"><span class="pre">window_norm()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#transformation-module">transformation module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#synthesis-module">synthesis module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pyatsyn.synthesis.synth">synth</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.synthesis.synth.synth"><code class="docutils literal notranslate"><span class="pre">synth()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyatsyn.synthesis.synth.synth_CLI"><code class="docutils literal notranslate"><span class="pre">synth_CLI()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -237,6 +266,10 @@
 </tr>
 </tbody>
 </table>
+<p>NOTE: when saving/loading <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a> objects, sampling-rate,
+frame-size, and window-size will be -1. The file should be saved as a .atsv file by convention,
+because this is currently not a supported format external to pyatsyn. See <a class="reference internal" href="#pyatsyn.ats_structure.to_cfr" title="pyatsyn.ats_structure.to_cfr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_cfr</span></code></a>
+if you would like to save a variable frame rate object to an externally compliant format by converting it to constant frame rate.</p>
 <p>The frame data immediately follows the header,
 again all double floats, frame by frame, with a
 format matching the <cite>type</cite> (int) as specified in the header</p>
@@ -362,12 +395,12 @@ format matching the <cite>type</cite> (int) as specified in the header</p>
 <span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_io.</span></span><span class="sig-name descname"><span class="pre">ats_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_io.html#ats_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_io.ats_load" title="Permalink to this definition"></a></dt>
 <dd><p>Function to load a .ats file into python</p>
 <p>Loads a .ats file into python and provides routines to re-optimize the
-<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> data if required.</p>
+ats sound data if required.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file</strong> (<em>str</em>) – filepath to .ats file to load</p></li>
-<li><p><strong>optimize</strong> (<em>bool</em><em>, </em><em>optional</em>) – determined whether to call <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.optimize" title="pyatsyn.ats_structure.AtsSound.optimize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize</span></code></a> upon load (default: True)</p></li>
+<li><p><strong>optimize</strong> (<em>bool</em><em>, </em><em>optional</em>) – determined whether to call <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound.optimize" title="pyatsyn.ats_structure.AtsSound.optimize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize</span></code></a> (or <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR.optimize" title="pyatsyn.ats_structure.AtsSoundVFR.optimize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimize</span></code></a>) upon load (default: True)</p></li>
 <li><p><strong>min_gap_size</strong> (<em>int</em><em>, </em><em>optional</em>) – when optimizing, tracked partial gaps smaller than or equal to this (in frames) will be
 interpolated and filled. If None, no gap filling will occur (default: None)</p></li>
 <li><p><strong>amp_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum amplitude threshold used during optimization to prune tracks.
@@ -382,7 +415,7 @@ If None, no minimum frequency thresholding will occur (default: None)</p></li>
 <dd class="field-even"><p>the loaded ats data</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> or <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a></p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><strong>ValueError</strong> – if file is not a compatible ATS format (i.e., the ATS magic number was not decodable)</p>
@@ -393,11 +426,11 @@ If None, no minimum frequency thresholding will occur (default: None)</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyatsyn.ats_io.ats_save">
 <span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_io.</span></span><span class="sig-name descname"><span class="pre">ats_save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_io.html#ats_save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_io.ats_save" title="Permalink to this definition"></a></dt>
-<dd><p>Function to save an <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> to a file</p>
+<dd><p>Function to save an <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> or <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a> to a file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sound</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – ats sound object to save</p></li>
+<li><p><strong>sound</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> or <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a>) – ats sound object to save</p></li>
 <li><p><strong>file</strong> (<em>str</em>) – file path to save to</p></li>
 <li><p><strong>save_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to include phase data in file output (default: True)</p></li>
 <li><p><strong>save_noise</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to include noise band energy data in file output (default: True)</p></li>
@@ -578,12 +611,13 @@ If None, no minimum frequency thresholding will occur (default: None)</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSound">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_structure.</span></span><span class="sig-name descname"><span class="pre">AtsSound</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#AtsSound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.AtsSound" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-class docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a></p>
 <p>Main data abstraction for ATS</p>
+<p>subclass of <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a> with a constant frame size</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sampling_rate</strong> (<em>int</em>) – sampling rate (samples/sec)</p></li>
+<li><p><strong>sampling_rate</strong> (<em>float</em>) – sampling rate (samples/sec)</p></li>
 <li><p><strong>frame_size</strong> (<em>int</em>) – interframe distance (in samples)</p></li>
 <li><p><strong>window_size</strong> (<em>int</em>) – size (in samples) of the FFT window used to analyze the sound</p></li>
 <li><p><strong>partials</strong> (<em>int</em>) – number of partials/tracks stored</p></li>
@@ -599,7 +633,7 @@ If None, no minimum frequency thresholding will occur (default: None)</p></li>
 <dd><p>sampling rate (samples/sec)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -655,17 +689,6 @@ If None, no minimum frequency thresholding will occur (default: None)</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSound.optimized">
-<span class="sig-name descname"><span class="pre">optimized</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSound.optimized" title="Permalink to this definition"></a></dt>
-<dd><p>whether the object has been through optimization yet</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -806,6 +829,17 @@ If None, no minimum frequency thresholding will occur (default: None)</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSound.info">
+<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partials_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#AtsSound.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.AtsSound.info" title="Permalink to this definition"></a></dt>
+<dd><p>Function to print information about this object to the stdout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>partials_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to include frq and amp averages about each partial in the output (default: False)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSound.optimize">
 <span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_gap_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#AtsSound.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.AtsSound.optimize" title="Permalink to this definition"></a></dt>
 <dd><p>Function to run optimization routines on the frames of partial data stored in the object.</p>
@@ -840,18 +874,280 @@ If None, this sub-optimization will be skipped. (default: None)</p></li>
 
 </dd></dl>
 
-</section>
-<section id="module-pyatsyn.ats_synth">
-<span id="ats-synth"></span><h2>ats_synth<a class="headerlink" href="#module-pyatsyn.ats_synth" title="Permalink to this heading"></a></h2>
-<p>Synthesizer Methods for Rendering .ats Files to Audio</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_structure.</span></span><span class="sig-name descname"><span class="pre">AtsSoundVFR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partials</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#AtsSoundVFR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Data abstraction for ATS sounds with variable frame rates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>partials</strong> (<em>int</em>) – number of partials/tracks stored</p></li>
+<li><p><strong>frames</strong> (<em>int</em>) – number of frames of analysis</p></li>
+<li><p><strong>dur</strong> (<em>float</em>) – duration (in s) of the sound</p></li>
+<li><p><strong>has_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to initial phase information data structure (default: True)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.partials">
+<span class="sig-name descname"><span class="pre">partials</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.partials" title="Permalink to this definition"></a></dt>
+<dd><p>number of partials/tracks stored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.frames">
+<span class="sig-name descname"><span class="pre">frames</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.frames" title="Permalink to this definition"></a></dt>
+<dd><p>number of frames of analysis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.dur">
+<span class="sig-name descname"><span class="pre">dur</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.dur" title="Permalink to this definition"></a></dt>
+<dd><p>duration (in s) of the sound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.amp_max">
+<span class="sig-name descname"><span class="pre">amp_max</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.amp_max" title="Permalink to this definition"></a></dt>
+<dd><p>maximum amplitude of the sound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.frq_max">
+<span class="sig-name descname"><span class="pre">frq_max</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.frq_max" title="Permalink to this definition"></a></dt>
+<dd><p>maximum frequency (in Hz) of the sound</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.frq_av">
+<span class="sig-name descname"><span class="pre">frq_av</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.frq_av" title="Permalink to this definition"></a></dt>
+<dd><p>1D array of average frequency (in Hz) for each partial</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.amp_av">
+<span class="sig-name descname"><span class="pre">amp_av</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.amp_av" title="Permalink to this definition"></a></dt>
+<dd><p>1D array of average amplitude for each partial</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.time">
+<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.time" title="Permalink to this definition"></a></dt>
+<dd><p>1D array of the time (in s) corresponding to each frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.frq">
+<span class="sig-name descname"><span class="pre">frq</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.frq" title="Permalink to this definition"></a></dt>
+<dd><p>2D array storing frequency (in Hz) for each partial at each frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.amp">
+<span class="sig-name descname"><span class="pre">amp</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.amp" title="Permalink to this definition"></a></dt>
+<dd><p>2D array storing amplitude for each partial at each frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.pha">
+<span class="sig-name descname"><span class="pre">pha</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.pha" title="Permalink to this definition"></a></dt>
+<dd><p>2D array storing phase (in radians) for each partial at each frame. None if no phase information is stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.energy">
+<span class="sig-name descname"><span class="pre">energy</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.energy" title="Permalink to this definition"></a></dt>
+<dd><p>2D array for storing noise band energy into each partials at each frame. NOTE: Currently only implemented for legacy purposes. Empty list if no noise information is stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.band_energy">
+<span class="sig-name descname"><span class="pre">band_energy</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.band_energy" title="Permalink to this definition"></a></dt>
+<dd><p>2D array of noise band energies for each band at each frame. Empty list if no noise information is stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.bands">
+<span class="sig-name descname"><span class="pre">bands</span></span><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.bands" title="Permalink to this definition"></a></dt>
+<dd><p>1D array of unique indices to label each noise band. Empty list if no noise information is stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.clone">
+<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#AtsSoundVFR.clone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.clone" title="Permalink to this definition"></a></dt>
+<dd><p>Function to return a deep copy of an <code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVBR</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a deep copy of the calling <code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVBR</span></code> object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVBR</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.info">
+<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">partials_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#AtsSoundVFR.info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.info" title="Permalink to this definition"></a></dt>
+<dd><p>Function to print information about this object to the stdout</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>partials_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether to include frq and amp averages about each partial in the output (default: False)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.AtsSoundVFR.optimize">
+<span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_gap_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#AtsSoundVFR.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.AtsSoundVFR.optimize" title="Permalink to this definition"></a></dt>
+<dd><p>Function to run optimization routines on the frames of partial data stored in the object.</p>
+<dl class="simple">
+<dt>The optimizations performed are:</dt><dd><ul class="simple">
+<li><p>fill gaps of min_gap_time or shorter</p></li>
+<li><p>trim short partials</p></li>
+<li><p>calculate and store maximum and average frq and amp</p></li>
+<li><p>prune partials below amplitude threshold</p></li>
+<li><p>prune partials outside frequency constraints</p></li>
+<li><p>re-order partials according to average frq</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>min_gap_time</strong> (<em>float</em><em>, </em><em>optional</em>) – partial gaps longer than this (in s) will not be interpolated and filled in.
+If None, this sub-optimization will be skipped.  (default: None)</p></li>
+<li><p><strong>min_segment_time</strong> (<em>float</em><em>, </em><em>optional</em>) – minimal size (in s) of a valid partial segment, otherwise it is pruned.
+If None, this sub-optimization will be skipped. (default: None)</p></li>
+<li><p><strong>amp_threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – amplitude threshold used to prune partials.
+If None, this sub-optimization will be skipped. (default: None)</p></li>
+<li><p><strong>highest_frequency</strong> (<em>float</em>) – upper frequency threshold, tracks with maxima above this will be pruned.
+If None, this sub-optimization will be skipped. (default: None)</p></li>
+<li><p><strong>lowest_frequency</strong> (<em>float</em>) – lower frequency threshold, tracks with minima below this will be pruned.
+If None, this sub-optimization will be skipped. (default: None)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.ats_synth.synth">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_synth.</span></span><span class="sig-name descname"><span class="pre">synth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sine_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_sine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_synth.html#synth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_synth.synth" title="Permalink to this definition"></a></dt>
-<dd><p>Function to synthesize audio from <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
-<p>Sine generator bank and band-limited noise synthesizer for .ats files. When
-phase information is ignored phase is linearly interpolated between consecutive
-frequencies from an initial phase of 0.0 at the first non-zero amplitude for that partial.</p>
-<p>The method for cubic polynomial interpolation of phase used is credited to:</p>
+<dt class="sig sig-object py" id="pyatsyn.ats_structure.to_cfr">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_structure.</span></span><span class="sig-name descname"><span class="pre">to_cfr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd_vfr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_structure.html#to_cfr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_structure.to_cfr" title="Permalink to this definition"></a></dt>
+<dd><p>Function to convert <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a> to constant frame rate <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
+<p>Can also be used to resample a <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> at another frame rate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ats_snd_vfr</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a> or <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – the ats sound object to resample</p></li>
+<li><p><strong>frame_size</strong> (<em>int</em>) – interframe distance (in samples) to be used to dictate the new constant frame rate</p></li>
+<li><p><strong>sampling_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – sampling rate (samples/sec). If None, will be assigned to <a class="reference internal" href="#pyatsyn.ats_utils.ATS_DEFAULT_SAMPLING_RATE" title="pyatsyn.ats_utils.ATS_DEFAULT_SAMPLING_RATE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_DEFAULT_SAMPLING_RATE</span></code></a> (Default: None)</p></li>
+<li><p><strong>window_size</strong> (<em>int</em><em>, </em><em>optional</em>) – size (in samples) of the FFT window used to analyze the sound. If None, will be assigned to -1 (Default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an interpolated or resamples ats sound object with constant frame rate</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-pyatsyn.ats_utils">
+<span id="ats-utils"></span><h2>ats_utils<a class="headerlink" href="#module-pyatsyn.ats_utils" title="Permalink to this heading"></a></h2>
+<p>Utility Functions for ATS</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyatsyn.ats_utils.ATS_DEFAULT_SAMPLING_RATE">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_utils.</span></span><span class="sig-name descname"><span class="pre">ATS_DEFAULT_SAMPLING_RATE</span></span><a class="headerlink" href="#pyatsyn.ats_utils.ATS_DEFAULT_SAMPLING_RATE" title="Permalink to this definition"></a></dt>
+<dd><p>default sampling rate (in samps / s) when one is not available/provided</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyatsyn.ats_utils.phase_interp_cubic">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_utils.</span></span><span class="sig-name descname"><span class="pre">phase_interp_cubic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_samps_from_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samps_from_0_to_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_utils.html#phase_interp_cubic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_utils.phase_interp_cubic" title="Permalink to this definition"></a></dt>
+<dd><p>Function to interpolate phase using cubic polynomial interpolation</p>
+<p>Uses cubic interpolation to determine and intermediate phase within the curve linking
+a particular frequency and phase at relative time 0, to a frequency and phase at time t.</p>
+<p>The basis for this method is credited to:</p>
 <blockquote>
 <div><p>MR. McAulay and T. Quatieri, “Speech analysis/Synthesis based on a
 sinusoidal representation,” in IEEE Transactions on Acoustics,
@@ -862,58 +1158,59 @@ August 1986</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>) – the .ats file used to synthesize</p></li>
-<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – normalize sound to ±1 before output (default: False)</p></li>
-<li><p><strong>compute_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – use cubic polynomial interpolation of phase information during synthesis, if available (default: True)</p></li>
-<li><p><strong>export_file</strong> (<em>str</em>) – audio file path to write synthesis to, or None for no file output (default: None)</p></li>
-<li><p><strong>sine_pct</strong> (<em>float</em>) – percentage of sine components to mix into output (default: 1.0)</p></li>
-<li><p><strong>noise_pct</strong> (<em>float</em>) – percentage of noise components to mix into output (default: 0.0)</p></li>
-<li><p><strong>noise_bands</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – 1D array of band edges to use for noise analysis. Currently using other than 25 bands
-(i.e. 26 edges) is not fully supported. If None,
-<a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> will be used. (default: None)</p></li>
-<li><p><strong>normalize_sine</strong> (<em>bool</em>) – normalize sine components to ±1 before mixing (default: False)</p></li>
-<li><p><strong>normalize_noise</strong> (<em>bool</em>) – normalize noise componenets to ±1 before mixing (default: False)</p></li>
+<li><p><strong>freq_0</strong> (<em>float</em>) – initial frequency (in Hz)</p></li>
+<li><p><strong>freq_t</strong> (<em>float</em>) – frequency at time t (in Hz)</p></li>
+<li><p><strong>pha_0</strong> (<em>float</em>) – initial phase (in radians)</p></li>
+<li><p><strong>pha_t</strong> (<em>float</em>) – phase at time t (in radians)</p></li>
+<li><p><strong>i_samps_from_0</strong> (<em>int</em>) – relative sample index <cite>i</cite> to interpolate at</p></li>
+<li><p><strong>samps_from_0_to_t</strong> (<em>int</em>) – distance (in samples) from 0 to t</p></li>
+<li><p><strong>sampling_rate</strong> (<em>flot</em>) – sampling rate (in samps/s)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A 1D array of amplitudes representing the synthesized sound</p>
+<dd class="field-even"><p>the modeled phase (in radians) at sample <cite>i</cite></p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray[float]</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.ats_synth.synth_CLI">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_synth.</span></span><span class="sig-name descname"><span class="pre">synth_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_synth.html#synth_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_synth.synth_CLI" title="Permalink to this definition"></a></dt>
-<dd><p>Command line wrapper for <a class="reference internal" href="#pyatsyn.ats_synth.synth" title="pyatsyn.ats_synth.synth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">synth</span></code></a></p>
-<p class="rubric">Example</p>
-<p>Display usage details with help flag</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-synth -h
-</pre></div>
-</div>
-<p>Generate a wav file from a sine generator bank from an ats file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-synth example.ats example.wav
-</pre></div>
-</div>
-<p>Generate a wav file from a sine generator bank and band-limited noise using from an ats file</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-synth example.ats example.wav --noise 1.0
-</pre></div>
-</div>
+<dt class="sig sig-object py" id="pyatsyn.ats_utils.phase_interp_linear">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.ats_utils.</span></span><span class="sig-name descname"><span class="pre">phase_interp_linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/ats_utils.html#phase_interp_linear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.ats_utils.phase_interp_linear" title="Permalink to this definition"></a></dt>
+<dd><p>Function to compute linear phase interpolation</p>
+<p>Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate
+from the relative time 0 to time t.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freq_0</strong> (<em>float</em>) – initial frequency (in Hz)</p></li>
+<li><p><strong>freq_t</strong> (<em>float</em>) – frequency at time t (in Hz)</p></li>
+<li><p><strong>pha_0</strong> (<em>float</em>) – initial phase (in radians)</p></li>
+<li><p><strong>t</strong> (<em>float</em>) – time (in s) from freq_0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the phase (in radians) at relative time t</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
 </section>
-<section id="atsa-module">
-<h1>atsa module<a class="headerlink" href="#atsa-module" title="Permalink to this heading"></a></h1>
-<section id="module-pyatsyn.atsa.critical_bands">
-<span id="critical-bands"></span><h2>critical_bands<a class="headerlink" href="#module-pyatsyn.atsa.critical_bands" title="Permalink to this heading"></a></h2>
+<section id="analysis-module">
+<h1>analysis module<a class="headerlink" href="#analysis-module" title="Permalink to this heading"></a></h1>
+<section id="module-pyatsyn.analysis.critical_bands">
+<span id="critical-bands"></span><h2>critical_bands<a class="headerlink" href="#module-pyatsyn.analysis.critical_bands" title="Permalink to this heading"></a></h2>
 <p>Critical Bands and Signal-to-Mask Ratio Evaluation</p>
 <p>This module is used to evaluate critical band masking for signal-to-mask ratio calculations</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></span><a class="headerlink" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.critical_bands.</span></span><span class="sig-name descname"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></span><a class="headerlink" href="#pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES" title="Permalink to this definition"></a></dt>
 <dd><p>1D array containing 26 frequencies that distinguish the default 25 critical bands</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -923,8 +1220,8 @@ August 1986</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.critical_bands.compute_slope_r">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">compute_slope_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masker_amp_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-27.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/critical_bands.html#compute_slope_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.critical_bands.compute_slope_r" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.critical_bands.compute_slope_r">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.critical_bands.</span></span><span class="sig-name descname"><span class="pre">compute_slope_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">masker_amp_db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-27.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/critical_bands.html#compute_slope_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.critical_bands.compute_slope_r" title="Permalink to this definition"></a></dt>
 <dd><p>Function to compute right slope of triangular mask</p>
 <p>Computes the right slope of mask, dependent on the level of the masker</p>
 <dl class="field-list simple">
@@ -938,10 +1235,10 @@ August 1986</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.critical_bands.evaluate_smr">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">evaluate_smr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-27.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/critical_bands.html#evaluate_smr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.critical_bands.evaluate_smr" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.critical_bands.evaluate_smr">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.critical_bands.</span></span><span class="sig-name descname"><span class="pre">evaluate_smr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slope_l</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-27.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/critical_bands.html#evaluate_smr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.critical_bands.evaluate_smr" title="Permalink to this definition"></a></dt>
 <dd><p>Function to evaluate signal-to-mask ratio for the given peaks</p>
-<p>This function evaluates masking values (SMR) for <code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak`s</span> <span class="pre">in</span> <span class="pre">list</span> <span class="pre">`peaks</span></code>
+<p>This function evaluates masking values (SMR) for <a class="reference internal" href="#pyatsyn.ats_structure.AtsPeak" title="pyatsyn.ats_structure.AtsPeak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak</span></code></a> in list <cite>peaks</cite>
 Iteratively the parameters will be use to generate a triangular mask
 with a primary vertex at the frequency of, and at delta_dB below the amplitude
 of the masker.</p>
@@ -968,28 +1265,28 @@ Must be (&lt;= 0dB) (default: -50)</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.critical_bands.find_band">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">find_band</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/critical_bands.html#find_band"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.critical_bands.find_band" title="Permalink to this definition"></a></dt>
-<dd><p>Function to retrieve lower band edge in <a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></p>
+<dt class="sig sig-object py" id="pyatsyn.analysis.critical_bands.find_band">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.critical_bands.</span></span><span class="sig-name descname"><span class="pre">find_band</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/critical_bands.html#find_band"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.critical_bands.find_band" title="Permalink to this definition"></a></dt>
+<dd><p>Function to retrieve lower band edge in <a class="reference internal" href="#pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>freq</strong> (<em>float</em>) – A frequency (in Hz) to find the related band in <a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> for</p>
+<dd class="field-odd"><p><strong>freq</strong> (<em>float</em>) – A frequency (in Hz) to find the related band in <a class="reference internal" href="#pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> for</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>index into <a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> that marks the lower band edge for the given freq</p>
+<dd class="field-even"><p>index into <a class="reference internal" href="#pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> that marks the lower band edge for the given freq</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>LookupError</strong> – if the frequency given is outside the range of the lowest or highest edge in <a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></p>
+<dd class="field-even"><p><strong>LookupError</strong> – if the frequency given is outside the range of the lowest or highest edge in <a class="reference internal" href="#pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.critical_bands.frq_to_bark">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.critical_bands.</span></span><span class="sig-name descname"><span class="pre">frq_to_bark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/critical_bands.html#frq_to_bark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.critical_bands.frq_to_bark" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.critical_bands.frq_to_bark">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.critical_bands.</span></span><span class="sig-name descname"><span class="pre">frq_to_bark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/critical_bands.html#frq_to_bark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.critical_bands.frq_to_bark" title="Permalink to this definition"></a></dt>
 <dd><p>Function to convert frequency from Hz to bark scale</p>
 <p>This function will convert frequency from Hz to bark scale, a psychoacoustical scale used
 for subjective measurements of loudness.</p>
@@ -1007,13 +1304,13 @@ for subjective measurements of loudness.</p>
 </dd></dl>
 
 </section>
-<section id="module-pyatsyn.atsa.peak_detect">
-<span id="peak-detect"></span><h2>peak_detect<a class="headerlink" href="#module-pyatsyn.atsa.peak_detect" title="Permalink to this heading"></a></h2>
+<section id="module-pyatsyn.analysis.peak_detect">
+<span id="peak-detect"></span><h2>peak_detect<a class="headerlink" href="#module-pyatsyn.analysis.peak_detect" title="Permalink to this heading"></a></h2>
 <p>Single-Frame Peak Detection from FFT Data</p>
 <p>Functions to process FFT data and extract peaks</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_detect.parabolic_interp">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">parabolic_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_detect.html#parabolic_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_detect.parabolic_interp" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_detect.parabolic_interp">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_detect.</span></span><span class="sig-name descname"><span class="pre">parabolic_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_detect.html#parabolic_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_detect.parabolic_interp" title="Permalink to this definition"></a></dt>
 <dd><p>Function to obtain a parabolically modeled maximum from 3 points</p>
 <p>Given 3 evenly-spaced points, a parabolic interpolation
 scheme is used to calculate a coordinate frequency offset
@@ -1038,8 +1335,8 @@ and maximum amplitude at the estimated parabolic apex.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_detect.peak_detection">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">peak_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftfreqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftmags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftphases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_bin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_bin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_detect.html#peak_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_detect.peak_detection" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_detect.peak_detection">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_detect.</span></span><span class="sig-name descname"><span class="pre">peak_detection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftfreqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftmags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fftphases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_bin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_bin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_detect.html#peak_detection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_detect.peak_detection" title="Permalink to this definition"></a></dt>
 <dd><p>Function to detect peaks from FFT data</p>
 <p>This function scans for peaks in FFT frequency data,
 returning found peaks that pass constraint criteria.
@@ -1066,8 +1363,8 @@ is used to provide a more precise estimation of amplitude, phase, and frequency.
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_detect.phase_correct">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_detect.</span></span><span class="sig-name descname"><span class="pre">phase_correct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_detect.html#phase_correct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_detect.phase_correct" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_detect.phase_correct">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_detect.</span></span><span class="sig-name descname"><span class="pre">phase_correct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_detect.html#phase_correct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_detect.phase_correct" title="Permalink to this definition"></a></dt>
 <dd><p>Function for angular interpolation of phase</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1087,8 +1384,8 @@ is used to provide a more precise estimation of amplitude, phase, and frequency.
 </dd></dl>
 
 </section>
-<section id="module-pyatsyn.atsa.peak_tracking">
-<span id="peak-tracking"></span><h2>peak_tracking<a class="headerlink" href="#module-pyatsyn.atsa.peak_tracking" title="Permalink to this heading"></a></h2>
+<section id="module-pyatsyn.analysis.peak_tracking">
+<span id="peak-tracking"></span><h2>peak_tracking<a class="headerlink" href="#module-pyatsyn.analysis.peak_tracking" title="Permalink to this heading"></a></h2>
 <p>Peak Tracking algorithms to assemble spectral trajectories</p>
 <p>Peaks issued by the peak detection algorithm need to be connected and
 translated into spectral trajectories. This process involves the evaluation
@@ -1111,13 +1408,13 @@ average duration of pre- and post-making effects.</p>
 <p>New tracks get created from orphan peaks (the ones that were not incorporated to any existing tracks),
 and tracks which couldn’t find continuing peaks are set to sleep.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.MatchCost">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">MatchCost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#MatchCost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.MatchCost" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_tracking.MatchCost">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">MatchCost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_tracking.html#MatchCost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_tracking.MatchCost" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Object to abstract cost for comparisons</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.MatchCost.cost">
-<span class="sig-name descname"><span class="pre">cost</span></span><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.MatchCost.cost" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_tracking.MatchCost.cost">
+<span class="sig-name descname"><span class="pre">cost</span></span><a class="headerlink" href="#pyatsyn.analysis.peak_tracking.MatchCost.cost" title="Permalink to this definition"></a></dt>
 <dd><p>the calculated cost to <cite>index</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1127,8 +1424,8 @@ and tracks which couldn’t find continuing peaks are set to sleep.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.MatchCost.index">
-<span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.MatchCost.index" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_tracking.MatchCost.index">
+<span class="sig-name descname"><span class="pre">index</span></span><a class="headerlink" href="#pyatsyn.analysis.peak_tracking.MatchCost.index" title="Permalink to this definition"></a></dt>
 <dd><p>the index that indicates the track the cost was calculated against</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1140,8 +1437,8 @@ and tracks which couldn’t find continuing peaks are set to sleep.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.are_valid_candidates">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">are_valid_candidates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deviation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#are_valid_candidates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.are_valid_candidates" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_tracking.are_valid_candidates">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">are_valid_candidates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">candidate1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidate2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deviation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_tracking.html#are_valid_candidates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_tracking.are_valid_candidates" title="Permalink to this definition"></a></dt>
 <dd><p>Function to determine if the distance between two peaks are within the relative deviation constraint</p>
 <p>Peaks are valid candidates for pair if their absolute distance is smaller than the frequency deviation
 multiplied by the lower of the candidate’s frequencies.</p>
@@ -1163,8 +1460,8 @@ multiplied by the lower of the candidate’s frequencies.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.find_track_in_peaks">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">find_track_in_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#find_track_in_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.find_track_in_peaks" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_tracking.find_track_in_peaks">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">find_track_in_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_tracking.html#find_track_in_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_tracking.find_track_in_peaks" title="Permalink to this definition"></a></dt>
 <dd><p>Function to search a the first peak found tagged a given track ind</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1184,8 +1481,8 @@ If no matches are found, None is returned.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.peak_dist">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">peak_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pk1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#peak_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.peak_dist" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_tracking.peak_dist">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">peak_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pk1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pk2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_tracking.html#peak_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_tracking.peak_dist" title="Permalink to this definition"></a></dt>
 <dd><p>Function to calculate peak frequency distance</p>
 <p>This function is used to calculate the cost for the peak matching algorithm
 and allows for psychoacoustic biasing of the calculation:</p>
@@ -1212,8 +1509,8 @@ and allows for psychoacoustic biasing of the calculation:</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.peak_tracking">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">peak_tracking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.45</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#peak_tracking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.peak_tracking" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_tracking.peak_tracking">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">peak_tracking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peaks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.45</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_tracking.html#peak_tracking"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_tracking.peak_tracking" title="Permalink to this definition"></a></dt>
 <dd><p>Core function to coordinate peak tracking</p>
 <p>This function coordinates the matching of new peaks with existing tracks using
 an adaptation of the Gale-Shapley algorithm for stable matching. The algorithm is
@@ -1228,7 +1525,7 @@ and a cubic polynomial interpolation for phase.</p>
 <li><p><strong>peaks</strong> (Iterable[<a class="reference internal" href="#pyatsyn.ats_structure.AtsPeak" title="pyatsyn.ats_structure.AtsPeak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak</span></code></a>]) – collection of candidate peaks to match</p></li>
 <li><p><strong>frame_n</strong> (<em>int</em>) – the current frame</p></li>
 <li><p><strong>analysis_frames</strong> (Iterable[Iterable[<a class="reference internal" href="#pyatsyn.ats_structure.AtsPeak" title="pyatsyn.ats_structure.AtsPeak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak</span></code></a>]]) – a running collection storing the <a class="reference internal" href="#pyatsyn.ats_structure.AtsPeak" title="pyatsyn.ats_structure.AtsPeak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak</span></code></a> objects at each frame in time</p></li>
-<li><p><strong>sample_rate</strong> (<em>int</em>) – the sampling rate (in samples / s)</p></li>
+<li><p><strong>sampling_rate</strong> (<em>float</em>) – the sampling rate (in samples / s)</p></li>
 <li><p><strong>hop_size</strong> (<em>int</em>) – the inter-frame distance (in samples)</p></li>
 <li><p><strong>frequency_deviation</strong> (<em>float</em><em>, </em><em>optional</em>) – maximum relative frequency deviation used to constrain peak tracking matches (default: 0.45)</p></li>
 <li><p><strong>SMR_continuity</strong> (<em>float</em><em>, </em><em>optional</em>) – percentage of SMR to use in cost calculations during peak tracking (default: 0.0)</p></li>
@@ -1239,68 +1536,8 @@ and a cubic polynomial interpolation for phase.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.phase_interp">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">phase_interp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#phase_interp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.phase_interp" title="Permalink to this definition"></a></dt>
-<dd><p>Function to compute linear phase interpolation</p>
-<p>NOTE: currently not used in peak tracking, but supplied for legacy purposes</p>
-<p>Assumes smooth linear interpolation, where the average frequency dictates phase rate estimate
-from the relative time 0 to time t.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>freq_0</strong> (<em>float</em>) – initial frequency (in Hz)</p></li>
-<li><p><strong>freq_t</strong> (<em>float</em>) – frequency at time t (in Hz)</p></li>
-<li><p><strong>pha_0</strong> (<em>float</em>) – initial phase (in radians)</p></li>
-<li><p><strong>t</strong> (<em>float</em>) – time (in s) from freq_0</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the phase (in radians) at relative time t</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.phase_interp_cubic">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">phase_interp_cubic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pha_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_samps_from_0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samps_from_0_to_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#phase_interp_cubic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.phase_interp_cubic" title="Permalink to this definition"></a></dt>
-<dd><p>Function to interpolate phase using cubic polynomial interpolation</p>
-<p>Uses cubic interpolation to determine and intermediate phase within the curve linking
-a particular frequency and phase at relative time 0, to a frequency and phase at time t.</p>
-<p>The basis for this method is credited to:</p>
-<blockquote>
-<div><p>MR. McAulay and T. Quatieri, “Speech analysis/Synthesis based on a
-sinusoidal representation,” in IEEE Transactions on Acoustics,
-Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754,
-August 1986</p>
-<p><a class="reference external" href="https://doi.org/10.1109/TASSP.1986.1164910">doi: 10.1109/TASSP.1986.1164910</a>.</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>freq_0</strong> (<em>float</em>) – initial frequency (in Hz)</p></li>
-<li><p><strong>freq_t</strong> (<em>float</em>) – frequency at time t (in Hz)</p></li>
-<li><p><strong>pha_0</strong> (<em>float</em>) – initial phase (in radians)</p></li>
-<li><p><strong>pha_t</strong> (<em>float</em>) – phase at time t (in radians)</p></li>
-<li><p><strong>i_samps_from_0</strong> (<em>int</em>) – relative sample index <cite>i</cite> to interpolate at</p></li>
-<li><p><strong>samps_from_0_to_t</strong> (<em>int</em>) – distance (in samples) from 0 to t</p></li>
-<li><p><strong>sample_rate</strong> (<em>int</em>) – sampling rate (in samps/s)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the modeled phase (in radians) at sample <cite>i</cite></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.peak_tracking.update_track_averages">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">update_track_averages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/peak_tracking.html#update_track_averages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.peak_tracking.update_track_averages" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.peak_tracking.update_track_averages">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.peak_tracking.</span></span><span class="sig-name descname"><span class="pre">update_track_averages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/peak_tracking.html#update_track_averages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.peak_tracking.update_track_averages" title="Permalink to this definition"></a></dt>
 <dd><p>Function to update running averages of recent peaks</p>
 <p>Using the list of current tracks, we use <cite>track_length</cite> frames to look back and update,
 the average amp, frq, and smr values for the tracks.</p>
@@ -1319,16 +1556,16 @@ the average amp, frq, and smr values for the tracks.</p>
 </dd></dl>
 
 </section>
-<section id="module-pyatsyn.atsa.residual">
-<span id="residual"></span><h2>residual<a class="headerlink" href="#module-pyatsyn.atsa.residual" title="Permalink to this heading"></a></h2>
+<section id="module-pyatsyn.analysis.residual">
+<span id="residual"></span><h2>residual<a class="headerlink" href="#module-pyatsyn.analysis.residual" title="Permalink to this heading"></a></h2>
 <p>Functions to Compute and Analyze Residual Signals</p>
 <p>The reisidual signal is computed by taking the time-domain difference between the orignal sound
 and the sinusoidal synthesis of the spectral trajectories. NOTE: this section is under active research.
 Currently, this noise signal is analyzed using the STFT to obtain time-varying energy at
-25 critical bands (see <a class="reference internal" href="#pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.atsa.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a>)</p>
+25 critical bands (see <a class="reference internal" href="#pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a>)</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.residual.band_to_energy">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">band_to_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_smr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#band_to_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.band_to_energy" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.residual.band_to_energy">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.residual.</span></span><span class="sig-name descname"><span class="pre">band_to_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_smr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/residual.html#band_to_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.residual.band_to_energy" title="Permalink to this definition"></a></dt>
 <dd><p>Function to transfer band energies into partials</p>
 <p>NOTE: Currently not fully supported. Included for legacy purposes.</p>
 <dl class="field-list simple">
@@ -1343,8 +1580,8 @@ Currently, this noise signal is analyzed using the STFT to obtain time-varying e
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.residual.compute_residual">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">compute_residual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_sound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#compute_residual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.compute_residual" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.residual.compute_residual">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.residual.</span></span><span class="sig-name descname"><span class="pre">compute_residual</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_sound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/residual.html#compute_residual"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.residual.compute_residual" title="Permalink to this definition"></a></dt>
 <dd><p>Function to computes the time domain difference between the sinusoidal synthesis of spectral trajectories in an ats_snd,
 and the original sound data</p>
 <dl class="field-list simple">
@@ -1367,8 +1604,8 @@ and the original sound data</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.residual.remove_bands">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">remove_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#remove_bands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.remove_bands" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.residual.remove_bands">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.residual.</span></span><span class="sig-name descname"><span class="pre">remove_bands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/residual.html#remove_bands"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.residual.remove_bands" title="Permalink to this definition"></a></dt>
 <dd><p>Function to remove bands and band_energies below a threshold</p>
 <p>NOTE: ats_snd is updated directly</p>
 <dl class="field-list simple">
@@ -1382,8 +1619,8 @@ and the original sound data</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.residual.residual_N">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_N" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.residual.residual_N">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.residual.</span></span><span class="sig-name descname"><span class="pre">residual_N</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/residual.html#residual_N"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.residual.residual_N" title="Permalink to this definition"></a></dt>
 <dd><p>Function to compute an FFT window size for residual analysis</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1403,8 +1640,8 @@ and the original sound data</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.residual.residual_analysis">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_analysis" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.residual.residual_analysis">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.residual.</span></span><span class="sig-name descname"><span class="pre">residual_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4096</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/residual.html#residual_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.residual.residual_analysis" title="Permalink to this definition"></a></dt>
 <dd><p>Function to compute noise energy in a residual signal across 25 critical bands</p>
 <p>Noise energy in each critical band is evaluated in the following way:</p>
 <p><span class="math notranslate nohighlight">\(E[i] = \frac{1}{K} \sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2\)</span></p>
@@ -1431,8 +1668,8 @@ If None, will use <code class="xref py py-obj docutils literal notranslate"><spa
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.residual.residual_compute_band_energy">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_compute_band_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fft_mags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_limits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_compute_band_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_compute_band_energy" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.residual.residual_compute_band_energy">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.residual.</span></span><span class="sig-name descname"><span class="pre">residual_compute_band_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fft_mags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_limits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_energy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/residual.html#residual_compute_band_energy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.residual.residual_compute_band_energy" title="Permalink to this definition"></a></dt>
 <dd><p>Function to compute the band energy</p>
 <p>Energy in each band is evaluated in the following way:</p>
 <p><span class="math notranslate nohighlight">\(E[i] = \frac{1}{K} \sum^{k_{i0} + K - 1}_{k= k_{i0}} |X(k)|^2\)</span></p>
@@ -1454,8 +1691,8 @@ amplitude data for a given bin <span class="math notranslate nohighlight">\(k\)<
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.residual.residual_get_band_limits">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.residual.</span></span><span class="sig-name descname"><span class="pre">residual_get_band_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fft_mag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/residual.html#residual_get_band_limits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.residual.residual_get_band_limits" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.residual.residual_get_band_limits">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.residual.</span></span><span class="sig-name descname"><span class="pre">residual_get_band_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fft_mag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/residual.html#residual_get_band_limits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.residual.residual_get_band_limits" title="Permalink to this definition"></a></dt>
 <dd><p>Function to convert band edges to FFT bin indices</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1474,8 +1711,8 @@ amplitude data for a given bin <span class="math notranslate nohighlight">\(k\)<
 </dd></dl>
 
 </section>
-<section id="module-pyatsyn.atsa.tracker">
-<span id="tracker"></span><h2>tracker<a class="headerlink" href="#module-pyatsyn.atsa.tracker" title="Permalink to this heading"></a></h2>
+<section id="module-pyatsyn.analysis.tracker">
+<span id="tracker"></span><h2>tracker<a class="headerlink" href="#module-pyatsyn.analysis.tracker" title="Permalink to this heading"></a></h2>
 <p>Main ATS Analysis Function</p>
 <p>The analysis tracker is responsible for driving the analysis of an audio file
 into the .ats format. The system uses a Short Time Fourier Transform (STFT) as
@@ -1486,19 +1723,19 @@ determines relevant spectral peaks in the data. At this point, pyschoacoustics
 are considered in the form of masking curve evaluation and computation of the
 Signal-to-Mask ratio (SMR) for each candidate peak. SMR data is store together with
 a corrected frequency, magnitude and phase.</p>
-<p>The next step involves frame-to-frame tracking of peaks (<a class="reference internal" href="#module-pyatsyn.atsa.peak_tracking" title="pyatsyn.atsa.peak_tracking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_tracking</span></code></a>) to connect peaks that
+<p>The next step involves frame-to-frame tracking of peaks (<a class="reference internal" href="#module-pyatsyn.analysis.peak_tracking" title="pyatsyn.analysis.peak_tracking"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_tracking</span></code></a>) to connect peaks that
 follow a similar spectral trajectory using both frequency and SMR data. The system
 uses a stable matching algorithm to pair candidate peaks, and is capable of interpolating
 gaps in the tracks.</p>
-<p>Once valid tracks are assembled, the results can be modeled with sinusoids (<code class="xref py py-obj docutils literal notranslate"><span class="pre">atsa_synth</span></code>) and subtracted
+<p>Once valid tracks are assembled, the results can be modeled with sinusoids (<a class="reference internal" href="#module-pyatsyn.synthesis.synth" title="pyatsyn.synthesis.synth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">synth</span></code></a>) and subtracted
 from the origin source sound to compute a residual. NOTE: This part of the ATS system is currently under
-active research. For now, the residual analysis (<a class="reference internal" href="#module-pyatsyn.atsa.residual" title="pyatsyn.atsa.residual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual</span></code></a>) is modeled using a
+active research. For now, the residual analysis (<a class="reference internal" href="#module-pyatsyn.analysis.residual" title="pyatsyn.analysis.residual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">residual</span></code></a>) is modeled using a
 25 time-varying critical noise band energy model (consistent with the critical bands used during SMR evaluation).
 These noise bands can then be resynthesized using 25 correspoding banks of time-enveloped, band-limited noise.</p>
 <p>Analysis is finally stored and abstracted as an <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> object.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.tracker.tracker">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blackman-harris-4-1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_peak_contribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/tracker.html#tracker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.tracker.tracker" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.tracker.tracker">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_deviation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_cycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blackman-harris-4-1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_gap_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_peak_contribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">SMR_continuity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residual_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimize_amp_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/tracker.html#tracker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.tracker.tracker" title="Permalink to this definition"></a></dt>
 <dd><p>Function to generates an Analysis-Transformation-Synthesis <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> from an audio file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1510,7 +1747,7 @@ These noise bands can then be resynthesized using 25 correspoding banks of time-
 <li><p><strong>highest_frequency</strong> (<em>float</em>) – highest frequency to analyze (capped to nyquist frequency and must be greater than <cite>lowest_frequency</cite>) (default: 20000.0)</p></li>
 <li><p><strong>frequency_deviation</strong> (<em>float</em>) – maximum relative frequency deviation used to constrain peak tracking matches (default: 0.1)</p></li>
 <li><p><strong>window_cycles</strong> (<em>int</em>) – lowest frequency to fit in analysis window; used to determine window size (default: 4)</p></li>
-<li><p><strong>window_type</strong> (<em>str</em>) – type of window to use for FFT analysis (default: ‘blackman-harris-4-1’). See <a class="reference internal" href="#pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS" title="pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></p></li>
+<li><p><strong>window_type</strong> (<em>str</em>) – type of window to use for FFT analysis (default: ‘blackman-harris-4-1’). See <a class="reference internal" href="#pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS" title="pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></p></li>
 <li><p><strong>hop_size</strong> (<em>float</em>) – fraction of window size to shift from frame-to-frame (default: 0.25)</p></li>
 <li><p><strong>fft_size</strong> (<em>int</em>) – None, or force an fft size (default: None)</p></li>
 <li><p><strong>amp_threshold</strong> (<em>float</em>) – lowest amplitude used for peak detection (default: 0.001)</p></li>
@@ -1547,9 +1784,9 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.tracker.tracker_CLI">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/tracker.html#tracker_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.tracker.tracker_CLI" title="Permalink to this definition"></a></dt>
-<dd><p>Command line wrapper for <a class="reference internal" href="#pyatsyn.atsa.tracker.tracker" title="pyatsyn.atsa.tracker.tracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracker</span></code></a></p>
+<dt class="sig sig-object py" id="pyatsyn.analysis.tracker.tracker_CLI">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.tracker.</span></span><span class="sig-name descname"><span class="pre">tracker_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/tracker.html#tracker_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.tracker.tracker_CLI" title="Permalink to this definition"></a></dt>
+<dd><p>Command line wrapper for <a class="reference internal" href="#pyatsyn.analysis.tracker.tracker" title="pyatsyn.analysis.tracker.tracker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracker</span></code></a></p>
 <p class="rubric">Example</p>
 <p>Display usage details with help flag</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-atsa -h
@@ -1566,12 +1803,12 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 </dd></dl>
 
 </section>
-<section id="module-pyatsyn.atsa.utils">
-<span id="utils"></span><h2>utils<a class="headerlink" href="#module-pyatsyn.atsa.utils" title="Permalink to this heading"></a></h2>
+<section id="module-pyatsyn.analysis.utils">
+<span id="utils"></span><h2>utils<a class="headerlink" href="#module-pyatsyn.analysis.utils" title="Permalink to this heading"></a></h2>
 <p>Utility Functions for ATS Analysis</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.MAX_DB_SPL">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">MAX_DB_SPL</span></span><a class="headerlink" href="#pyatsyn.atsa.utils.MAX_DB_SPL" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.MAX_DB_SPL">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">MAX_DB_SPL</span></span><a class="headerlink" href="#pyatsyn.analysis.utils.MAX_DB_SPL" title="Permalink to this definition"></a></dt>
 <dd><p>maximum DB_SPL level; used for converting amplitude units</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1581,8 +1818,8 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.ATS_MIN_SEGMENT_LENGTH">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">ATS_MIN_SEGMENT_LENGTH</span></span><a class="headerlink" href="#pyatsyn.atsa.utils.ATS_MIN_SEGMENT_LENGTH" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.ATS_MIN_SEGMENT_LENGTH">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">ATS_MIN_SEGMENT_LENGTH</span></span><a class="headerlink" href="#pyatsyn.analysis.utils.ATS_MIN_SEGMENT_LENGTH" title="Permalink to this definition"></a></dt>
 <dd><p>default minimum segment length</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1592,8 +1829,8 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.ATS_AMP_THRESHOLD">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">ATS_AMP_THRESHOLD</span></span><a class="headerlink" href="#pyatsyn.atsa.utils.ATS_AMP_THRESHOLD" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.ATS_AMP_THRESHOLD">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">ATS_AMP_THRESHOLD</span></span><a class="headerlink" href="#pyatsyn.analysis.utils.ATS_AMP_THRESHOLD" title="Permalink to this definition"></a></dt>
 <dd><p>default amp threshold</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1603,8 +1840,8 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.ATS_NOISE_THRESHOLD">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">ATS_NOISE_THRESHOLD</span></span><a class="headerlink" href="#pyatsyn.atsa.utils.ATS_NOISE_THRESHOLD" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.ATS_NOISE_THRESHOLD">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">ATS_NOISE_THRESHOLD</span></span><a class="headerlink" href="#pyatsyn.analysis.utils.ATS_NOISE_THRESHOLD" title="Permalink to this definition"></a></dt>
 <dd><p>default noise threshold</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1614,8 +1851,8 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.amp_to_db">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">amp_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/utils.html#amp_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.utils.amp_to_db" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.amp_to_db">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">amp_to_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/utils.html#amp_to_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.utils.amp_to_db" title="Permalink to this definition"></a></dt>
 <dd><p>Function to convert amplitude to decibels: <span class="math notranslate nohighlight">\(20 * \log_{10}{amp}\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1631,8 +1868,8 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.amp_to_db_spl">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">amp_to_db_spl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/utils.html#amp_to_db_spl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.utils.amp_to_db_spl" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.amp_to_db_spl">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">amp_to_db_spl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/utils.html#amp_to_db_spl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.utils.amp_to_db_spl" title="Permalink to this definition"></a></dt>
 <dd><p>Function to convert amplitude to decibel sound pressure level (dB SPL)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1648,8 +1885,8 @@ NOTE: noise calculation will not be performed in .ats file without this (default
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.compute_frames">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">compute_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_samps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/utils.html#compute_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.utils.compute_frames" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.compute_frames">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">compute_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_samps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/utils.html#compute_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.utils.compute_frames" title="Permalink to this definition"></a></dt>
 <dd><p>Function to compute the number frames to use in the specified analysis.</p>
 <p>Calculates an extra frame to prevent attenuation during windowing at the tail and to allow
 for interpolation at the end of the soundfile.</p>
@@ -1670,8 +1907,8 @@ for interpolation at the end of the soundfile.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.db_to_amp">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">db_to_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/utils.html#db_to_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.utils.db_to_amp" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.db_to_amp">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">db_to_amp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/utils.html#db_to_amp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.utils.db_to_amp" title="Permalink to this definition"></a></dt>
 <dd><p>Function to convert decibels to amplitude: <span class="math notranslate nohighlight">\(10^{dB / 20.0}\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1687,8 +1924,8 @@ for interpolation at the end of the soundfile.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.next_power_of_2">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">next_power_of_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/utils.html#next_power_of_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.utils.next_power_of_2" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.next_power_of_2">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">next_power_of_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/utils.html#next_power_of_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.utils.next_power_of_2" title="Permalink to this definition"></a></dt>
 <dd><p>Function to return the closest power of 2 integer more than or equal to an input</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1704,8 +1941,8 @@ for interpolation at the end of the soundfile.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.utils.optimize_tracks">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.utils.</span></span><span class="sig-name descname"><span class="pre">optimize_tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/utils.html#optimize_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.utils.optimize_tracks" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.utils.optimize_tracks">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.utils.</span></span><span class="sig-name descname"><span class="pre">optimize_tracks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tracks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_segment_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amp_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highest_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowest_frequency</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/utils.html#optimize_tracks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.utils.optimize_tracks" title="Permalink to this definition"></a></dt>
 <dd><p>Function to run optimization routines on the established tracks.</p>
 <dl class="simple">
 <dt>The optimizations performed are:</dt><dd><ul class="simple">
@@ -1724,7 +1961,7 @@ for interpolation at the end of the soundfile.</p>
 <li><p><strong>tracks</strong> (Iterable[<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a>]) – collection of established tracks</p></li>
 <li><p><strong>analysis_frames</strong> (Iterable[Iterable[<a class="reference internal" href="#pyatsyn.ats_structure.AtsPeak" title="pyatsyn.ats_structure.AtsPeak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak</span></code></a>]]) – a collection storing the <a class="reference internal" href="#pyatsyn.ats_structure.AtsPeak" title="pyatsyn.ats_structure.AtsPeak"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsPeak</span></code></a> objects at each frame in time</p></li>
 <li><p><strong>min_segment_length</strong> (<em>int</em>) – minimal size (in frames) of a valid track segment, otherwise it is pruned</p></li>
-<li><p><strong>amp_threshold</strong> (<em>float</em>) – amplitude threshold used to prune tracks. If None, will default to <a class="reference internal" href="#pyatsyn.atsa.utils.ATS_AMP_THRESHOLD" title="pyatsyn.atsa.utils.ATS_AMP_THRESHOLD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_AMP_THRESHOLD</span></code></a> converted to amplitude.</p></li>
+<li><p><strong>amp_threshold</strong> (<em>float</em>) – amplitude threshold used to prune tracks. If None, will default to <a class="reference internal" href="#pyatsyn.analysis.utils.ATS_AMP_THRESHOLD" title="pyatsyn.analysis.utils.ATS_AMP_THRESHOLD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_AMP_THRESHOLD</span></code></a> converted to amplitude.</p></li>
 <li><p><strong>highest_frequency</strong> (<em>float</em>) – upper frequency threshold, tracks with maxima above this will be pruned</p></li>
 <li><p><strong>lowest_frequency</strong> (<em>float</em>) – lower frequency threshold, tracks with minima below this will be pruned</p></li>
 </ul>
@@ -1739,8 +1976,8 @@ for interpolation at the end of the soundfile.</p>
 </dd></dl>
 
 </section>
-<section id="module-pyatsyn.atsa.windows">
-<span id="windows"></span><h2>windows<a class="headerlink" href="#module-pyatsyn.atsa.windows" title="Permalink to this heading"></a></h2>
+<section id="module-pyatsyn.analysis.windows">
+<span id="windows"></span><h2>windows<a class="headerlink" href="#module-pyatsyn.analysis.windows" title="Permalink to this heading"></a></h2>
 <p>Functions to Generate FFT Windows</p>
 <p>A collection of window utilies to generate several useful window types:</p>
 <table class="docutils align-default">
@@ -1802,8 +2039,8 @@ no. 1, pp. 84-91, February 1981</p>
 <div><p><a class="reference external" href="https://doi.org/10.1109/TASSP.1981.1163506">doi: 10.1109/TASSP.1981.1163506</a>.</p>
 </div></blockquote>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></span><a class="headerlink" href="#pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.windows.</span></span><span class="sig-name descname"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></span><a class="headerlink" href="#pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS" title="Permalink to this definition"></a></dt>
 <dd><p>a list of supported window types</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1813,8 +2050,8 @@ no. 1, pp. 84-91, February 1981</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="pyatsyn.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span></span><a class="headerlink" href="#pyatsyn.atsa.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.windows.</span></span><span class="sig-name descname"><span class="pre">ATS_BLACKMAN_WINDOW_COEFF_LABELS</span></span><a class="headerlink" href="#pyatsyn.analysis.windows.ATS_BLACKMAN_WINDOW_COEFF_LABELS" title="Permalink to this definition"></a></dt>
 <dd><p>A dictionary to match blackman window type strings to their coefficients</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1824,8 +2061,8 @@ no. 1, pp. 84-91, February 1981</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.windows.bes_i0">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">bes_i0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/windows.html#bes_i0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.windows.bes_i0" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.windows.bes_i0">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.windows.</span></span><span class="sig-name descname"><span class="pre">bes_i0</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/windows.html#bes_i0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.windows.bes_i0" title="Permalink to this definition"></a></dt>
 <dd><p>Modified Bessel Function of the First Kind from “Numerical Recipes in C”</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1841,8 +2078,8 @@ no. 1, pp. 84-91, February 1981</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.windows.make_blackman_window">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">make_blackman_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/windows.html#make_blackman_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.windows.make_blackman_window" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.windows.make_blackman_window">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.windows.</span></span><span class="sig-name descname"><span class="pre">make_blackman_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/windows.html#make_blackman_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.windows.make_blackman_window" title="Permalink to this definition"></a></dt>
 <dd><p>Helper function to build Blackman windows</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1861,13 +2098,13 @@ no. 1, pp. 84-91, February 1981</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.windows.make_fft_window">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">make_fft_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/windows.html#make_fft_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.windows.make_fft_window" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.windows.make_fft_window">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.windows.</span></span><span class="sig-name descname"><span class="pre">make_fft_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/windows.html#make_fft_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.windows.make_fft_window" title="Permalink to this definition"></a></dt>
 <dd><p>Function to build the specified window</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>window_type</strong> (<em>str</em>) – the type of window (supported types are defined in <a class="reference internal" href="#pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS" title="pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a>)</p></li>
+<li><p><strong>window_type</strong> (<em>str</em>) – the type of window (supported types are defined in <a class="reference internal" href="#pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS" title="pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a>)</p></li>
 <li><p><strong>size</strong> (<em>int</em>) – the size of the window to generate</p></li>
 <li><p><strong>beta</strong> (<em>float</em><em>, </em><em>optional</em>) – parameter used in certain window calculations (float: 1.0)</p></li>
 <li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – parameter used in tukey window calculation (float: 0.5)</p></li>
@@ -1880,14 +2117,14 @@ no. 1, pp. 84-91, February 1981</p>
 <dd class="field-odd"><p>ndarray[float]</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValueError</strong> – if <cite>window_type</cite> is not one of the supported window types in <a class="reference internal" href="#pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS" title="pyatsyn.atsa.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></p>
+<dd class="field-even"><p><strong>ValueError</strong> – if <cite>window_type</cite> is not one of the supported window types in <a class="reference internal" href="#pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS" title="pyatsyn.analysis.windows.VALID_FFT_WINDOW_DEFINITIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VALID_FFT_WINDOW_DEFINITIONS</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.windows.normalize_window">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">normalize_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/windows.html#normalize_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.windows.normalize_window" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.windows.normalize_window">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.windows.</span></span><span class="sig-name descname"><span class="pre">normalize_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/windows.html#normalize_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.windows.normalize_window" title="Permalink to this definition"></a></dt>
 <dd><p>Function to normalize a window</p>
 <p>Normalization here means that the window will integrate to 1.0 (i.e., total area of 1)</p>
 <dl class="field-list simple">
@@ -1904,8 +2141,8 @@ no. 1, pp. 84-91, February 1981</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pyatsyn.atsa.windows.window_norm">
-<span class="sig-prename descclassname"><span class="pre">pyatsyn.atsa.windows.</span></span><span class="sig-name descname"><span class="pre">window_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/atsa/windows.html#window_norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.atsa.windows.window_norm" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyatsyn.analysis.windows.window_norm">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.analysis.windows.</span></span><span class="sig-name descname"><span class="pre">window_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/analysis/windows.html#window_norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.analysis.windows.window_norm" title="Permalink to this definition"></a></dt>
 <dd><p>Function to compute the norm of a window</p>
 <p><span class="math notranslate nohighlight">\(norm = \frac{1}{\sum | x |}\)</span> where <span class="math notranslate nohighlight">\(x\)</span> are the window samples</p>
 <dl class="field-list simple">
@@ -1919,6 +2156,75 @@ no. 1, pp. 84-91, February 1981</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="transformation-module">
+<h1>transformation module<a class="headerlink" href="#transformation-module" title="Permalink to this heading"></a></h1>
+</section>
+<section id="synthesis-module">
+<h1>synthesis module<a class="headerlink" href="#synthesis-module" title="Permalink to this heading"></a></h1>
+<section id="module-pyatsyn.synthesis.synth">
+<span id="synth"></span><h2>synth<a class="headerlink" href="#module-pyatsyn.synthesis.synth" title="Permalink to this heading"></a></h2>
+<p>Synthesizer Methods for Rendering .ats Files to Audio</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyatsyn.synthesis.synth.synth">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.synthesis.synth.</span></span><span class="sig-name descname"><span class="pre">synth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ats_snd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sine_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_sine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/synthesis/synth.html#synth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.synthesis.synth.synth" title="Permalink to this definition"></a></dt>
+<dd><p>Function to synthesize audio from <a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> or <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a></p>
+<p>Sine generator bank and band-limited noise synthesizer for .ats files. When
+phase information is ignored phase is linearly interpolated between consecutive
+frequencies from an initial phase of 0.0 at the first non-zero amplitude for that partial.</p>
+<p>The method for cubic polynomial interpolation of phase used is credited to:</p>
+<blockquote>
+<div><p>MR. McAulay and T. Quatieri, “Speech analysis/Synthesis based on a
+sinusoidal representation,” in IEEE Transactions on Acoustics,
+Speech, and Signal Processing, vol. 34, no. 4, pp. 744-754,
+August 1986</p>
+<p><a class="reference external" href="https://doi.org/10.1109/TASSP.1986.1164910">doi: 10.1109/TASSP.1986.1164910</a>.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ats_snd</strong> (<a class="reference internal" href="#pyatsyn.ats_structure.AtsSound" title="pyatsyn.ats_structure.AtsSound"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSound</span></code></a> or <a class="reference internal" href="#pyatsyn.ats_structure.AtsSoundVFR" title="pyatsyn.ats_structure.AtsSoundVFR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtsSoundVFR</span></code></a>) – the .ats file used to synthesize</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – normalize sound to ±1 before output (default: False)</p></li>
+<li><p><strong>compute_phase</strong> (<em>bool</em><em>, </em><em>optional</em>) – use cubic polynomial interpolation of phase information during synthesis, if available (default: True)</p></li>
+<li><p><strong>export_file</strong> (<em>str</em>) – audio file path to write synthesis to, or None for no file output (default: None)</p></li>
+<li><p><strong>sine_pct</strong> (<em>float</em>) – percentage of sine components to mix into output (default: 1.0)</p></li>
+<li><p><strong>noise_pct</strong> (<em>float</em>) – percentage of noise components to mix into output (default: 0.0)</p></li>
+<li><p><strong>noise_bands</strong> (<em>ndarray</em><em>[</em><em>float</em><em>]</em>) – 1D array of band edges to use for noise analysis. Currently using other than 25 bands
+(i.e. 26 edges) is not fully supported. If None,
+<a class="reference internal" href="#pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES" title="pyatsyn.analysis.critical_bands.ATS_CRITICAL_BAND_EDGES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ATS_CRITICAL_BAND_EDGES</span></code></a> will be used. (default: None)</p></li>
+<li><p><strong>normalize_sine</strong> (<em>bool</em>) – normalize sine components to ±1 before mixing (default: False)</p></li>
+<li><p><strong>normalize_noise</strong> (<em>bool</em>) – normalize noise componenets to ±1 before mixing (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A 1D array of amplitudes representing the synthesized sound</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyatsyn.synthesis.synth.synth_CLI">
+<span class="sig-prename descclassname"><span class="pre">pyatsyn.synthesis.synth.</span></span><span class="sig-name descname"><span class="pre">synth_CLI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pyatsyn/synthesis/synth.html#synth_CLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyatsyn.synthesis.synth.synth_CLI" title="Permalink to this definition"></a></dt>
+<dd><p>Command line wrapper for <code class="xref py py-obj docutils literal notranslate"><span class="pre">synth</span></code></p>
+<p class="rubric">Example</p>
+<p>Display usage details with help flag</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-synth -h
+</pre></div>
+</div>
+<p>Generate a wav file from a sine generator bank from an ats file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-synth example.ats example.wav
+</pre></div>
+</div>
+<p>Generate a wav file from a sine generator bank and band-limited noise using from an ats file</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pyatsyn-synth example.ats example.wav --noise 1.0
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
