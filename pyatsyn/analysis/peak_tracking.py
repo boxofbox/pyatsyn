@@ -130,7 +130,7 @@ def find_track_in_peaks(track, peaks):
     return None
 
 
-def peak_tracking(tracks, peaks, frame_n, analysis_frames, sampling_rate, hop_size, frequency_deviation = 0.45, SMR_continuity = 0.0, min_gap_length = 1):
+def peak_tracking(tracks, peaks, frame_n, analysis_frames, sampling_rate, hop_size, frequency_deviation = 0.1, SMR_continuity = 0.0, min_gap_length = 1):
     """Core function to coordinate peak tracking
 
     This function coordinates the matching of new peaks with existing tracks using 
@@ -156,7 +156,7 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sampling_rate, hop_si
     hop_size : int 
         the inter-frame distance (in samples)
     frequency_deviation : float, optional
-        maximum relative frequency deviation used to constrain peak tracking matches (default: 0.45)
+        maximum relative frequency deviation used to constrain peak tracking matches (default: 0.1)
     SMR_continuity : float, optional
         percentage of SMR to use in cost calculations during peak tracking (default: 0.0)
     min_gap_length : int

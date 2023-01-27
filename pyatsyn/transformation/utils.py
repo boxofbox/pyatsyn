@@ -9,6 +9,19 @@
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
 # <Oscar Pablo Di Liscia, Pete Moss, and Juan Pampin>
 
+"""
+TODO
+"""
 
-def keep_partials():
+
+def fadeout():
+    pass# TODO
+
+def fadein():
+    pass# TODO
+
+def volume_shift():
+    pass# TODO
+
+def trim():
     pass # TODO
