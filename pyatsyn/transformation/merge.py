@@ -9,9 +9,19 @@
 # Except where otherwise noted, ATSA and ATSH is Copyright (c) <2002-2004>
 # <Oscar Pablo Di Liscia, Pete Moss, and Juan Pampin>
 
-"""
+"""A set of functions to handle transformations using multiple ats sound objects
+
+Attributes
+----------
 TODO
 """
+
+import random
+from heapq import heappop, heappush
+from queue import SimpleQueue
+
+from pyatsyn.ats_structure import MatchCost
+
 
 ATS_VALID_MERGE_MATCH_MODES = [ "plain",
                                 "stable",
@@ -21,9 +31,11 @@ ATS_VALID_MERGE_MATCH_MODES = [ "plain",
                                 "middle",
                                 "higher",
                                 "twist",
+                                "twist_full",
                                 "random",
-                                "randomduped"
+                                "random_full"
                                 ]
+
 
 def merge(  ats_snd1, 
             ats_snd2,
@@ -43,6 +55,8 @@ def merge(  ats_snd1,
             ):
     """
     TODO
+
+    cross-synthesis tool
 
                 t=0.0 (relative to ats_snd1 0.0 + ats_snd1_start)
                  |  (e.g., ats_snd1_start = '**')
@@ -69,6 +83,7 @@ def merge(  ats_snd1,
     match_modes: 
         "plain" - just stitches together with no interpolation
         "stable" - uses frequency_deviation and stable matching to make optimal pairings
+            NOTE: (maybe TODO) currently uses frq_av to calculate costs. For tracks with wilder behavior (e.g., prior merges), maybe looking at average close to the merge_start is more suitable
         "spread" - covers matching as evenly as possible mapping to the full frequency span of inputs to outputs
         "full" - every partial will have a match because we will duplicate & fork as needed (needs more info)
         "lower" - lowest frequencies are prioritized for matching
@@ -76,7 +91,7 @@ def merge(  ats_snd1,
         "higher" - higher frequencies are prioritized for matching
         "twist" - same as spread, but the bins of one side of the match are flipped lowest <-> highest
         "random" - random pairing
-        "randomduped" - random pairing but every partial has a match because we will duplicate & fork as needed
+        "random_full" - random pairing but every partial has a match because we will duplicate & fork as needed
 
     force_matches:
         If None, will process all partials according to match_modes
@@ -87,11 +102,15 @@ def merge(  ats_snd1,
     NOTE: currently only supports equal noise bands
     
     TODO!!!!!! rethink what the index refers to in the list form?!!??!?!!!!!!!!!!!!!!!!!!!!!!!!!
+        first - all force_matches
+        then - all subsequent matches found by the match_mode
+        then - all p#, None pairs remaining
+        then - all None, p# pairs remaining
 
     *bias_curve - used to specify how the mixture is made for the matched partials.
         
         *bias_curve = num # interpreted as constant bias at all times for all partials (e.g.,0.0 for all ats_snd1, 1.0 for all ats_snd2, 0.5 for 50% mixture)
-            NOTE: all bias values must be in the range [0.0, 1.0]
+            NOTE: all bias values must be in the range [0.0, 1.0] anything outside this range will be constrained to the range (i.e. -0.5 -> 0.0 or 7.2 -> 1.0)
         *bias_curve = None # interpreted as linear interpolation time envelope from 0 to 1 parallel for all partials
         *bias_curve = tuple (invalid)
         *bias_curve = envelope # interpreted as a time/bias envelope parallel for all partials
@@ -115,8 +134,17 @@ def merge(  ats_snd1,
             e.g., [None, [(0.2, 1.0), (0.1, 0.5)], 2.0] is INVALID because partial 1
             e.g., [[(0.2, 1.0), (0.3, 0.5), (1.0, 0.0)], 1.0, None, None] is VALID
             e.g., [1, (0,1), [1], [(0,1),(1,0)]] is INVALID because although partial 0 & 3 are correct, partial 1 & 2 are incorrectly specified
+            TODO example outside of bias range
 
     """
+
+    # get new frames
+        # account for bias curve times, start/ends, time-deviation
+
+    if merge_dur is None:
+        pass #TODO set to end of file
+    # if merge_dur == 0.0 are there special rules for dropping/merging ats_snd2 frame 0?
+
 
     # get new partials
     matches = []
@@ -136,57 +164,228 @@ def merge(  ats_snd1,
 
     if match_mode not in ATS_VALID_MERGE_MATCH_MODES:
         raise Exception("specified match_mode is not supported")
+    
+    elif match_mode == "plain":
+        pass
+
+    elif match_mode == "stable":
+        p1_list = list(p1_remaining)
+        p2_list = list(p2_remaining)
+
+        p1_costs = [[] for _ in p1_remaining]
+
+        # set frequencies to use for costs
+        # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        # calculate costs
+        for p2_ind, p2 in enumerate(p2_remaining):
+            for p1_ind, p1 in (p1_remaining):
+                if are_valid_candidates(ats_snd1.frq_av[p1],ats_snd2.frq_av[p2],frequency_deviation):
+                    cost = abs(ats_snd1.frq_av[p1] - ats_snd2.frq_av[p2])
+                    heappush(p1_costs[p1_ind], MatchCost(cost, p2_ind))
+
+        # perform Gale-Shapley stable matching
+        p1_queue = SimpleQueue()
+        for ind in range(len(p1_list)):
+            p1_queue.put(ind)
+
+        unmatched_p1 = []
+        p2_matches = [None for _ in p2_list]
+
+        while(not p1_queue.empty()):
+            p1_ind = p1_queue.get()
+
+            made_match = False
+            while( len(p1_costs[p1_ind]) > 0):
+                p2 = heappop(p1_costs[p1_ind])
+                # if p2 is unmatched
+                if p2_matches[p2.index] is None:
+                    # update match
+                    p2_matches[p2.index] = MatchCost(p2.cost, p1_ind)
+                    made_match = True
+                    break
+                # prior match is more costly, re-match
+                elif p2_matches[p2.index].cost > p2.cost:
+                    # kick previous match back onto queue
+                    p1_queue.put(p2_matches[p2.index].index)
+                    # update match
+                    p2_matches[p2.index] = MatchCost(p2.cost, p1_ind)
+                    made_match = True
+                    break
+            # if we ran out of candidates or no match was made, the peak is unmatched
+            if not made_match:
+                unmatched_p1.append(p1_list[p1_ind])
+
+        # process matches
+        unmatched_p2 = []
+        for p2_ind, p2 in enumerate(p2_matches):
+            if p2 is None:
+                unmatched_p2.append(p2_list[p2_ind])
+            else:
+                p1_val = p1_list[p2.index]
+                matches.append((p1_val, p2_list[p2_ind]))
+
+        # update _remaining sets
+        p1_remaining = set(unmatched_p1)
+        p2_remaining = set(unmatched_p2)
+
     else:
-        if match_mode == "plain":
-            for p in p1_remaining:
-                matches.append((p, None))
-            for p in p2_remaining:
-                matches.append((None, p))
-
-        elif match_mode == "stable":
-            pass # TODO
-
-        elif match_mode == "spread":
-            pass # TODO
-
+        p1_len = len(p1_remaining)
+        p2_len = len(p2_remaining)
+        
+        if match_mode == "spread":
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, p2_remaining)
+                p1_remaining = {}
+                p2_remaining = {}
+            elif p1_len > p2_len:
+                skip = set(random.sample(list(p1_remaining), p1_len - p2_len))
+                matches += zip(p1_remaining - skip, p2_remaining)
+                p1_remaining = skip
+                p2_remaining = {}
+            else:         
+                skip = set(random.sample(list(p2_remaining), p2_len - p1_len))
+                matches += zip(p1_remaining, p2_remaining - skip)
+                p1_remaining = {}
+                p2_remaining = skip
+            
         elif match_mode == "full":
-            pass # TODO
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, p2_remaining)
+            elif p1_len > p2_len:
+                dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
+                matches += zip(p1_remaining, sorted(list(p2_remaining) + dupes))
+            else:                         
+                dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
+                matches += zip(sorted(list(p1_remaining) + dupes), p2_remaining)      
+            p1_remaining = {}
+            p2_remaining = {}
 
         elif match_mode == "lower":
-            pass # TODO
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, p2_remaining)
+                p1_remaining = {}
+                p2_remaining = {}
+            elif p1_len > p2_len:
+                matches += zip(list(p1_remaining)[:p2_len], p2_remaining)
+                p1_remaining = set(list(p1_remaining)[p2_len:])
+                p2_remaining = {}
+            else:         
+                matches += zip(p1_remaining, list(p2_remaining)[:p1_len])
+                p1_remaining = {}
+                p2_remaining = set(list(p2_remaining)[p1_len:])
 
         elif match_mode == "middle":
-            pass # TODO
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, p2_remaining)
+                p1_remaining = {}
+                p2_remaining = {}
+            elif p1_len > p2_len:
+                mid = p1_len // 2
+                lo = mid - (p2_len // 2)
+                hi = lo + p2_len
+                p1_list = list(p1_remaining)
+                matches += zip(p1_list[lo:hi], p2_remaining)
+                p1_remaining = set(p1_list[:lo] + p1_list[hi:])
+                p2_remaining = {}
+            else:                         
+                mid = p2_len // 2
+                lo = mid - (p1_len // 2)
+                hi = lo + p1_len
+                p2_list = list(p2_remaining)
+                matches += zip(p1_remaining, p2_list[lo:hi])
+                p1_remaining = {}
+                p2_remaining = set(p2_list[:lo] + p2_list[hi:])
 
         elif match_mode == "higher":
-            pass # TODO
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, p2_remaining)
+                p1_remaining = {}
+                p2_remaining = {}
+            elif p1_len > p2_len:
+                matches += zip(list(p1_remaining)[p1_len - p2_len:],p2_remaining)
+                p1_remaining = set(list(p1_remaining)[:p1_len - p2_len])
+                p2_remaining = {}
+            else:         
+                matches += zip(p1_remaining, list(p2_remaining)[p2_len - p1_len:])
+                p1_remaining = {}
+                p2_remaining = set(list(p2_remaining)[:p2_len - p1_len])
 
         elif match_mode == "twist":
-            pass # TODO
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, list(p2_remaining)[::-1])
+                p1_remaining = {}
+                p2_remaining = {}
+            elif p1_len > p2_len:
+                skip = set(random.sample(list(p1_remaining), p1_len - p2_len))
+                matches += zip(p1_remaining - skip, list(p2_remaining)[::-1])
+                p1_remaining = skip
+                p2_remaining = {}
+            else:         
+                skip = set(random.sample(list(p2_remaining), p2_len - p1_len))
+                matches += zip(p1_remaining, list(p2_remaining - skip)[::-1])
+                p1_remaining = {}
+                p2_remaining = skip
+
+        elif match_mode == "twist_full":
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, list(p2_remaining)[::-1])
+            elif p1_len > p2_len:
+                dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
+                matches += zip(p1_remaining, sorted(list(p2_remaining) + dupes)[::-1])
+            else:                         
+                dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
+                matches += zip(sorted(list(p1_remaining) + dupes), list(p2_remaining)[::-1])
+            p1_remaining = {}
+            p2_remaining = {}
 
         elif match_mode == "random":
-            pass # TODO
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, random.sample(list(p2_remaining),p2_len))
+                p1_remaining = {}
+                p2_remaining = {}
+            elif p1_len > p2_len:
+                skip = set(random.sample(list(p1_remaining), p1_len - p2_len))
+                matches += zip(p1_remaining - skip, random.sample(p2_remaining, p2_len))
+                p1_remaining = skip
+                p2_remaining = {}
+            else:         
+                skip = set(random.sample(list(p2_remaining), p2_len - p1_len))
+                matches += zip(p1_remaining, random.sample(p2_remaining - skip, p1_len))
+                p1_remaining = {}
+                p2_remaining = skip
 
-        elif match_mode == "randomduped":
-            pass # TODO
+        elif match_mode == "random_full":
+            if p1_len == p2_len:
+                matches += zip(p1_remaining, random.sample(list(p2_remaining),p2_len))
+                p1_remaining = {}
+                p2_remaining = {}
+            elif p1_len > p2_len:
+                dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
+                matches += zip(p1_remaining, random.sample(sorted(list(p2_remaining) + dupes), p1_len))
+            else:                         
+                dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
+                matches += zip(random.sample(sorted(list(p1_remaining) + dupes), p2_len), p2_remaining)
+            p1_remaining = {}
+            p2_remaining = {}
+    
+    # assign remaining partials to None
+    for p in p1_remaining:
+        matches.append((p, None))
+    for p in p2_remaining:
+        matches.append((None, p))
     
     if return_match_list_only:
         return matches, None
-    
 
     # check bias curves
-
-    # get new frames
-    if merge_dur is None:
-        pass #TODO set to end of file
-    # if merge_dur == 0.0 are there special rules for dropping/merging ats_snd2 frame 0?
-
-    
-    
+    # constrain range
+    # build envelopes
 
     # new AtsSoundVFR
 
     # add beginning
+    # TODO what to do about duplicated partials!?
 
     # do merge
 
@@ -212,6 +411,30 @@ def is_valid_list_of_pairs(check):
         return True
     return False
 
+def are_valid_candidates(frq1, frq2, deviation):
+    """Function to determine if the distance between two frequencies are within the relative deviation constraint
+
+    Frequencies are valid candidates for pairing if their absolute distance is smaller than the frequency deviation 
+    multiplied by the lower of the candidate frequencies.
+
+    Parameters
+    ----------
+    frq1 : float
+        a candidate frequency
+    frq2 : float
+        a candidate frequency
+    deviation : float
+        relative frequency deviation
+
+    Returns
+    -------
+    bool
+        True if the candidates are within constrained range, False otherwise.
+    """ 
+    min_frq = min(frq1, frq2)
+    return abs(frq1 - frq2) <= 0.5 * min_frq * deviation
+
+
 def is_valid_envelope(envelope):
 
     return True # TODO
@@ -231,3 +454,5 @@ def concat():
 def splice():
     pass# TODO
 
+def merge_CLI():
+    pass# TODO

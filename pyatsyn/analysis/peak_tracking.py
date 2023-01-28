@@ -43,6 +43,7 @@ and tracks which couldn't find continuing peaks are set to sleep.
 from heapq import heappop, heappush
 from queue import SimpleQueue
 from pyatsyn.ats_utils import phase_interp_cubic
+from ats_structure import MatchCost
 
 
 def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta = 0.0):
@@ -258,7 +259,7 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sampling_rate, hop_si
 def are_valid_candidates(candidate1, candidate2, deviation):
     """Function to determine if the distance between two peaks are within the relative deviation constraint
 
-    Peaks are valid candidates for pair if their absolute distance is smaller than the frequency deviation 
+    Peaks are valid candidates for pairing if their absolute distance is smaller than the frequency deviation 
     multiplied by the lower of the candidate's frequencies.
 
     Parameters
@@ -305,24 +306,3 @@ def peak_dist(pk1, pk2, alpha):
         the frequency distance (in Hz) between the peaks
     """ 
     return (abs(pk1.frq - pk2.frq) + (alpha * abs(pk1.smr - pk2.smr))) / (alpha + 1.0)
-
- 
-class MatchCost():
-    """Object to abstract cost for comparisons
-
-    Attributes
-    ----------
-    cost : float
-        the calculated cost to `index`
-    index : int
-        the index that indicates the track the cost was calculated against
-    """ 
-    def __init__(self, cost, index):
-        self.cost = cost
-        self.index = index
-    
-    def __repr__(self):
-        return f"to index: {self.index} at cost: {self.cost}"
-    
-    def __lt__(self, other):
-        return self.cost < other.cost

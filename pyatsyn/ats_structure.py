@@ -678,4 +678,22 @@ def to_cfr(ats_snd_vfr, frame_size, sampling_rate=None, window_size=None):
 
     return ats_cfr
 
+class MatchCost():
+    """Object to abstract cost for comparisons
 
+    Attributes
+    ----------
+    cost : float
+        the calculated cost to `index`
+    index : int
+        the index that indicates the track the cost was calculated against
+    """ 
+    def __init__(self, cost, index):
+        self.cost = cost
+        self.index = index
+    
+    def __repr__(self):
+        return f"to index: {self.index} at cost: {self.cost}"
+    
+    def __lt__(self, other):
+        return self.cost < other.cost
