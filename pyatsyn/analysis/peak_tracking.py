@@ -170,7 +170,7 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sampling_rate, hop_si
     for tk_ind, tk in enumerate(tracks):
         if tk.asleep_for is None or tk.asleep_for < min_gap_length:
             for pk_ind, pk in enumerate(peaks):
-                if are_valid_candidates(tk, pk, frequency_deviation):
+                if are_valid_peak_candidates(tk, pk, frequency_deviation):
                     cost = peak_dist(tk, pk, SMR_continuity)
                     heappush(peak_costs[pk_ind], MatchCost(cost, tk_ind))
     
@@ -256,7 +256,7 @@ def peak_tracking(tracks, peaks, frame_n, analysis_frames, sampling_rate, hop_si
             tracks[tk_ind].asleep_for += 1
 
 
-def are_valid_candidates(candidate1, candidate2, deviation):
+def are_valid_peak_candidates(candidate1, candidate2, deviation):
     """Function to determine if the distance between two peaks are within the relative deviation constraint
 
     Peaks are valid candidates for pairing if their absolute distance is smaller than the frequency deviation 

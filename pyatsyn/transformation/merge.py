@@ -20,7 +20,8 @@ import random
 from heapq import heappop, heappush
 from queue import SimpleQueue
 
-from pyatsyn.ats_structure import MatchCost
+from pyatsyn.ats_structure import MatchCost, AtsSoundVFR
+from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE
 
 
 ATS_VALID_MERGE_MATCH_MODES = [ "plain",
@@ -37,7 +38,7 @@ ATS_VALID_MERGE_MATCH_MODES = [ "plain",
                                 ]
 
 
-def merge(  ats_snd1, 
+def merge(  ats_snd1,
             ats_snd2,
             merge_start = 0.0,
             merge_dur = None,
@@ -46,7 +47,7 @@ def merge(  ats_snd1,
             ats_snd2_dur = None,           
             match_mode = "stable",
             force_matches = None,
-            time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error
+            time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
             frequency_deviation = 0.1,
             frequency_bias_curve = None,
             amplitude_bias_curve = None,
@@ -63,7 +64,7 @@ def merge(  ats_snd1,
     ats_snd1  |**-------------------------------| any ats_snd1 frames after the merge range will be omitted
                             merge_start is relative to t=0.0
                             |
-                            |xxxx| by default merge dur 'xxxx' will go to the end of ats_snd1
+                            |xxxx| by default merge dur  will go to the end of ats_snd1 if merge_dur = None (in the depiction it's 'xxxx')
 
                             ats_snd2 will be aligned to merge_start offset by ats_snd2_start (e.g, ats_snd2_start = '****')
                             |
@@ -118,7 +119,8 @@ def merge(  ats_snd1,
                 if [(t,v)] this is the same as specifying bias v for the length of the merge
                 envelope t's should be monotonically increasing and will be proportionally re-scaled to the length of the merge
                     e.g, [(0.2, 1.0), (0.1, 0.5)] is invalid and will raise an exception because t0 > t1
-                    e.g., [(0.2, 1.0), (0.3, 0.5), (1.0, 0.0)] is valid and will be rescaled -> [(0.0, 1.0), (merge_dur * 0.125, 0.5), (merge_dur, 0.0)]
+                    e.g., [(0.2, 1.0), (0.3, 0.5), (1.0, -0.1)] is valid and will be rescaled -> [(0.0, 1.0), (merge_dur * 0.125, 0.5), (merge_dur, 0.0)]
+                        NOTE: the final bias value was capped to 0.0. Times get rescaled, biases get constrainted.
 
         *bias_curve = list of num, None or envelopes to specify the value for partial at corresponding index of base list
             *bias_curve indices in the base list correspond to the match indices (especially useful if you specify your matches directly, see match_modes)
@@ -137,13 +139,28 @@ def merge(  ats_snd1,
             TODO example outside of bias range
 
     """
-
-    # get new frames
-        # account for bias curve times, start/ends, time-deviation
+    if time_deviation is None:
+        time_deviation = 1 / ATS_DEFAULT_SAMPLING_RATE
 
     if merge_dur is None:
-        pass #TODO set to end of file
-    # if merge_dur == 0.0 are there special rules for dropping/merging ats_snd2 frame 0?
+        merge_dur = ats_snd1.dur - ats_snd1_start
+    if merge_dur < 0.0:
+        merge_dur = 0.0
+    merge_end = merge_start + merge_dur
+    
+    new_frame_time_candidates = []
+    # get merge_start/end indices from 1 & 2 TODO
+    # add frame times from ats_snd1 TODO
+    # add frame times from ats_snd2 TODO
+
+
+    # if merge_dur == 0.0 are there special ways to define the bias curves? TODO
+    # check bias curves TODO
+    # constrain range TODO
+    # build envelopes TODO
+    # add frame times from envelopes TODO
+
+    # solve frames for time-deviations preserving merge_start & merge_end, if different TODO
 
 
     # get new partials
@@ -151,8 +168,9 @@ def merge(  ats_snd1,
     p1_remaining = set(range(ats_snd1.partials))
     p2_remaining = set(range(ats_snd1.partials)) 
 
-    if force_matches is not None:        
-        if is_valid_list_of_pairs(force_matches):
+    if force_matches is not None:
+        check_valid, force_matches = is_valid_list_of_pairs(force_matches)
+        if check_valid:
             # add the forced matches, and remove from the partial lists for match_mode processing
             for tp in force_matches:
                 if tp != (None, None):
@@ -180,7 +198,7 @@ def merge(  ats_snd1,
         # calculate costs
         for p2_ind, p2 in enumerate(p2_remaining):
             for p1_ind, p1 in (p1_remaining):
-                if are_valid_candidates(ats_snd1.frq_av[p1],ats_snd2.frq_av[p2],frequency_deviation):
+                if are_valid_frq_candidates(ats_snd1.frq_av[p1],ats_snd2.frq_av[p2],frequency_deviation):
                     cost = abs(ats_snd1.frq_av[p1] - ats_snd2.frq_av[p2])
                     heappush(p1_costs[p1_ind], MatchCost(cost, p2_ind))
 
@@ -378,40 +396,60 @@ def merge(  ats_snd1,
     if return_match_list_only:
         return matches, None
 
-    # check bias curves
-    # constrain range
-    # build envelopes
+    # new AtsSoundVFR TODO
+    ats_out = AtsSoundVFR(frames=None, partials=None, dur=None, has_phase=True)
 
-    # new AtsSoundVFR
-
-    # add beginning
+    # add beginning TODO
     # TODO what to do about duplicated partials!?
 
-    # do merge
+    # do merge TODO
+    # if merge_dur == 0.0 are there special rules for dropping/merging ats_snd2 frame 0? TODO
 
-    # phase correction
 
-    # update max/av & resort
+    # add end TODO
 
-    # add end
+    # phase correction TODO
 
-    return matches, None
+    # update max/av & resort TODO
+
+    return matches, ats_out
+
+
+def is_iterable(check):
+    """
+    TODO
+    """
+    try:
+        iter(check)
+    except Exception:
+        return False
+    else:
+        return True
 
 def is_valid_list_of_pairs(check):
     """
     TODO
     TODO does this work with generators?
     """
-    if isinstance(check, list):
+    out = []
+    if is_iterable(check):
         for tp in check:
-            if not (isinstance(tp, tuple) and len(tp) == 2 and \
-                (tp[0] is None or isinstance(tp[0], (int, float))) and \
-                    (tp[1] is None or isinstance(tp[1], (int, float)))):
-                return False
-        return True
-    return False
+            if not is_iterable(tp):
+                return False, None
+            out.append(tuple(tp))
+            if not (len(out[-1] == 2) and is_num_or_none(out[-1][0]) \
+                    and is_num_or_none(out[-1][1])):                
+                return False, None
+        return True, out
+    return False, None
 
-def are_valid_candidates(frq1, frq2, deviation):
+def is_num_or_none(check):
+    """
+    TODO
+    """
+    return check is None or isinstance(check, (int, float))
+
+def are_valid_frq_candidates(frq1, frq2, deviation):
     """Function to determine if the distance between two frequencies are within the relative deviation constraint
 
     Frequencies are valid candidates for pairing if their absolute distance is smaller than the frequency deviation 
@@ -435,9 +473,6 @@ def are_valid_candidates(frq1, frq2, deviation):
     return abs(frq1 - frq2) <= 0.5 * min_frq * deviation
 
 
-def is_valid_envelope(envelope):
-
-    return True # TODO
 
 def insert():
     pass# TODO
@@ -456,3 +491,13 @@ def splice():
 
 def merge_CLI():
     pass# TODO
+
+
+class ListNode():
+    """
+    TODO
+    """
+    def __init__(self, val, next=None):
+        self.val = val
+        self.next = next
+    
