@@ -19,6 +19,7 @@ TODO
 import random
 from heapq import heappop, heappush
 from queue import SimpleQueue
+from numpy import inf, zeros, copy
 
 from pyatsyn.ats_structure import MatchCost, AtsSoundVFR
 from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE
@@ -47,6 +48,8 @@ def merge(  ats_snd1,
             ats_snd2_dur = None,           
             match_mode = "stable",
             force_matches = None,
+            snd1_frq_av_range = None,
+            snd2_frq_av_range = None,
             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
             frequency_deviation = 0.1,
             frequency_bias_curve = None,
@@ -56,6 +59,7 @@ def merge(  ats_snd1,
             ):
     """
     TODO
+
 
     cross-synthesis tool
 
@@ -71,6 +75,7 @@ def merge(  ats_snd1,
     ats_snd2            |****-------**********|
                                     |
                                     relative to ats_snd2_start, ats_snd2_dur specifies the end of the output (e.g., ats_snd2_dur = '-------'), if None to the end of the ats sound
+                                    if the end of the merge_dur ends after the end of ats_snd2_dur, then merge_dur will specify the end
 
     output       |11111111111mmmm222|
 
@@ -93,6 +98,16 @@ def merge(  ats_snd1,
         "twist" - same as spread, but the bins of one side of the match are flipped lowest <-> highest
         "random" - random pairing
         "random_full" - random pairing but every partial has a match because we will duplicate & fork as needed
+
+    snd#_frq_av_range:
+        NOTE: only averages non-zero frequency values, unless all are 0.0 in that range
+        If None, will use .frq_av for each partial
+        If float/int will interpret that as seconds from merge_start to before the time before merge_start to use for snd1, to time after merge_start for snd2 for all partials
+        If 2 float/int iterable will use that as the time time range in seconds to average over relative to the ats_snd# 0.0 (not relative to ats_snd#_start)
+        For other iterables:
+            if fewer than the number of partials, remaining partials will use .frq_av
+            if more than the number of partials, will ignore the excess
+            each iterable specifies it's corresponding partial, using None, float/int or a 2 float/int iterable as stated above
 
     force_matches:
         If None, will process all partials according to match_modes
@@ -136,7 +151,7 @@ def merge(  ats_snd1,
             e.g., [None, [(0.2, 1.0), (0.1, 0.5)], 2.0] is INVALID because partial 1
             e.g., [[(0.2, 1.0), (0.3, 0.5), (1.0, 0.0)], 1.0, None, None] is VALID
             e.g., [1, (0,1), [1], [(0,1),(1,0)]] is INVALID because although partial 0 & 3 are correct, partial 1 & 2 are incorrectly specified
-            TODO example outside of bias range
+            
 
     """
     if time_deviation is None:
@@ -147,21 +162,12 @@ def merge(  ats_snd1,
     if merge_dur < 0.0:
         merge_dur = 0.0
     merge_end = merge_start + merge_dur
+    out_dur = merge_start + max(merge_dur, ats_snd2_dur)
     
-    new_frame_time_candidates = []
-    # get merge_start/end indices from 1 & 2 TODO
-    # add frame times from ats_snd1 TODO
-    # add frame times from ats_snd2 TODO
-
-
-    # if merge_dur == 0.0 are there special ways to define the bias curves? TODO
-    # check bias curves TODO
-    # constrain range TODO
-    # build envelopes TODO
-    # add frame times from envelopes TODO
-
-    # solve frames for time-deviations preserving merge_start & merge_end, if different TODO
-
+    new_frame_time_candidates = [0.0]
+    new_frame_time_candidates += [ats_snd1.time >= ats_snd1_start and ats_snd1.time <= ats_snd1_start + merge_end] - ats_snd1_start
+    snd2_time_offset = merge_start - ats_snd2_start
+    new_frame_time_candidates += [ats_snd2.time >= ats_snd2_start and ats_snd2.time <= ats_snd2_start + ats_snd2_dur] - snd2_time_offset
 
     # get new partials
     matches = []
@@ -178,7 +184,7 @@ def merge(  ats_snd1,
                     p1_remaining = p1_remaining - {tp[0]}
                     p2_remaining = p2_remaining - {tp[1]}                                      
         else:
-            raise Exception("force_matches not correctly specified")
+            raise Exception("force_matches not properly specified")
 
     if match_mode not in ATS_VALID_MERGE_MATCH_MODES:
         raise Exception("specified match_mode is not supported")
@@ -193,13 +199,18 @@ def merge(  ats_snd1,
         p1_costs = [[] for _ in p1_remaining]
 
         # set frequencies to use for costs
-        # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        check_valid, snd1_cost_frq = is_valid_cost_range(snd1_frq_av_range, ats_snd1, ats_snd1_start + merge_start)
+        if not check_valid:
+            raise Exception("snd1_frq_av_range is not properly specified")      
+        check_valid, snd2_cost_frq = is_valid_cost_range(snd2_frq_av_range, ats_snd2, ats_snd2_start, before_merge = False)
+        if not check_valid:
+            raise Exception("snd2_frq_av_range is not properly specified")
 
         # calculate costs
         for p2_ind, p2 in enumerate(p2_remaining):
             for p1_ind, p1 in (p1_remaining):
-                if are_valid_frq_candidates(ats_snd1.frq_av[p1],ats_snd2.frq_av[p2],frequency_deviation):
-                    cost = abs(ats_snd1.frq_av[p1] - ats_snd2.frq_av[p2])
+                if are_valid_frq_candidates(snd1_cost_frq[p1],snd2_cost_frq[p2],frequency_deviation):
+                    cost = abs(snd1_cost_frq[p1] - snd2_cost_frq[p2])
                     heappush(p1_costs[p1_ind], MatchCost(cost, p2_ind))
 
         # perform Gale-Shapley stable matching
@@ -396,21 +407,37 @@ def merge(  ats_snd1,
     if return_match_list_only:
         return matches, None
 
-    # new AtsSoundVFR TODO
-    ats_out = AtsSoundVFR(frames=None, partials=None, dur=None, has_phase=True)
+    partials = len(matches)
 
-    # add beginning TODO
-    # TODO what to do about duplicated partials!?
+    # validate and build bias curves
+    check_valid, env_frames, frequency_bias_curve = is_valid_bias_curve(frequency_bias_curve, merge_dur, partials, merge_start)
+    if not check_valid:
+        raise Exception("frequency_bias_curve not properly specified")
+    new_frame_time_candidates += env_frames
+
+    check_valid, env_frames, amplitude_bias_curve = is_valid_bias_curve(amplitude_bias_curve, merge_dur, partials, merge_start)
+    if not check_valid:
+        raise Exception("amplitude_bias_curve not properly specified")
+    new_frame_time_candidates += env_frames
+        
+    new_frame_time_candidates = sorted(set(new_frame_time_candidates))
+    # TODO remove based on time-deviations
+    # TODO insert merge_start & merge_end
+    frames = len(new_frame_time_candidates)
+
+    # new AtsSoundVFR
+    ats_out = AtsSoundVFR(frames=frames, partials=partials, dur=out_dur, has_phase=True)
 
     # do merge TODO
+    # add beginning TODO
+    # TODO what to do about duplicated partials!?
     # if merge_dur == 0.0 are there special rules for dropping/merging ats_snd2 frame 0? TODO
-
-
     # add end TODO
 
     # phase correction TODO
 
-    # update max/av & resort TODO
+    # update max/av & resort
+    ats_out.optimize()
 
     return matches, ats_out
 
@@ -443,6 +470,141 @@ def is_valid_list_of_pairs(check):
         return True, out
     return False, None
 
+def is_valid_cost_range(check, ats_snd, merge_time, before_merge = True):    
+    """ TODO
+    snd#_frq_av_range:
+        NOTE: only averages non-zero frequency values, unless all are 0.0 in that range
+        If None, will use .frq_av for each partial
+        If float/int will interpret that as seconds from merge_start to before the time before merge_start to use for snd1, to time after merge_start for snd2 for all partials
+        If 2 float/int iterable will use that as the time range in seconds to average over for all partials
+        For other iterables:
+            if fewer than the number of partials, remaining partials will use .frq_av
+            if more than the number of partials, will ignore the excess
+            each iterable specifies it's corresponding partial, using None, float/int or a 2 float/int iterable as stated above
+    """    
+    if check is None:
+        return True, copy(ats_snd.frq_av)
+    elif isinstance(check, (float, int)):
+        out = zeros(ats_snd.partials, "float64")
+        # TODO seconds before/after merge to average over for all partials, remember to check >=0.0?
+        return True, out
+    elif not is_iterable(check):
+        return False, None
+    else:
+        out = zeros(ats_snd.partials, "float64")
+        collect = [ck for ck in check]
+        if len(collect) == 2:
+            if isinstance(collect[0], (float, int)) and isinstance(collect[1], (float, int)):                
+                # TODO use this as the time range to average over for all partials, remember to check the time range?
+                return True, out
+        for ind, ck in enumerate(collect[:ats_snd.partials]):
+            if ck is None:
+                out[ind] = ats_snd.frq_av[ind]
+            elif isinstance(ck, (float, int)):
+                pass # TODO seconds before/after merge to average over for this partial,, remember to check >=0.0?
+            elif not is_iterable(ck):
+                return False, None
+            else:
+                pass # TODO check for size 2 tuple to specify range for this partial, , remember to check the time range?
+        # do remaining partials
+        for ind in range(len(collect), ats_snd.partials):
+            out[ind] = ats_snd.frq_av[ind]
+        return True, out
+
+
+def is_valid_bias_curve(check, end_time, partials, out_frame_time_offset):
+    """ TODO
+    *bias_curve - used to specify how the mixture is made for the matched partials.
+        
+        *bias_curve = num # interpreted as constant bias at all times for all partials (e.g.,0.0 for all ats_snd1, 1.0 for all ats_snd2, 0.5 for 50% mixture)
+            NOTE: all bias values must be in the range [0.0, 1.0] anything outside this range will be constrained to the range (i.e. -0.5 -> 0.0 or 7.2 -> 1.0)
+        *bias_curve = None # interpreted as linear interpolation time envelope from 0 to 1 parallel for all partials
+        *bias_curve = tuple (invalid)
+        *bias_curve = envelope # interpreted as a time/bias envelope parallel for all partials
+            all envelopes should be a list of tuple pairs of time and value: [(t0,v0),(t1,v1), ... (tn,vn)]
+                if [(t,v)] this is the same as specifying bias v for the length of the merge
+                envelope t's should be monotonically increasing and will be proportionally re-scaled to the length of the merge
+                    e.g, [(0.2, 1.0), (0.1, 0.5)] is invalid and will raise an exception because t0 > t1
+                    e.g., [(0.2, 1.0), (0.3, 0.5), (1.0, -0.1)] is valid and will be rescaled -> [(0.0, 1.0), (merge_dur * 0.125, 0.5), (merge_dur, 0.0)]
+                        NOTE: the final bias value was capped to 0.0. Times get rescaled, biases get constrainted.
+
+        *bias_curve = list of num, None or envelopes to specify the value for partial at corresponding index of base list
+            *bias_curve indices in the base list correspond to the match indices (especially useful if you specify your matches directly, see match_modes)
+            *if more biases are specified than there are partial matches, the extra will be ignored
+            *if fewer biases are specified than there are partial matches, remaining partial matches will assume None, i.e., linear interpolation over the merge duration
+            * an empty list will be interpreted as if the *bias_curve = None
+        NOTE: when specifying a partial matched to None (i.e, unmatched pairing), None will be treated as amp 0.0 and freq of the existent partial.
+            e.g., let's say the match is (4, None). This means partial #4 of ats_snd1 found no match. The interpolation range in effect looks like [4.frq -> 4.frq] and [4.amp -> 0.0]
+        
+        *bias_curve examples
+            e.g., 0.5 all partials will be a 50% mix of their corresponding matches for the entire merge duration
+            e.g., [None, 0.5, [(0.2, 0.7)]] is VALID, partial 0 will be linearly interpolated, partial 1 will be 50% mix of both for the entire merge duration, and partial 2 will by 70% from ats_snd2, 30% from ats_snd1
+            e.g., [None, [(0.2, 1.0), (0.1, 0.5)], 2.0] is INVALID because partial 1
+            e.g., [[(0.2, 1.0), (0.3, 0.5), (1.0, 0.0)], 1.0, None, None] is VALID
+            e.g., [1, (0,1), [1], [(0,1),(1,0)]] is INVALID because although partial 0 & 3 are correct, partial 1 & 2 are incorrectly specified
+      """
+    default_end_time = end_time
+    if default_end_time == 0.0:
+        default_end_time = 1.0
+    out_env = []
+    out_frames = []
+    if check is None:
+        out_env = [[(0.0, 0.0), (default_end_time, 1.0)] for p in partials]
+        return True, [], out_env
+    elif isinstance(check, (float, int)):
+        check = min(max(check, 0.0), 1.0)
+        out_env = [[(0.0, check), (default_end_time, check)] for p in partials]
+        return True, [], out_env
+    elif not is_iterable(check):
+        return False, [], None
+    else:
+        for ck in check:
+            if ck is None:
+                out_env.append([[(0.0, 0.0, (default_end_time, 1.0))]])
+            elif isinstance(check, (float, int)):
+                outval = min(max(check, 0.0), 1.0)
+                out_env.append([[(0.0, outval), (default_end_time, outval)]])
+            elif not is_iterable(ck):
+                return False, [], None
+            else:
+                # potentially a time/val envelope
+                env = []
+                cur_time = -inf
+                for tp in ck:
+                    # we expect tuples
+                    if not is_iterable(tp):
+                        return False, [], None
+                    outval = tuple(tp)
+                    # we expect 2 numbers: time, bias & time must monotonically increase
+                    if len(outval) != 2 or not isinstance(outval[0], (float, int)) \
+                                or not isinstance(outval[1], (float, int)) \
+                                    or outval[0] <= cur_time:
+                        return False, [], None
+                    cur_time = outval[0]
+                    outval[1] = min(max(outval[1], 0.0), 1.0)
+                    env.append(outval)
+                env_len = len(env)
+                if env_len == 0:
+                    # an empty list will be interpreted as None
+                    out_env.append([[(0.0, 0.0, (default_end_time, 1.0))]])
+                elif env_len == 1:
+                    # a single tuple will be interpreted as that bias for the entire length of the merge
+                    out_env.append([[(0.0, env[0][1]), (default_end_time, env[0][1])]])
+                else:                    
+                    min_time = env[0][0]
+                    max_time = env[-1][0]
+                    time_norm = default_end_time / (max_time - min_time)
+                    env[0][0] = 0.0
+                    env[-1][0] = default_end_time
+                    for ind in range(1, env_len - 1):
+                        # normalize times
+                        env[ind][0] = time_norm * (env[ind][0] - min_time)
+                        # export to out_frames
+                        out_frames.append(env[ind][0] + out_frame_time_offset)
+                    out_env.append(env)
+        return True, out_frames, out_env
+
+    
 def is_num_or_none(check):
     """
     TODO
@@ -491,13 +653,3 @@ def splice():
 
 def merge_CLI():
     pass# TODO
-
-
-class ListNode():
-    """
-    TODO
-    """
-    def __init__(self, val, next=None):
-        self.val = val
-        self.next = next
-    
