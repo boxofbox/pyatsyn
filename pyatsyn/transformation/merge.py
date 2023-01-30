@@ -19,7 +19,7 @@ TODO
 import random
 from heapq import heappop, heappush
 from queue import SimpleQueue
-from numpy import inf, zeros, copy
+from numpy import inf, zeros, copy, where
 
 from pyatsyn.ats_structure import MatchCost, AtsSoundVFR
 from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE
@@ -102,7 +102,7 @@ def merge(  ats_snd1,
     snd#_frq_av_range:
         NOTE: only averages non-zero frequency values, unless all are 0.0 in that range
         If None, will use .frq_av for each partial
-        If float/int will interpret that as seconds from merge_start to before the time before merge_start to use for snd1, to time after merge_start for snd2 for all partials
+        If float/int will interpret that as seconds from merge_start to before the time before merge_start to use for snd1, to time after merge_start for snd2 for all partials, must be > 0.0
         If 2 float/int iterable will use that as the time time range in seconds to average over relative to the ats_snd# 0.0 (not relative to ats_snd#_start)
         For other iterables:
             if fewer than the number of partials, remaining partials will use .frq_av
@@ -158,21 +158,26 @@ def merge(  ats_snd1,
         time_deviation = 1 / ATS_DEFAULT_SAMPLING_RATE
 
     if merge_dur is None:
-        merge_dur = ats_snd1.dur - ats_snd1_start
+        merge_dur = ats_snd1.dur - (ats_snd1_start + merge_start)
     if merge_dur < 0.0:
         merge_dur = 0.0
     merge_end = merge_start + merge_dur
+    if ats_snd2_dur is None:
+        ats_snd2_dur = ats_snd2.dur - ats_snd2_start
     out_dur = merge_start + max(merge_dur, ats_snd2_dur)
-    
-    new_frame_time_candidates = [0.0]
-    new_frame_time_candidates += [ats_snd1.time >= ats_snd1_start and ats_snd1.time <= ats_snd1_start + merge_end] - ats_snd1_start
-    snd2_time_offset = merge_start - ats_snd2_start
-    new_frame_time_candidates += [ats_snd2.time >= ats_snd2_start and ats_snd2.time <= ats_snd2_start + ats_snd2_dur] - snd2_time_offset
 
+    print("MS", merge_start, "MD", merge_dur, "ME", merge_end, "OD", out_dur)
+    
+    new_frame_time_candidates = [0.0]    
+    new_frame_time_candidates += list(ats_snd1.time[(ats_snd1.time >= ats_snd1_start) & (ats_snd1.time <= ats_snd1_start + merge_end)] - ats_snd1_start)
+    snd2_time_offset = merge_start - ats_snd2_start
+    print("POST1", new_frame_time_candidates)
+    new_frame_time_candidates += list(ats_snd2.time[(ats_snd2.time >= ats_snd2_start) & (ats_snd2.time <= ats_snd2_start + ats_snd2_dur)] - snd2_time_offset)
+    print("POST2", new_frame_time_candidates)
     # get new partials
     matches = []
     p1_remaining = set(range(ats_snd1.partials))
-    p2_remaining = set(range(ats_snd1.partials)) 
+    p2_remaining = set(range(ats_snd2.partials)) 
 
     if force_matches is not None:
         check_valid, force_matches = is_valid_list_of_pairs(force_matches)
@@ -208,7 +213,7 @@ def merge(  ats_snd1,
 
         # calculate costs
         for p2_ind, p2 in enumerate(p2_remaining):
-            for p1_ind, p1 in (p1_remaining):
+            for p1_ind, p1 in enumerate(p1_remaining):
                 if are_valid_frq_candidates(snd1_cost_frq[p1],snd2_cost_frq[p2],frequency_deviation):
                     cost = abs(snd1_cost_frq[p1] - snd2_cost_frq[p2])
                     heappush(p1_costs[p1_ind], MatchCost(cost, p2_ind))
@@ -283,10 +288,10 @@ def merge(  ats_snd1,
                 matches += zip(p1_remaining, p2_remaining)
             elif p1_len > p2_len:
                 dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
-                matches += zip(p1_remaining, sorted(list(p2_remaining) + dupes))
+                matches += zip(p1_remaining, sorted(list(p2_remaining) + list(dupes)))
             else:                         
                 dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
-                matches += zip(sorted(list(p1_remaining) + dupes), p2_remaining)      
+                matches += zip(sorted(list(p1_remaining) + list(dupes)), p2_remaining)      
             p1_remaining = {}
             p2_remaining = {}
 
@@ -361,10 +366,10 @@ def merge(  ats_snd1,
                 matches += zip(p1_remaining, list(p2_remaining)[::-1])
             elif p1_len > p2_len:
                 dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
-                matches += zip(p1_remaining, sorted(list(p2_remaining) + dupes)[::-1])
+                matches += zip(p1_remaining, sorted(list(p2_remaining) + list(dupes))[::-1])
             else:                         
                 dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
-                matches += zip(sorted(list(p1_remaining) + dupes), list(p2_remaining)[::-1])
+                matches += zip(sorted(list(p1_remaining) + list(dupes)), list(p2_remaining)[::-1])
             p1_remaining = {}
             p2_remaining = {}
 
@@ -375,12 +380,12 @@ def merge(  ats_snd1,
                 p2_remaining = {}
             elif p1_len > p2_len:
                 skip = set(random.sample(list(p1_remaining), p1_len - p2_len))
-                matches += zip(p1_remaining - skip, random.sample(p2_remaining, p2_len))
+                matches += zip(p1_remaining - skip, random.sample(list(p2_remaining), p2_len))
                 p1_remaining = skip
                 p2_remaining = {}
             else:         
                 skip = set(random.sample(list(p2_remaining), p2_len - p1_len))
-                matches += zip(p1_remaining, random.sample(p2_remaining - skip, p1_len))
+                matches += zip(p1_remaining, random.sample(list(p2_remaining - skip), p1_len))
                 p1_remaining = {}
                 p2_remaining = skip
 
@@ -391,10 +396,10 @@ def merge(  ats_snd1,
                 p2_remaining = {}
             elif p1_len > p2_len:
                 dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
-                matches += zip(p1_remaining, random.sample(sorted(list(p2_remaining) + dupes), p1_len))
+                matches += zip(p1_remaining, random.sample(sorted(list(p2_remaining) + list(dupes)), p1_len))
             else:                         
                 dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
-                matches += zip(random.sample(sorted(list(p1_remaining) + dupes), p2_len), p2_remaining)
+                matches += zip(random.sample(sorted(list(p1_remaining) + list(dupes)), p2_len), p2_remaining)
             p1_remaining = {}
             p2_remaining = {}
     
@@ -413,21 +418,42 @@ def merge(  ats_snd1,
     check_valid, env_frames, frequency_bias_curve = is_valid_bias_curve(frequency_bias_curve, merge_dur, partials, merge_start)
     if not check_valid:
         raise Exception("frequency_bias_curve not properly specified")
-    new_frame_time_candidates += env_frames
+    new_frame_time_candidates = new_frame_time_candidates + env_frames
 
     check_valid, env_frames, amplitude_bias_curve = is_valid_bias_curve(amplitude_bias_curve, merge_dur, partials, merge_start)
     if not check_valid:
         raise Exception("amplitude_bias_curve not properly specified")
-    new_frame_time_candidates += env_frames
+    new_frame_time_candidates = new_frame_time_candidates + env_frames
         
-    new_frame_time_candidates = sorted(set(new_frame_time_candidates))
-    # TODO remove based on time-deviations
-    # TODO insert merge_start & merge_end
-    frames = len(new_frame_time_candidates)
+    # make sure new time frames are not within time_deviation of each other
+    new_frame_time_candidates = sorted(set(new_frame_time_candidates))    
+    ind = 1
+    candidates_len = len(new_frame_time_candidates)
+    new_frames = None
+    if candidates_len == 0:
+        new_frames = list({merge_start, merge_end})
+    else:    
+        check = new_frame_time_candidates[0] + time_deviation
+        new_frames = [new_frame_time_candidates[0]]
+        while (ind < candidates_len):
+            if new_frame_time_candidates[ind] > check:
+                check = new_frame_time_candidates[ind] + time_deviation
+                new_frames.append(new_frame_time_candidates[ind])        
+            ind += 1
+        
+        # insert merge_start & merge_end using 1/sampling_rate as time_deviation for floating point error
+        pad = 1 / ATS_DEFAULT_SAMPLING_RATE
+        ind, new_frames = insert_into_list_with_deviation(new_frames, merge_start, pad, start_at = 0)
+        _, new_frames = insert_into_list_with_deviation(new_frames, merge_end, pad, start_at=ind)
 
+    frames = len(new_frames)
+    print("FREQ_ENV", frequency_bias_curve)
+    print("AMP_BIAS", amplitude_bias_curve)
+    print("NEW_FRAMES", new_frames)
     # new AtsSoundVFR
     ats_out = AtsSoundVFR(frames=frames, partials=partials, dur=out_dur, has_phase=True)
 
+    # PAUSE HERE FOR TESTING!?!?!?!?!?!??!?!?!?!?!?!??!?!? TODO    
     # do merge TODO
     # add beginning TODO
     # TODO what to do about duplicated partials!?
@@ -464,7 +490,7 @@ def is_valid_list_of_pairs(check):
             if not is_iterable(tp):
                 return False, None
             out.append(tuple(tp))
-            if not (len(out[-1] == 2) and is_num_or_none(out[-1][0]) \
+            if not (len(out[-1]) == 2 and is_num_or_none(out[-1][0]) \
                     and is_num_or_none(out[-1][1])):                
                 return False, None
         return True, out
@@ -475,7 +501,7 @@ def is_valid_cost_range(check, ats_snd, merge_time, before_merge = True):
     snd#_frq_av_range:
         NOTE: only averages non-zero frequency values, unless all are 0.0 in that range
         If None, will use .frq_av for each partial
-        If float/int will interpret that as seconds from merge_start to before the time before merge_start to use for snd1, to time after merge_start for snd2 for all partials
+        If float/int will interpret that as seconds from merge_start to before the time before merge_start to use for snd1, to time after merge_start for snd2 for all partials (must be > 0.0)
         If 2 float/int iterable will use that as the time range in seconds to average over for all partials
         For other iterables:
             if fewer than the number of partials, remaining partials will use .frq_av
@@ -485,31 +511,227 @@ def is_valid_cost_range(check, ats_snd, merge_time, before_merge = True):
     if check is None:
         return True, copy(ats_snd.frq_av)
     elif isinstance(check, (float, int)):
-        out = zeros(ats_snd.partials, "float64")
-        # TODO seconds before/after merge to average over for all partials, remember to check >=0.0?
-        return True, out
+        if check <= 0.0:
+            print("WARNING: negative range value, assuming None")
+            return True, copy(ats_snd.frq_av)
+        start = merge_time
+        end = merge_time
+        if before_merge:
+            start = merge_time - check            
+        else:
+            end = merge_time + check
+        return get_averages_in_time_range(ats_snd, start, end)
+
     elif not is_iterable(check):
         return False, None
+
     else:
         out = zeros(ats_snd.partials, "float64")
         collect = [ck for ck in check]
+        if len(collect) == 0:
+            print("WARNING: empty iterable, assuming None")
+            return True, copy(ats_snd.frq_av)
         if len(collect) == 2:
             if isinstance(collect[0], (float, int)) and isinstance(collect[1], (float, int)):                
-                # TODO use this as the time range to average over for all partials, remember to check the time range?
-                return True, out
+                # use this as the time range to average over for all partials
+                return get_averages_in_time_range(ats_snd, collect[0], collect[1])
+
         for ind, ck in enumerate(collect[:ats_snd.partials]):
             if ck is None:
                 out[ind] = ats_snd.frq_av[ind]
             elif isinstance(ck, (float, int)):
-                pass # TODO seconds before/after merge to average over for this partial,, remember to check >=0.0?
+                if check <= 0.0:
+                    print("WARNING: single negative range value, assuming None")
+                    out[ind] = ats_snd.frq_av[ind]
+                start = merge_time
+                end = merge_time
+                if before_merge:
+                    start = merge_time - check
+                else:
+                    end = merge_time + check
+                out[ind] = get_average_in_time_range(ats_snd, ind, start, end)
+
             elif not is_iterable(ck):
                 return False, None
             else:
-                pass # TODO check for size 2 tuple to specify range for this partial, , remember to check the time range?
+                tp = tuple(ck)
+                tp_len = len(tp)
+                if tp_len == 0:
+                    print("WARNING: single empty tuple, assuming None")
+                    out[ind] = ats_snd.frq_av[ind]
+                elif tp_len != 2 or not isinstance(tp[0], (float, int)) or not isinstance(tp[1], (float, int)):
+                    return False, None
+                else:
+                    out[ind] = get_average_in_time_range(ats_snd, ind, tp[0], tp[1])
+
         # do remaining partials
         for ind in range(len(collect), ats_snd.partials):
             out[ind] = ats_snd.frq_av[ind]
         return True, out
+
+def get_average_in_time_range(ats_snd, partial, start, end):
+    """TODO
+    """
+    start = max(0.0, start)
+    if start > ats_snd.dur:
+        print("WARNING: partial cost range specified started past ats sound duration")
+        return 0.0
+    
+    end = max(min(ats_snd.dur, end), 0.0)
+    if start >= end:
+        print("WARNING: partial cost range specified had duration of 0.0 or was negative after constraining to ats sound duration")
+        return 0.0
+
+    time_selection = (ats_snd.time >= start) & (ats_snd.time <= end)
+    frq = 0.0
+    time_sum = 0.0
+
+    if any(time_selection):
+        true_indices = where(time_selection)
+        start_ind = true_indices[0][0]
+        end_ind = true_indices[0][-1]
+        for ind in range(start_ind + 1, end_ind + 1):
+            t_dur = ats_snd.time[ind] - ats_snd.time[ind - 1]
+            if ats_snd.frq[partial][ind] > 0.0 and ats_snd.frq[partial][ind - 1] > 0.0:
+                time_sum += t_dur
+                frq += (ats_snd.frq[partial][ind] + ats_snd.frq[partial][ind - 1]) * 0.5 * t_dur
+            elif ats_snd.frq[partial][ind] > 0.0:
+                time_sum += t_dur
+                frq += ats_snd.frq[partial][ind] * t_dur
+            elif ats_snd.frq[partial][ind - 1] > 0.0:
+                time_sum += t_dur
+                frq += ats_snd.frq[partial][ind - 1] * t_dur
+        # handle head
+        if start_ind > 0:
+            t_dur = ats_snd.time[start_ind] - start             
+            if ats_snd.frq[partial][start_ind] > 0.0 and ats_snd.frq[partial][start_ind - 1] > 0.0:
+                time_sum += t_dur
+                lo_frq = ats_snd.frq[partial][start_ind] + ((ats_snd.frq[partial][start_ind - 1] - ats_snd.frq[partial][start_ind]) * (t_dur / (ats_snd.time[start_ind] - ats_snd.time[start_ind - 1])))
+                frq += (lo_frq + ats_snd.frq[partial][start_ind]) * 0.5 * t_dur
+            elif ats_snd.frq[partial][start_ind] > 0.0:
+                time_sum += t_dur
+                frq += ats_snd.frq[partial][start_ind] * t_dur
+        # handle tail
+        if end_ind < ats_snd.time.size - 1:
+            t_dur = end - ats_snd.time[end_ind]                  
+            if ats_snd.frq[partial][end_ind] > 0.0 and ats_snd.frq[partial][end_ind + 1] > 0.0:
+                time_sum[partial] += t_dur
+                hi_frq = ats_snd.frq[partial][end_ind] + ((ats_snd.frq[partial][end_ind + 1] - ats_snd.frq[partial][end_ind]) * (t_dur / (ats_snd.time[end_ind + 1] - ats_snd.time[end_ind])))
+                frq += (hi_frq + ats_snd.frq[partial][end_ind]) * 0.5 * t_dur
+            elif ats_snd.frq[partial][end_ind] > 0.0:
+                time_sum += t_dur
+                frq += ats_snd.frq[partial][end_ind] * t_dur
+
+        if time_sum > 0.0:
+            return frq / time_sum
+        else:
+            return 0.0
+    else:
+        # range lies completely between frames
+        hi_ind = where(ats_snd.time >= end)[0][0]
+        lo_ind = hi_ind - 1
+        t1 = start - ats_snd.time[lo_ind]
+        t2 = end - ats_snd.time[hi_ind]
+        t_dur = ats_snd.time[hi_ind] - ats_snd.time[lo_ind]
+        t1_scalar = t1 / t_dur
+        t2_scalar = t2 / t_dur
+        if ats_snd.frq[partial][lo_ind] > 0.0 and ats_snd.frq[partial][hi_ind] > 0.0:
+            lo_frq = ats_snd.frq[partial][lo_ind] + (t1_scalar * (ats_snd.frq[partial][hi_ind] - ats_snd.frq[partial][lo_ind]))                    
+            hi_frq = ats_snd.frq[partial][lo_ind] + (t2_scalar * (ats_snd.frq[partial][hi_ind] - ats_snd.frq[partial][lo_ind]))                    
+            frq = (hi_frq + lo_frq) * 0.5
+        elif ats_snd.frq[partial][lo_ind] > 0.0:
+            frq = ats_snd.frq[partial][lo_ind]
+        elif ats_snd.frq[partial][hi_ind] > 0.0:                    
+            frq = ats_snd.frq[partial][hi_ind]
+        return frq
+
+
+def get_averages_in_time_range(ats_snd, start, end):
+    """
+    TODO
+    """
+    # constrain start/end to ats_snd 
+    start = max(0.0, start)
+    if start > ats_snd.dur:
+        print("WARNING: cost range specified started past ats sound duration")
+        return True, zeros(ats_snd.partials,"float64")
+    
+    end = max(min(ats_snd.dur, end), 0.0)
+    if start >= end:
+        print("WARNING: cost range specified had duration of 0.0 or was negative after constraining to ats sound duration")
+        return True, zeros(ats_snd.partials,"float64")
+    
+    time_selection = (ats_snd.time >= start) & (ats_snd.time <= end)
+    frq = zeros(ats_snd.partials, "float64")
+    time_sum = zeros(ats_snd.partials, "float64")
+
+    if any(time_selection):
+        true_indices = where(time_selection)
+        start_ind = true_indices[0][0]
+        end_ind = true_indices[0][-1]
+        
+        for ind in range(start_ind + 1, end_ind + 1):
+            t_dur = ats_snd.time[ind] - ats_snd.time[ind - 1]                                
+            for p in range(ats_snd.partials):
+                if ats_snd.frq[p][ind] > 0.0 and ats_snd.frq[p][ind - 1] > 0.0:
+                    time_sum[p] += t_dur
+                    frq[p] += (ats_snd.frq[p][ind] + ats_snd.frq[p][ind - 1]) * 0.5 * t_dur
+                elif ats_snd.frq[p][ind] > 0.0:
+                    time_sum[p] += t_dur
+                    frq[p] += ats_snd.frq[p][ind] * t_dur
+                elif ats_snd.frq[p][ind - 1] > 0.0:
+                    time_sum[p] += t_dur
+                    frq[p] += ats_snd.frq[p][ind - 1] * t_dur
+        # handle head
+        if start_ind > 0:
+            t_dur = ats_snd.time[start_ind] - start 
+            for p in range(ats_snd.partials):                       
+                if ats_snd.frq[p][start_ind] > 0.0 and ats_snd.frq[p][start_ind - 1] > 0.0:
+                    time_sum[p] += t_dur
+                    lo_frq = ats_snd.frq[p][start_ind] + ((ats_snd.frq[p][start_ind - 1] - ats_snd.frq[p][start_ind]) * (t_dur / (ats_snd.time[start_ind] - ats_snd.time[start_ind - 1])))
+                    frq[p] += (lo_frq + ats_snd.frq[p][start_ind]) * 0.5 * t_dur
+                elif ats_snd.frq[p][start_ind] > 0.0:
+                    time_sum[p] += t_dur
+                    frq[p] += ats_snd.frq[p][start_ind] * t_dur
+        # handle tail
+        if end_ind < ats_snd.time.size - 1:
+            t_dur = end - ats_snd.time[end_ind]
+            for p in range(ats_snd.partials):                    
+                if ats_snd.frq[p][end_ind] > 0.0 and ats_snd.frq[p][end_ind + 1] > 0.0:
+                    time_sum[p] += t_dur
+                    hi_frq = ats_snd.frq[p][end_ind] + ((ats_snd.frq[p][end_ind + 1] - ats_snd.frq[p][end_ind]) * (t_dur / (ats_snd.time[end_ind + 1] - ats_snd.time[end_ind])))
+                    frq[p] += (hi_frq + ats_snd.frq[p][end_ind]) * 0.5 * t_dur
+                elif ats_snd.frq[p][end_ind] > 0.0:
+                    time_sum[p] += t_dur
+                    frq[p] += ats_snd.frq[p][end_ind] * t_dur
+
+        for p in range(ats_snd.partials):
+            if time_sum[p] > 0.0:
+                frq[p] /= time_sum[p]
+            else:
+                frq[p] = 0.0
+
+        return True, frq
+        
+    else:
+        # range lies completely between frames
+        hi_ind = where(ats_snd.time >= end)[0][0]
+        lo_ind = hi_ind - 1
+        t1 = start - ats_snd.time[lo_ind]
+        t2 = end - ats_snd.time[hi_ind]
+        t_dur = ats_snd.time[hi_ind] - ats_snd.time[lo_ind]
+        t1_scalar = t1 / t_dur
+        t2_scalar = t2 / t_dur
+        for p in range(ats_snd.partials):
+            if ats_snd.frq[p][lo_ind] > 0.0 and ats_snd.frq[p][hi_ind] > 0.0:
+                lo_frq = ats_snd.frq[p][lo_ind] + (t1_scalar * (ats_snd.frq[p][hi_ind] - ats_snd.frq[p][lo_ind]))                    
+                hi_frq = ats_snd.frq[p][lo_ind] + (t2_scalar * (ats_snd.frq[p][hi_ind] - ats_snd.frq[p][lo_ind]))                    
+                frq[p] = (hi_frq + lo_frq) * 0.5
+            elif ats_snd.frq[p][lo_ind] > 0.0:
+                frq[p] = ats_snd.frq[p][lo_ind]
+            elif ats_snd.frq[p][hi_ind] > 0.0:                    
+                frq[p] = ats_snd.frq[p][hi_ind]
+        return True, frq
 
 
 def is_valid_bias_curve(check, end_time, partials, out_frame_time_offset):
@@ -549,11 +771,11 @@ def is_valid_bias_curve(check, end_time, partials, out_frame_time_offset):
     out_env = []
     out_frames = []
     if check is None:
-        out_env = [[(0.0, 0.0), (default_end_time, 1.0)] for p in partials]
+        out_env = [[(0.0, 0.0), (default_end_time, 1.0)] for p in range(partials)]
         return True, [], out_env
     elif isinstance(check, (float, int)):
         check = min(max(check, 0.0), 1.0)
-        out_env = [[(0.0, check), (default_end_time, check)] for p in partials]
+        out_env = [[(0.0, check), (default_end_time, check)] for p in range(partials)]
         return True, [], out_env
     elif not is_iterable(check):
         return False, [], None
@@ -634,7 +856,41 @@ def are_valid_frq_candidates(frq1, frq2, deviation):
     min_frq = min(frq1, frq2)
     return abs(frq1 - frq2) <= 0.5 * min_frq * deviation
 
-
+def insert_into_list_with_deviation(lst, val, dev, start_at = 0):   
+    """
+    TODO NOTE: may mutate input list
+    """     
+    ind = start_at
+    new_len = len(lst)        
+    while (ind < new_len):
+        if lst[ind] > val:
+            break
+        ind += 1
+    if ind == 0:
+        if lst[ind] <= val + dev:
+            lst[ind] = val
+        else:
+            lst = [val] + lst
+    elif ind == new_len:
+        if lst[-1] >= val - dev:
+            lst[-1] = val
+        else:
+            lst = lst + [val]
+    else:
+        before = lst[ind - 1]
+        after = lst[ind]
+        if before >= val - dev and after <= val + dev:
+            lst[ind - 1] = val
+            lst = lst[:ind] + lst[ind+1:]
+            ind -= 1
+        elif before >= val - dev:
+            lst[ind - 1] = val
+            ind -= 1
+        elif after <= val + dev:
+            lst[ind] = val
+        else:
+            lst = lst[:ind] + [val] + lst[ind:]
+    return ind, lst
 
 def insert():
     pass# TODO
@@ -653,3 +909,64 @@ def splice():
 
 def merge_CLI():
     pass# TODO
+
+
+
+if __name__ == "__main__":
+    from numpy import array
+    from pyatsyn.analysis.tracker import tracker
+    mock1 = AtsSoundVFR(20, 8, 2.0)
+    mock1.frq_av = array([400, 660, 800, 1195, 1201, 1501, 12000, 14000])
+
+    mock2 = AtsSoundVFR(20, 5, 2.0)
+    mock2.frq_av = array([400, 660, 800, 1200, 1800])
+
+    # for match_mode in ATS_VALID_MERGE_MATCH_MODES:
+    #     print(match_mode, merge(  mock1,
+    #             mock2,
+    #             merge_start = 1.0,
+    #             merge_dur = None,
+    #             ats_snd1_start = 0.0,
+    #             ats_snd2_start = 0.0,
+    #             ats_snd2_dur = None,           
+    #             match_mode = match_mode,
+    #             force_matches = [(2,4),(2,7)],
+    #             snd1_frq_av_range = None,
+    #             snd2_frq_av_range = None,
+    #             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
+    #             frequency_deviation = 0.1,
+    #             frequency_bias_curve = None,
+    #             amplitude_bias_curve = None,
+    #             noise_bias_curve = None,
+    #             return_match_list_only = False,
+    #             ))
+
+    mock1 = tracker("../../sample_sounds/sine440.wav")
+    mock2 = tracker("../../sample_sounds/sine440.wav")
+
+    print(merge(  mock1,
+            mock2,
+            merge_start = 1.0,
+            merge_dur = None,
+            ats_snd1_start = 0.0,
+            ats_snd2_start = 0.0,
+            ats_snd2_dur = None,           
+            match_mode = "stable",
+            force_matches = [(2,4),(2,7)],
+            snd1_frq_av_range = 0.2,
+            snd2_frq_av_range = (0.0,1.1),
+            time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
+            frequency_deviation = 0.1,
+            frequency_bias_curve = None,
+            amplitude_bias_curve = None,
+            noise_bias_curve = None,
+            return_match_list_only = False,
+            ))
+
+
+    # TEST
+    """
+    bias curves
+    cost ranges
+    
+    """

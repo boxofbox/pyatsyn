@@ -43,7 +43,7 @@ and tracks which couldn't find continuing peaks are set to sleep.
 from heapq import heappop, heappush
 from queue import SimpleQueue
 from pyatsyn.ats_utils import phase_interp_cubic
-from ats_structure import MatchCost
+from pyatsyn.ats_structure import MatchCost
 
 
 def update_track_averages(tracks, track_length, frame_n, analysis_frames, beta = 0.0):
