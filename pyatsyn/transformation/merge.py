@@ -20,10 +20,11 @@ import random
 from heapq import heappop, heappush
 from queue import SimpleQueue
 from numpy import inf, zeros, copy, where
+from collections import defaultdict
 
 from pyatsyn.ats_structure import MatchCost, AtsSoundVFR
 from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE
-
+from pyatsyn.analysis.critical_bands import ATS_CRITICAL_BAND_EDGES
 
 ATS_VALID_MERGE_MATCH_MODES = [ "plain",
                                 "stable",
@@ -54,7 +55,7 @@ def merge(  ats_snd1,
             frequency_deviation = 0.1,
             frequency_bias_curve = None,
             amplitude_bias_curve = None,
-            noise_bias_curve = None,
+            noise_bias_curve = None, # NOTE: currently ignores .energy
             return_match_list_only = False,
             ):
     """
@@ -152,6 +153,7 @@ def merge(  ats_snd1,
             e.g., [[(0.2, 1.0), (0.3, 0.5), (1.0, 0.0)], 1.0, None, None] is VALID
             e.g., [1, (0,1), [1], [(0,1),(1,0)]] is INVALID because although partial 0 & 3 are correct, partial 1 & 2 are incorrectly specified
             
+            TODO: change envelope docs to [] of []s not tuples
 
     """
     if time_deviation is None:
@@ -165,15 +167,12 @@ def merge(  ats_snd1,
     if ats_snd2_dur is None:
         ats_snd2_dur = ats_snd2.dur - ats_snd2_start
     out_dur = merge_start + max(merge_dur, ats_snd2_dur)
-
-    print("MS", merge_start, "MD", merge_dur, "ME", merge_end, "OD", out_dur)
     
     new_frame_time_candidates = [0.0]    
     new_frame_time_candidates += list(ats_snd1.time[(ats_snd1.time >= ats_snd1_start) & (ats_snd1.time <= ats_snd1_start + merge_end)] - ats_snd1_start)
     snd2_time_offset = merge_start - ats_snd2_start
-    print("POST1", new_frame_time_candidates)
-    new_frame_time_candidates += list(ats_snd2.time[(ats_snd2.time >= ats_snd2_start) & (ats_snd2.time <= ats_snd2_start + ats_snd2_dur)] - snd2_time_offset)
-    print("POST2", new_frame_time_candidates)
+    new_frame_time_candidates += list(ats_snd2.time[(ats_snd2.time >= ats_snd2_start) & (ats_snd2.time <= ats_snd2_start + ats_snd2_dur)] + snd2_time_offset)
+    
     # get new partials
     matches = []
     p1_remaining = set(range(ats_snd1.partials))
@@ -210,7 +209,7 @@ def merge(  ats_snd1,
         check_valid, snd2_cost_frq = is_valid_cost_range(snd2_frq_av_range, ats_snd2, ats_snd2_start, before_merge = False)
         if not check_valid:
             raise Exception("snd2_frq_av_range is not properly specified")
-
+        
         # calculate costs
         for p2_ind, p2 in enumerate(p2_remaining):
             for p1_ind, p1 in enumerate(p1_remaining):
@@ -414,6 +413,15 @@ def merge(  ats_snd1,
 
     partials = len(matches)
 
+    # assign partial tracks
+    snd1_partial_map = defaultdict(list)
+    snd2_partial_map = defaultdict(list)
+    for ind, match in enumerate(matches):
+        if match[0] is not None:
+            snd1_partial_map[match[0]].append(ind)
+        if match[1] is not None:
+            snd2_partial_map[match[1]].append(ind)
+
     # validate and build bias curves
     check_valid, env_frames, frequency_bias_curve = is_valid_bias_curve(frequency_bias_curve, merge_dur, partials, merge_start)
     if not check_valid:
@@ -424,7 +432,14 @@ def merge(  ats_snd1,
     if not check_valid:
         raise Exception("amplitude_bias_curve not properly specified")
     new_frame_time_candidates = new_frame_time_candidates + env_frames
-        
+    
+    has_noi = ats_snd1.bands and ats_snd1.band_energy and ats_snd2.bands and ats_snd2.band_energy
+    if has_noi:
+        check_valid, env_frames, noise_bias_curve = is_valid_bias_curve(noise_bias_curve, merge_dur, len(ats_snd1.bands), merge_start)
+        if not check_valid:
+            raise Exception("noise_bias_curve not properly specified")
+        new_frame_time_candidates = new_frame_time_candidates + env_frames
+            
     # make sure new time frames are not within time_deviation of each other
     new_frame_time_candidates = sorted(set(new_frame_time_candidates))    
     ind = 1
@@ -443,22 +458,47 @@ def merge(  ats_snd1,
         
         # insert merge_start & merge_end using 1/sampling_rate as time_deviation for floating point error
         pad = 1 / ATS_DEFAULT_SAMPLING_RATE
-        ind, new_frames = insert_into_list_with_deviation(new_frames, merge_start, pad, start_at = 0)
-        _, new_frames = insert_into_list_with_deviation(new_frames, merge_end, pad, start_at=ind)
+        merge_start_ind, new_frames = insert_into_list_with_deviation(new_frames, merge_start, pad, start_at = 0)
+        merge_end_ind, new_frames = insert_into_list_with_deviation(new_frames, merge_end, pad, start_at=merge_start_ind)
 
+    # BUG IS FIRST FRAME 0.0? TODO
+    # BUG DO WE NEED AN EXTRA FRAME BEYOND DUR for synthesis?!?! TODO
     frames = len(new_frames)
-    print("FREQ_ENV", frequency_bias_curve)
-    print("AMP_BIAS", amplitude_bias_curve)
-    print("NEW_FRAMES", new_frames)
+    
     # new AtsSoundVFR
+    has_pha = ats_snd1.pha is not None and ats_snd2.pha is not None
     ats_out = AtsSoundVFR(frames=frames, partials=partials, dur=out_dur, has_phase=True)
 
-    # PAUSE HERE FOR TESTING!?!?!?!?!?!??!?!?!?!?!?!??!?!? TODO    
-    # do merge TODO
-    # add beginning TODO
-    # TODO what to do about duplicated partials!?
-    # if merge_dur == 0.0 are there special rules for dropping/merging ats_snd2 frame 0? TODO
-    # add end TODO
+    if has_noi:
+        ats_out.bands = copy(ats_snd1.bands)
+        ats_out.band_energy = zeros([len(ATS_CRITICAL_BAND_EDGES) - 1, frames], "float64")
+
+
+    ###############
+    # BEGIN MERGE #
+    ###############
+
+    # add beginning INCORRECT, NEED TO INTERPOLATE FIRST FRAME AND START FROM LATTER FRAMES TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    ats_snd1_end_ind = min(merge_start_ind, ats_snd1.frames)
+    for pt, inds in snd1_partial_map.items():
+        ats_out.frq[inds[0]][:ats_snd1_end_ind] = copy(ats_snd1.frq[pt][:ats_snd1_end_ind])
+        ats_out.amp[inds[0]][:ats_snd1_end_ind] = copy(ats_snd1.amp[pt][:ats_snd1_end_ind])
+    if has_pha:
+        for pt, inds in snd1_partial_map.items():
+            ats_out.pha[inds[0]][:ats_snd1_end_ind] = copy(ats_snd1.pha[pt][:ats_snd1_end_ind])
+    if has_noi:
+        ats_out.band_energy[:][:ats_snd1_end_ind] = copy(ats_snd1.band_energy[:][:ats_snd1_end_ind])
+    
+    # add end
+
+    # handle merge section
+    # if merge_dur == 0.0 are there special rules for dropping/merging ats_snd2 frame 0? TODO    
+    # TODO what to do about duplicated partials!? (remember to set freq to same +- 1 frame) 
+    # DONT FORGET NOISE! TODO
+    # NOTE: only process a partial # if it exists!?!?!?!!!!!!!
+
+     # handle 0's in prior and latter frames at transition points
+     # final frame handling? beyond dur
 
     # phase correction TODO
 
@@ -489,7 +529,7 @@ def is_valid_list_of_pairs(check):
         for tp in check:
             if not is_iterable(tp):
                 return False, None
-            out.append(tuple(tp))
+            out.append(list(tp))
             if not (len(out[-1]) == 2 and is_num_or_none(out[-1][0]) \
                     and is_num_or_none(out[-1][1])):                
                 return False, None
@@ -536,19 +576,19 @@ def is_valid_cost_range(check, ats_snd, merge_time, before_merge = True):
                 # use this as the time range to average over for all partials
                 return get_averages_in_time_range(ats_snd, collect[0], collect[1])
 
-        for ind, ck in enumerate(collect[:ats_snd.partials]):
+        for ind, ck in enumerate(collect[:ats_snd.partials]):            
             if ck is None:
                 out[ind] = ats_snd.frq_av[ind]
             elif isinstance(ck, (float, int)):
-                if check <= 0.0:
+                if ck <= 0.0:
                     print("WARNING: single negative range value, assuming None")
                     out[ind] = ats_snd.frq_av[ind]
                 start = merge_time
                 end = merge_time
                 if before_merge:
-                    start = merge_time - check
+                    start = merge_time - ck
                 else:
-                    end = merge_time + check
+                    end = merge_time + ck
                 out[ind] = get_average_in_time_range(ats_snd, ind, start, end)
 
             elif not is_iterable(ck):
@@ -615,7 +655,7 @@ def get_average_in_time_range(ats_snd, partial, start, end):
         if end_ind < ats_snd.time.size - 1:
             t_dur = end - ats_snd.time[end_ind]                  
             if ats_snd.frq[partial][end_ind] > 0.0 and ats_snd.frq[partial][end_ind + 1] > 0.0:
-                time_sum[partial] += t_dur
+                time_sum += t_dur
                 hi_frq = ats_snd.frq[partial][end_ind] + ((ats_snd.frq[partial][end_ind + 1] - ats_snd.frq[partial][end_ind]) * (t_dur / (ats_snd.time[end_ind + 1] - ats_snd.time[end_ind])))
                 frq += (hi_frq + ats_snd.frq[partial][end_ind]) * 0.5 * t_dur
             elif ats_snd.frq[partial][end_ind] > 0.0:
@@ -780,23 +820,57 @@ def is_valid_bias_curve(check, end_time, partials, out_frame_time_offset):
     elif not is_iterable(check):
         return False, [], None
     else:
+        # we have either a global envelope or a list of per-match items
+        collect = []
+        all_iterable = True
         for ck in check:
+            if is_iterable(ck):
+                item = [it for it in ck]
+                collect.append(item)
+            else:
+                collect.append(ck)
+                all_iterable = False
+        # check for global envelope (i.e. collect will be all 2-item iterables of nums)
+        if len(collect) > 0 and all_iterable and len(collect[0]) == 2 \
+                and isinstance(collect[0][0], (int, float)) and isinstance(collect[0][1], (int, float)):
+                
+                cur_time = collect[0][0]
+                for ck in collect[1:]:
+                    if len(ck) != 2 or not isinstance(ck[0], (float, int)) \
+                        or not isinstance(ck[1], (float, int)) or ck[0] <= cur_time:
+                        return False, [], None
+                # all checks passed, now we normalize the envelope and export to out frames
+                min_time = collect[0][0] 
+                max_time = collect[-1][0]
+                time_norm = default_end_time / (max_time - min_time)
+                collect[0][0] = 0.0
+                collect[0][1] = min(max(collect[0][1], 0.0), 1.0)
+                for ind in range(1, len(collect)):
+                    # constrain bias
+                    collect[ind][1] = min(max(collect[ind][1], 0.0), 1.0)
+                    # normalize time
+                    collect[ind][0] = time_norm * (collect[ind][0] - min_time)             
+                    # export to out_frames
+                    out_frames.append(collect[ind][0] + out_frame_time_offset)
+                return True, out_frames, collect
+
+        # otherwise we possibly have a list of per-match items
+        for ck in collect:
             if ck is None:
                 out_env.append([[(0.0, 0.0, (default_end_time, 1.0))]])
-            elif isinstance(check, (float, int)):
-                outval = min(max(check, 0.0), 1.0)
+            elif isinstance(ck, (float, int)):
+                outval = min(max(ck, 0.0), 1.0)
                 out_env.append([[(0.0, outval), (default_end_time, outval)]])
             elif not is_iterable(ck):
                 return False, [], None
             else:
-                # potentially a time/val envelope
                 env = []
                 cur_time = -inf
                 for tp in ck:
                     # we expect tuples
                     if not is_iterable(tp):
                         return False, [], None
-                    outval = tuple(tp)
+                    outval = list(tp)
                     # we expect 2 numbers: time, bias & time must monotonically increase
                     if len(outval) != 2 or not isinstance(outval[0], (float, int)) \
                                 or not isinstance(outval[1], (float, int)) \
@@ -804,7 +878,7 @@ def is_valid_bias_curve(check, end_time, partials, out_frame_time_offset):
                         return False, [], None
                     cur_time = outval[0]
                     outval[1] = min(max(outval[1], 0.0), 1.0)
-                    env.append(outval)
+                    env.append(list(outval))
                 env_len = len(env)
                 if env_len == 0:
                     # an empty list will be interpreted as None
@@ -817,8 +891,7 @@ def is_valid_bias_curve(check, end_time, partials, out_frame_time_offset):
                     max_time = env[-1][0]
                     time_norm = default_end_time / (max_time - min_time)
                     env[0][0] = 0.0
-                    env[-1][0] = default_end_time
-                    for ind in range(1, env_len - 1):
+                    for ind in range(1, env_len):
                         # normalize times
                         env[ind][0] = time_norm * (env[ind][0] - min_time)
                         # export to out_frames
@@ -948,13 +1021,13 @@ if __name__ == "__main__":
             mock2,
             merge_start = 1.0,
             merge_dur = None,
-            ats_snd1_start = 0.0,
-            ats_snd2_start = 0.0,
+            ats_snd1_start = 0.5,
+            ats_snd2_start = 0.2,
             ats_snd2_dur = None,           
             match_mode = "stable",
-            force_matches = [(2,4),(2,7)],
-            snd1_frq_av_range = 0.2,
-            snd2_frq_av_range = (0.0,1.1),
+            force_matches = [(2,4),(2,8)],
+            snd1_frq_av_range = None,
+            snd2_frq_av_range = None,
             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
             frequency_deviation = 0.1,
             frequency_bias_curve = None,
@@ -962,7 +1035,6 @@ if __name__ == "__main__":
             noise_bias_curve = None,
             return_match_list_only = False,
             ))
-
 
     # TEST
     """
