@@ -298,11 +298,11 @@ def merge(  ats_snd1,
             if p1_len == p2_len:
                 matches += zip(p1_remaining, p2_remaining)
             elif p1_len > p2_len:
-                dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
-                matches += zip(p1_remaining, sorted(list(p2_remaining) + list(dupes)))
+                dupes = random.choices(list(p2_remaining), k = p1_len - p2_len)
+                matches += zip(p1_remaining, sorted(list(p2_remaining) + dupes))
             else:                         
-                dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
-                matches += zip(sorted(list(p1_remaining) + list(dupes)), p2_remaining)      
+                dupes = random.choices(list(p1_remaining), k = p2_len - p1_len)
+                matches += zip(sorted(list(p1_remaining) + dupes), p2_remaining)      
             p1_remaining = {}
             p2_remaining = {}
 
@@ -376,11 +376,11 @@ def merge(  ats_snd1,
             if p1_len == p2_len:
                 matches += zip(p1_remaining, list(p2_remaining)[::-1])
             elif p1_len > p2_len:
-                dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
-                matches += zip(p1_remaining, sorted(list(p2_remaining) + list(dupes))[::-1])
+                dupes = random.choices(list(p2_remaining), k = p1_len - p2_len)
+                matches += zip(p1_remaining, sorted(list(p2_remaining) + dupes)[::-1])
             else:                         
-                dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
-                matches += zip(sorted(list(p1_remaining) + list(dupes)), list(p2_remaining)[::-1])
+                dupes = random.choices(list(p1_remaining), k = p2_len - p1_len)
+                matches += zip(sorted(list(p1_remaining) + dupes), list(p2_remaining)[::-1])
             p1_remaining = {}
             p2_remaining = {}
 
@@ -406,11 +406,11 @@ def merge(  ats_snd1,
                 p1_remaining = {}
                 p2_remaining = {}
             elif p1_len > p2_len:
-                dupes = set(random.sample(list(p2_remaining), p1_len - p2_len))
-                matches += zip(p1_remaining, random.sample(sorted(list(p2_remaining) + list(dupes)), p1_len))
+                dupes = random.choices(list(p2_remaining), k = p1_len - p2_len)
+                matches += zip(p1_remaining, random.sample(sorted(list(p2_remaining) + dupes), p1_len))
             else:                         
-                dupes = set(random.sample(list(p1_remaining), p2_len - p1_len))
-                matches += zip(random.sample(sorted(list(p1_remaining) + list(dupes)), p2_len), p2_remaining)
+                dupes = random.choices(list(p1_remaining), k = p2_len - p1_len)
+                matches += zip(random.sample(sorted(list(p1_remaining) + dupes), p2_len), p2_remaining)
             p1_remaining = {}
             p2_remaining = {}
     
@@ -429,7 +429,7 @@ def merge(  ats_snd1,
     snd1_partial_map = defaultdict(list)
     snd2_partial_map = defaultdict(list)
     for ind, match in enumerate(matches):
-        if match[0] >= ats_snd1.partials or match[1] >= ats_snd2.partials:
+        if (match[0] is not None and match[0] >= ats_snd1.partials) or (match[1] is not None and match[1] >= ats_snd2.partials):
             print("WARNING: skipping match with partial specified outside of available partial range")
             continue
         if match[0] is not None:
@@ -680,129 +680,118 @@ def merge(  ats_snd1,
                             + ats_snd1.band_energy[:,prior_ind]
 
     # add merged middle
+    snd1_stop = snd1_end_frame
+    snd2_stop = snd2_end_merge_frame
+    if snd2_stop is None:
+        snd2_stop = snd2_end_frame
+
+    stop = merge_end_ind
+
+    frame_n = merge_start_ind
+
     if merge_dur == 0.0:
-        frame_t = ats_out.time[merge_start_ind]
-        
-                
-            
-        if snd1_start_merge_frame is not None:
-            frame_t_in_snd1_time = frame_t + ats_snd1_start
-            if within_dev(ats_snd1.time[snd1_start_merge_frame], frame_t_in_snd1_time, pad):
-                # add a bias-scaled version of the exactly timed frame              
-                for pt, inds in snd1_partial_map.items():
-                    f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], 0.5)
-                    a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], 0.5)
-                    n_bins = len(inds)
-                    ats_out.frq[inds[0]][merge_start_ind] = f_bias * ats_snd1.frq[pt][snd1_start_merge_frame]
-                    ats_out.amp[inds[0]][merge_start_ind] = a_bias * ats_snd1.amp[pt][snd1_start_merge_frame] / n_bins
-
-                if has_noi:
-                    for band in ats_out.bands:
-                        n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], 0.5)
-                        ats_out.band_energy[band][merge_start_ind] = n_bias * ats_snd1.band_energy[band][snd1_start_merge_frame]
-            else:
-                prior_ind = snd1_start_merge_frame - 1
-                interp = (frame_t_in_snd1_time - ats_snd1.time[prior_ind]) / (ats_snd1.time[snd1_start_merge_frame] - ats_snd1.time[prior_ind])
-                for pt, inds in snd1_partial_map.items():
-                    f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], 0.5)
-                    a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], 0.5)
-                    n_bins = len(inds)
-                    ats_out.frq[inds[0]][merge_start_ind] = f_bias * (((ats_snd1.frq[pt][snd1_start_merge_frame] - ats_snd1.frq[pt][prior_ind]) * interp) \
-                            + ats_snd1.frq[pt][prior_ind])
-                    ats_out.amp[inds[0]][merge_start_ind] = a_bias * (((ats_snd1.amp[pt][snd1_start_merge_frame] - ats_snd1.amp[pt][prior_ind]) * interp) \
-                            + ats_snd1.amp[pt][prior_ind]) / n_bins
-
-                if has_noi:
-                    for band in ats_out.bands:
-                        n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], 0.5)
-                        ats_out.band_energy[band][merge_start_ind] = ((ats_snd1.band_energy[band][snd1_start_merge_frame] \
-                                - ats_snd1.band_energy[band][prior_ind]) * interp) + ats_snd1.band_energy[band][prior_ind]
-        # ats_snd2 single frame
-        frame_t_in_snd2_time = frame_t + ats_snd2_start - merge_start
-        if within_dev(ats_snd2.time[snd2_start_merge_frame], frame_t_in_snd2_time, pad):
-            # add a bias-scaled version of the exactly timed frame              
-            for pt, inds in snd2_partial_map.items():
-                f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], 0.5)
-                a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], 0.5)
-                n_bins = len(inds)
-                ats_out.frq[inds[0]][merge_start_ind] += f_bias * ats_snd2.frq[pt][snd2_start_merge_frame]
-                ats_out.amp[inds[0]][merge_start_ind] += a_bias * ats_snd2.amp[pt][snd2_start_merge_frame] / n_bins
-
-            if has_noi:
-                for band in ats_out.bands:
-                    n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], 0.5)
-                    ats_out.band_energy[band][merge_start_ind] += n_bias * ats_snd2.band_energy[band][snd2_start_merge_frame]
-        else:
-            prior_ind = snd2_start_merge_frame - 1
-            interp = (frame_t_in_snd2_time - ats_snd2.time[prior_ind]) / (ats_snd2.time[snd2_start_merge_frame] - ats_snd2.time[prior_ind])
-            for pt, inds in snd2_partial_map.items():
-                f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], 0.5)
-                a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], 0.5)
-                n_bins = len(inds)
-                ats_out.frq[inds[0]][merge_start_ind] += f_bias * (((ats_snd2.frq[pt][snd2_start_merge_frame] - ats_snd2.frq[pt][prior_ind]) * interp) \
-                        + ats_snd2.frq[pt][prior_ind])
-                ats_out.amp[inds[0]][merge_start_ind] += a_bias * (((ats_snd2.amp[pt][snd2_start_merge_frame] - ats_snd2.amp[pt][prior_ind]) * interp) \
-                        + ats_snd2.amp[pt][prior_ind]) / n_bins
-
-            if has_noi:
-                for band in ats_out.bands:
-                    n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], 0.5)
-                    ats_out.band_energy[band][merge_start_ind] += ((ats_snd2.band_energy[band][snd2_start_merge_frame] \
-                            - ats_snd2.band_energy[band][prior_ind]) * interp) + ats_snd2.band_energy[band][prior_ind]
+        snd1_stop = merge_start_ind + 1
+        snd2_stop = merge_start_ind + 1
+        stop = merge_end_ind + 1
     
-    else:
-        stop = merge_end_ind
-        if snd1_early_cutoff_ind is not None and snd1_early_cutoff_ind < stop:
-            stop = snd1_early_cutoff_ind
-        frame_n = merge_start_ind
-        for frame_t in ats_out.time[merge_start_ind:stop]:
-            print(frame_t, frame_n, merge_start_ind, merge_end_ind)
-            snd1_ind = snd1_start_merge_frame
-            exact = False
-            frame_t_in_snd1_time = frame_t + ats_snd1_start
-            while(True):
-                if within_dev(ats_snd1.time[snd1_ind], frame_t_in_snd1_time, pad):
-                    exact = True
-                    break
-                elif ats_snd1.time[snd1_ind] > frame_t_in_snd1_time:
-                    break
-                snd1_ind += 1
-            frame_t_in_bias_time = frame_t - merge_start 
-            if exact:
-                # add a bias-scaled version of the exactly timed frame                         
-                for pt, inds in snd1_partial_map.items():
-                    f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], frame_t_in_bias_time)
-                    a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], frame_t_in_bias_time)
-                    n_bins = len(inds)
-                    ats_out.frq[inds[0]][frame_n] = f_bias * ats_snd1.frq[pt][snd1_ind]
-                    ats_out.amp[inds[0]][frame_n] = a_bias * ats_snd1.amp[pt][snd1_ind] / n_bins
+    snd1_ind = snd1_start_merge_frame
+    snd2_ind = snd2_start_merge_frame
 
-                if has_noi:
+    while (frame_n < stop and (snd1_ind < snd1_stop or snd1_ind < snd2_stop)):
+        frame_t = ats_out.time[frame_n]
+
+        # get indices
+        frame_t_in_snd1_time = frame_t + ats_snd1_start
+        frame_t_in_snd2_time = frame_t + ats_snd2_start - merge_start
+        frame_t_in_bias_time = frame_t - merge_start
+        if merge_dur == 0.0:
+            frame_t_in_bias_time = 0.5
+
+        snd1_interp = None
+        snd1_prior_ind = None
+        snd2_interp = None
+        snd2_prior_ind = None
+
+        while(snd1_ind < snd1_stop):
+            if within_dev(ats_snd1.time[snd1_ind], frame_t_in_snd1_time, pad):
+                break
+            elif ats_snd1.time[snd1_ind] > frame_t_in_snd1_time:
+                snd1_prior_ind = snd1_ind - 1
+                snd1_interp = (frame_t_in_snd1_time - ats_snd1.time[snd1_prior_ind]) / (ats_snd1.time[snd1_ind] - ats_snd1.time[snd1_prior_ind])
+                break
+            snd1_ind += 1
+        while(snd2_ind < snd2_stop):
+            if within_dev(ats_snd2.time[snd2_ind], frame_t_in_snd2_time, pad):
+                break
+            elif ats_snd2.time[snd2_ind] > frame_t_in_snd2_time:
+                snd2_prior_ind = snd2_ind - 1
+                snd2_interp = (frame_t_in_snd2_time - ats_snd2.time[snd2_prior_ind]) / (ats_snd2.time[snd2_ind] - ats_snd2.time[snd2_prior_ind])
+                break
+            snd2_ind += 1
+
+        for ind, match in enumerate(matches):
+            if (match[0] is not None and match[0] >= ats_snd1.partials) or (match[1] is not None and match[1] >= ats_snd2.partials):
+                continue
+            if match[0] is None or match[1] is None:
+                continue
+
+
+            snd1_frq = 0.0
+            snd1_amp = 0.0
+            snd2_frq = 0.0
+            snd2_amp = 0.0
+
+            if match[0] is not None and snd1_ind < snd1_stop:
+                snd1_n_bins = len(snd1_partial_map[match[0]])
+                if snd1_interp is None:
+                    snd1_frq = ats_snd1.frq[match[0]][snd1_ind]
+                    snd1_amp = ats_snd1.amp[match[0]][snd1_ind] / snd1_n_bins
+                else:                    
+                    snd1_frq = ((ats_snd1.frq[match[0]][snd1_ind] - ats_snd1.frq[match[0]][snd1_prior_ind]) * snd1_interp) \
+                            + ats_snd1.frq[match[0]][snd1_prior_ind]
+                    snd1_amp = ((ats_snd1.amp[match[0]][snd1_ind] - ats_snd1.amp[match[0]][snd1_prior_ind]) * snd1_interp) \
+                            + ats_snd1.amp[match[0]][snd1_prior_ind] / snd1_n_bins
+
+            if match[1] is not None and snd2_ind < snd2_stop:
+                snd2_n_bins = len(snd2_partial_map[match[1]])
+                if snd2_interp is None:
+                    snd2_frq = ats_snd2.frq[match[1]][snd2_ind]
+                    snd2_amp = ats_snd2.amp[match[1]][snd2_ind] / snd2_n_bins
+                else:                    
+                    snd2_frq = ((ats_snd2.frq[match[1]][snd2_ind] - ats_snd2.frq[match[1]][snd2_prior_ind]) * snd2_interp) \
+                            + ats_snd2.frq[match[1]][snd2_prior_ind]
+                    snd2_amp = ((ats_snd2.amp[match[1]][snd2_ind] - ats_snd2.amp[match[1]][snd2_prior_ind]) * snd2_interp) \
+                            + ats_snd2.amp[match[1]][snd2_prior_ind] / snd2_n_bins
+
+            a_bias = get_env_val_at_t(amplitude_bias_curve[ind], frame_t_in_bias_time)
+            
+            if snd1_ind < snd1_stop and (match[1] is None or (snd2_frq == 0.0 and snd2_amp == 0.0)):
+                ats_out.frq[ind][frame_n] = snd1_frq
+                ats_out.amp[ind][frame_n] = snd1_amp * (1.0 - a_bias)
+            elif snd2_ind < snd2_stop and (match[0] is None or (snd1_frq == 0.0 and snd1_amp == 0.0)):
+                ats_out.frq[ind][frame_n] = snd2_frq
+                ats_out.amp[ind][frame_n] = snd2_amp * a_bias
+            elif snd1_ind < snd1_stop and snd2_ind < snd2_stop:
+                f_bias = get_env_val_at_t(frequency_bias_curve[ind], frame_t_in_bias_time)
+                ats_out.frq[ind][frame_n] = ((1.0 - f_bias) * snd1_frq) + (f_bias * snd2_frq)
+                ats_out.amp[ind][frame_n] = ((1.0 - a_bias) * snd1_amp) + (a_bias * snd2_amp)
+
+        print(frame_n, a_bias)
+        if has_noi:
+            if snd1_ind < snd1_stop:
+                if snd1_interp is None:
                     for band in ats_out.bands:
                         n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], frame_t_in_bias_time)
-                        ats_out.band_energy[band][frame_n] = n_bias * ats_snd1.band_energy[band][snd1_ind]
-            else:
-                prior_ind = snd1_ind - 1
-                interp = (frame_t_in_snd1_time - ats_snd1.time[prior_ind]) / (ats_snd1.time[snd1_ind] - ats_snd1.time[prior_ind])
-                for pt, inds in snd1_partial_map.items():
-                    f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], frame_t_in_bias_time)
-                    a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], frame_t_in_bias_time)
-                    n_bins = len(inds)
-                    ats_out.frq[inds[0]][frame_n] = f_bias * (((ats_snd1.frq[pt][snd1_ind] - ats_snd1.frq[pt][prior_ind]) * interp) \
-                            + ats_snd1.frq[pt][prior_ind])
-                    ats_out.amp[inds[0]][frame_n] = a_bias * (((ats_snd1.amp[pt][snd1_ind] - ats_snd1.amp[pt][prior_ind]) * interp) \
-                            + ats_snd1.amp[pt][prior_ind]) / n_bins
-
-                if has_noi:
+                        ats_out.band_energy[band][frame_n] = ats_snd1.band_energy[band][snd1_ind] * n_bias
+                else:
                     for band in ats_out.bands:
                         n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], frame_t_in_bias_time)
-                        ats_out.band_energy[band][frame_n] = ((ats_snd1.band_energy[band][snd1_ind] \
-                                - ats_snd1.band_energy[band][prior_ind]) * interp) + ats_snd1.band_energy[band][prior_ind]
+                        ats_out.band_energy[band][frame_n] = (((ats_snd1.band_energy[band][snd1_ind] \
+                                - ats_snd1.band_energy[band][snd1_prior_ind]) * snd1_interp) \
+                                    + ats_snd1.band_energy[band][snd1_prior_ind]) * n_bias
 
-            frame_n += 1
+        frame_n += 1
 
-        
-    # TODO if other partial is None? or freq = 0.0/amp = 0.0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
     # add end
    
@@ -1348,28 +1337,28 @@ if __name__ == "__main__":
     #             return_match_list_only = False,
     #             ))
 
-    mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sine440.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav")
-    mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sine440.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav")
+    mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence1.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav")
+    mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence2.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav")
 
     merge_out = merge(  mock1,
             mock2,
-            merge_start = 1.00,
-            merge_dur = 1.0,
+            merge_start = 1.0,
+            merge_dur = 30.0,
             ats_snd1_start = 0,
-            ats_snd2_start = 0.4,
+            ats_snd2_start = 0.0,
             ats_snd2_dur = None,           
-            match_mode = "stable",
-            force_matches = [(2,4),(2,8)],
+            match_mode = "random",
+            force_matches = None, 
             snd1_frq_av_range = None,
             snd2_frq_av_range = None,
             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
             frequency_deviation = 0.1,
-            frequency_bias_curve = None,
-            amplitude_bias_curve = None,
+            frequency_bias_curve = 0,
+            amplitude_bias_curve = 1,
             noise_bias_curve = None,
             return_match_list_only = False,
             )
-    print(merge_out)
+    #print(merge_out)
 
     from pyatsyn.synthesis.synth import synth
 
