@@ -19,11 +19,11 @@ TODO
 import random
 from heapq import heappop, heappush
 from queue import SimpleQueue
-from numpy import inf, zeros, copy, where
+from numpy import inf, zeros, copy, where, asarray
 from collections import defaultdict
 
 from pyatsyn.ats_structure import MatchCost, AtsSoundVFR
-from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE
+from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE, phase_interp_cubic
 from pyatsyn.analysis.critical_bands import ATS_CRITICAL_BAND_EDGES
 
 ATS_VALID_MERGE_MATCH_MODES = [ "plain",
@@ -159,13 +159,25 @@ def merge(  ats_snd1,
     if time_deviation is None:
         time_deviation = 1 / ATS_DEFAULT_SAMPLING_RATE
 
+    ats_snd1_start = max(0.0, ats_snd1_start)
+    ats_snd2_start = max(0.0, ats_snd2_start)
+
+    if ats_snd1_start >= ats_snd1.dur:
+        raise Exception("TODO")
+    if ats_snd2_start >= ats_snd2.dur:
+        raise Exception("TODO")
+
+    merge_start = max(0.0, merge_start)
+
     if merge_dur is None:
         merge_dur = ats_snd1.dur - (ats_snd1_start + merge_start)
-    if merge_dur < 0.0:
-        merge_dur = 0.0
+    merge_dur = max(0.0, merge_dur)    
     merge_end = merge_start + merge_dur
+
     if ats_snd2_dur is None:
         ats_snd2_dur = ats_snd2.dur - ats_snd2_start
+    ats_snd2_dur = max(0.0, ats_snd2_dur)
+
     out_dur = merge_start + max(merge_dur, ats_snd2_dur)
     
     new_frame_time_candidates = [0.0]    
@@ -417,6 +429,9 @@ def merge(  ats_snd1,
     snd1_partial_map = defaultdict(list)
     snd2_partial_map = defaultdict(list)
     for ind, match in enumerate(matches):
+        if match[0] >= ats_snd1.partials or match[1] >= ats_snd2.partials:
+            print("WARNING: skipping match with partial specified outside of available partial range")
+            continue
         if match[0] is not None:
             snd1_partial_map[match[0]].append(ind)
         if match[1] is not None:
@@ -433,7 +448,7 @@ def merge(  ats_snd1,
         raise Exception("amplitude_bias_curve not properly specified")
     new_frame_time_candidates = new_frame_time_candidates + env_frames
     
-    has_noi = ats_snd1.bands and ats_snd1.band_energy and ats_snd2.bands and ats_snd2.band_energy
+    has_noi = len(ats_snd1.bands) > 0 and len(ats_snd1.band_energy) > 0 and len(ats_snd2.bands) > 0 and len(ats_snd2.band_energy) > 0
     if has_noi:
         check_valid, env_frames, noise_bias_curve = is_valid_bias_curve(noise_bias_curve, merge_dur, len(ats_snd1.bands), merge_start)
         if not check_valid:
@@ -441,63 +456,358 @@ def merge(  ats_snd1,
         new_frame_time_candidates = new_frame_time_candidates + env_frames
             
     # make sure new time frames are not within time_deviation of each other
-    new_frame_time_candidates = sorted(set(new_frame_time_candidates))    
+    new_frame_time_candidates = sorted(set(new_frame_time_candidates))  
     ind = 1
     candidates_len = len(new_frame_time_candidates)
     new_frames = None
+    pad = 1 / ATS_DEFAULT_SAMPLING_RATE / 10 # pad for floating point error
     if candidates_len == 0:
-        new_frames = list({merge_start, merge_end})
-    else:    
-        check = new_frame_time_candidates[0] + time_deviation
-        new_frames = [new_frame_time_candidates[0]]
+        new_frames = sorted(list({0.0, merge_start, merge_end}))
+        merge_start_ind = new_frames.index(merge_start)
+        merge_end_ind = new_frames.index(merge_end)
+    else:
+        check = time_deviation
+        if new_frame_time_candidates[0] != 0.0:
+            new_frames = [0.0]
+            ind = 0
+        else:
+            new_frames = [new_frame_time_candidates[0]]
         while (ind < candidates_len):
             if new_frame_time_candidates[ind] > check:
                 check = new_frame_time_candidates[ind] + time_deviation
                 new_frames.append(new_frame_time_candidates[ind])        
             ind += 1
         
-        # insert merge_start & merge_end using 1/sampling_rate as time_deviation for floating point error
-        pad = 1 / ATS_DEFAULT_SAMPLING_RATE
+        # insert merge_start & merge_end using 1/sampling_rate (pad) as time_deviation for floating point error
         merge_start_ind, new_frames = insert_into_list_with_deviation(new_frames, merge_start, pad, start_at = 0)
         merge_end_ind, new_frames = insert_into_list_with_deviation(new_frames, merge_end, pad, start_at=merge_start_ind)
 
-    # BUG IS FIRST FRAME 0.0? TODO
-    # BUG DO WE NEED AN EXTRA FRAME BEYOND DUR for synthesis?!?! TODO
+    # force first frame to 0.0 (corrects for padding error if merge_start very close to 0)
+    new_frames[0] = 0.0
+
+    # add extra frame beyond dur for synth interpolation (also accounts for merge_end very close to out_dur, within padding error)
+    if new_frames[-1] < out_dur:
+        if new_frames[-1] + pad >= out_dur:
+            new_frames[-1] = out_dur
+        else:
+            new_frames.append(out_dur)
+        new_frames.append(out_dur + time_deviation)
+    elif new_frames[-1] == out_dur:      
+        new_frames.append(out_dur + time_deviation)
+
     frames = len(new_frames)
     
     # new AtsSoundVFR
     has_pha = ats_snd1.pha is not None and ats_snd2.pha is not None
     ats_out = AtsSoundVFR(frames=frames, partials=partials, dur=out_dur, has_phase=True)
 
+    ats_out.time = asarray(new_frames, dtype = "float64")
+
     if has_noi:
         ats_out.bands = copy(ats_snd1.bands)
         ats_out.band_energy = zeros([len(ATS_CRITICAL_BAND_EDGES) - 1, frames], "float64")
-
 
     ###############
     # BEGIN MERGE #
     ###############
 
-    # add beginning INCORRECT, NEED TO INTERPOLATE FIRST FRAME AND START FROM LATTER FRAMES TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ats_snd1_end_ind = min(merge_start_ind, ats_snd1.frames)
-    for pt, inds in snd1_partial_map.items():
-        ats_out.frq[inds[0]][:ats_snd1_end_ind] = copy(ats_snd1.frq[pt][:ats_snd1_end_ind])
-        ats_out.amp[inds[0]][:ats_snd1_end_ind] = copy(ats_snd1.amp[pt][:ats_snd1_end_ind])
-    if has_pha:
-        for pt, inds in snd1_partial_map.items():
-            ats_out.pha[inds[0]][:ats_snd1_end_ind] = copy(ats_snd1.pha[pt][:ats_snd1_end_ind])
-    if has_noi:
-        ats_out.band_energy[:][:ats_snd1_end_ind] = copy(ats_snd1.band_energy[:][:ats_snd1_end_ind])
+    # handle start point of snd1
+    snd1_start_frame = 0
+    while (snd1_start_frame < ats_snd1.frames - 1):
+        if within_dev(ats_snd1.time[snd1_start_frame], ats_snd1_start, pad) \
+                or ats_snd1.time[snd1_start_frame] > ats_snd1_start:
+            break
+        snd1_start_frame += 1
+        
+    # handle merge start point of snd1
+    snd1_end_frame = None
+    snd1_start_merge_frame = snd1_start_frame
+    snd1_early_cutoff_ind = None
+    snd1_dur_in_out_time = ats_snd1.dur - ats_snd1_start
+
+    merge_start_in_snd1_time = merge_start + ats_snd1_start    
+    if merge_start_in_snd1_time - pad > ats_snd1.dur:
+        # the merge starts after we run out of ats1_snd        
+        snd1_start_merge_frame = None
+        snd1_end_frame = ats_snd1.frames - 1
+        snd1_early_cutoff_out_ind = 0        
+        while (snd1_early_cutoff_out_ind < ats_out.frames - 1):
+            if within_dev(ats_out.time[snd1_early_cutoff_out_ind], snd1_dur_in_out_time, pad) \
+                    or ats_out.time[snd1_early_cutoff_out_ind] > snd1_dur_in_out_time:
+                break
+            snd1_early_cutoff_ind += 1
+    else:        
+        while (snd1_start_merge_frame < ats_snd1.frames - 1):      
+            if within_dev(ats_snd1.time[snd1_start_merge_frame], merge_start_in_snd1_time, pad) \
+                    or ats_snd1.time[snd1_start_merge_frame] > merge_start_in_snd1_time:
+                break
+            snd1_start_merge_frame += 1
+                        
+    # handle merge end point of snd1
+    merge_end_in_snd1_time = merge_end + ats_snd1_start    
+    if snd1_early_cutoff_ind is None:
+        if merge_end_in_snd1_time - pad > ats_snd1.dur:
+            # the merge ends after we run out of ats1_snd
+            snd1_end_frame = ats_snd1.frames - 1
+            snd1_early_cutoff_ind = merge_start_ind
+            while (snd1_early_cutoff_ind < ats_out.frames - 1):
+                if within_dev(ats_out.time[snd1_early_cutoff_ind], snd1_dur_in_out_time, pad) \
+                        or ats_out.time[snd1_early_cutoff_ind] > snd1_dur_in_out_time:
+                    break
+                snd1_early_cutoff_ind += 1
+        else:
+            snd1_end_frame = snd1_start_merge_frame
+            while (snd1_end_frame < ats_snd1.frames - 1):
+                if within_dev(ats_snd1.time[snd1_end_frame], merge_end_in_snd1_time, pad) \
+                        or ats_snd1.time[snd1_end_frame] > merge_end_in_snd1_time:
+                    break
+                snd1_end_frame += 1
+    
+
+    # handle start point of snd2 (merge start)
+    snd2_start_merge_frame = 0
+    while (snd2_start_merge_frame < ats_snd2.frames - 1):
+        if within_dev(ats_snd2.time[snd2_start_merge_frame], ats_snd2_start, pad):
+            break
+        snd2_start_merge_frame += 1
+
+    # handle merge end point of snd2
+    snd2_end_frame = None
+    snd2_end_merge_frame = snd2_start_merge_frame
+    snd2_early_cutoff_ind = None
+    snd2_dur_in_out_time = ats_snd2.dur - ats_snd2_start + merge_start
+
+    merge_end_in_snd2_time = merge_dur + ats_snd2_start
+    if merge_end_in_snd2_time - pad > ats_snd2.dur:
+        # the merge ends after we run out of ats2_snd
+        snd2_end_merge_frame = None
+        snd2_end_frame = ats_snd2.frames - 1
+        snd2_early_cutoff_ind = merge_start_ind
+        while (snd2_early_cutoff_ind < ats_out.frames - 1):
+            if within_dev(ats_out.time[snd2_early_cutoff_ind], snd2_dur_in_out_time, pad) \
+                    or ats_out.time[snd2_early_cutoff_ind] > snd2_dur_in_out_time:
+                break
+            snd2_early_cutoff_ind += 1
+    else:        
+        while (snd2_end_merge_frame < ats_snd2.frames - 1):
+            if within_dev(ats_snd2.time[snd2_end_merge_frame], merge_end_in_snd2_time, pad) \
+                    or ats_snd2.time[snd2_end_merge_frame] > merge_end_in_snd2_time:
+                break
+            snd2_end_merge_frame += 1
+    
+    # handle end of snd2 beyond merge
+    out_end_in_snd2_time = out_dur - merge_start + ats_snd2_start
+    if snd2_early_cutoff_ind is None:
+        if out_end_in_snd2_time - pad > ats_snd2.dur:
+            # the output ends after we run out of ats2_snd
+            snd2_end_frame = ats_snd2.frames - 1
+            snd2_early_cutoff_ind = merge_end_ind
+            while (snd2_early_cutoff_ind < ats_out.frames - 1):
+                if within_dev(ats_out.time[snd2_early_cutoff_ind], snd2_dur_in_out_time, pad) \
+                        or ats_out.time[snd2_early_cutoff_ind] > snd2_dur_in_out_time:                
+                    break
+                snd2_early_cutoff_ind += 1
+        else:
+            snd2_end_frame = snd2_end_merge_frame
+            while (snd2_end_frame < ats_snd2.frames - 1):
+                if within_dev(ats_snd2.time[snd2_end_frame], out_end_in_snd2_time, pad) \
+                        or ats_snd2.time[snd2_end_frame] > out_end_in_snd2_time:
+                    break
+                snd2_end_frame += 1
+
+    print("merge_start", merge_start, "merge_dur", merge_dur, "snd1_start", ats_snd1_start, "\n")
+
+    print("1st", snd1_start_frame, "\t", "1sm", snd1_start_merge_frame,  "\t", "1en", snd1_end_frame,  "\t", "1ec", snd1_early_cutoff_ind, "\t", "1dur", ats_snd1.dur, "1out", snd1_dur_in_out_time)
+    print(ats_snd1.time[snd1_start_frame], "\t", ats_snd1.time[snd1_start_merge_frame] if snd1_start_merge_frame is not None else None, "\t", ats_snd1.time[snd1_end_frame] )
+    print(snd1_early_cutoff_ind, "\t", merge_start_ind, "\t", merge_end_ind)
+    print(ats_out.time[snd1_early_cutoff_ind] if snd1_early_cutoff_ind is not None else None, "\t", ats_out.time[merge_start_ind], "\t", ats_out.time[merge_end_ind], "\n")
+    
+    print("2sm", snd2_start_merge_frame, "\t", "2em", snd2_end_merge_frame,  "\t", "2en", snd2_end_frame,  "\t","2ec",  snd2_early_cutoff_ind, "\t","2dur",  ats_snd2.dur, "2out", snd2_dur_in_out_time)
+    print(ats_snd2.time[snd2_start_merge_frame], "\t", ats_snd2.time[snd2_end_merge_frame] if snd2_end_merge_frame is not None else None, "\t", ats_snd2.time[snd2_end_frame] )
+    print(snd2_early_cutoff_ind, merge_start_ind, merge_end_ind)
+    print(ats_out.time[snd2_early_cutoff_ind] if snd2_early_cutoff_ind is not None else None, "\t", ats_out.time[merge_start_ind], "\t", ats_out.time[merge_end_ind])
+
+    # add beginning
+    if merge_start_ind > 0:
+        stop = merge_start_ind
+        if snd1_early_cutoff_ind is not None and snd1_early_cutoff_ind < stop:
+            stop = snd1_early_cutoff_ind        
+        for frame_n, frame_t in enumerate(ats_out.time[:stop]):
+            
+            snd1_ind = snd1_start_frame
+            exact = False
+            frame_t_in_snd1_time = frame_t + ats_snd1_start
+            while(True):
+                if within_dev(ats_snd1.time[snd1_ind], frame_t_in_snd1_time, pad):
+                    exact = True
+                    break
+                elif ats_snd1.time[snd1_ind] > frame_t_in_snd1_time:
+                    break
+                snd1_ind += 1
+            if exact:
+                # just copy the exactly timed frame over
+                for pt, inds in snd1_partial_map.items():
+                    ats_out.frq[inds[0]][frame_n] = ats_snd1.frq[pt][snd1_ind]
+                    ats_out.amp[inds[0]][frame_n] = ats_snd1.amp[pt][snd1_ind]
+                if has_pha:
+                    for pt, inds in snd1_partial_map.items():
+                        ats_out.pha[inds[0]][frame_n] = ats_snd1.pha[pt][snd1_ind]
+                if has_noi:
+                    ats_out.band_energy[:, frame_n] = copy(ats_snd1.band_energy[:, snd1_ind])            
+            else:
+                # otherwise we need to interpolate from snd1
+                prior_ind = snd1_ind - 1
+                i_delta = frame_t_in_snd1_time - ats_snd1.time[prior_ind]
+                t_delta = ats_snd1.time[snd1_ind] - ats_snd1.time[prior_ind]
+                interp = i_delta / t_delta
+                for pt, inds in snd1_partial_map.items():
+                    ats_out.frq[inds[0]][frame_n] = ((ats_snd1.frq[pt][snd1_ind] - ats_snd1.frq[pt][prior_ind]) * interp) \
+                            + ats_snd1.frq[pt][prior_ind]
+                    ats_out.amp[inds[0]][frame_n] = ((ats_snd1.amp[pt][snd1_ind] - ats_snd1.amp[pt][prior_ind]) * interp) \
+                            + ats_snd1.amp[pt][prior_ind]
+                if has_pha:
+                    for pt, inds in snd1_partial_map.items():
+                        ats_out.pha[inds[0]][frame_n] = phase_interp_cubic( ats_snd1.frq[pt][prior_ind], 
+                                                                            ats_snd1.frq[pt][snd1_ind],
+                                                                            ats_snd1.pha[pt][prior_ind], 
+                                                                            ats_snd1.pha[pt][snd1_ind],
+                                                                            i_samps_from_0 = i_delta * ATS_DEFAULT_SAMPLING_RATE,
+                                                                            samps_from_0_to_t= t_delta * ATS_DEFAULT_SAMPLING_RATE,
+                                                                            sampling_rate=ATS_DEFAULT_SAMPLING_RATE
+                                                                            )
+                if has_noi:
+                    ats_out.band_energy[:,frame_n] = ((ats_snd1.band_energy[:,snd1_ind] - ats_snd1.band_energy[:,prior_ind]) * interp) \
+                            + ats_snd1.band_energy[:,prior_ind]
+
+    # add merged middle
+    if merge_dur == 0.0:
+        frame_t = ats_out.time[merge_start_ind]
+        
+                
+            
+        if snd1_start_merge_frame is not None:
+            frame_t_in_snd1_time = frame_t + ats_snd1_start
+            if within_dev(ats_snd1.time[snd1_start_merge_frame], frame_t_in_snd1_time, pad):
+                # add a bias-scaled version of the exactly timed frame              
+                for pt, inds in snd1_partial_map.items():
+                    f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], 0.5)
+                    a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], 0.5)
+                    n_bins = len(inds)
+                    ats_out.frq[inds[0]][merge_start_ind] = f_bias * ats_snd1.frq[pt][snd1_start_merge_frame]
+                    ats_out.amp[inds[0]][merge_start_ind] = a_bias * ats_snd1.amp[pt][snd1_start_merge_frame] / n_bins
+
+                if has_noi:
+                    for band in ats_out.bands:
+                        n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], 0.5)
+                        ats_out.band_energy[band][merge_start_ind] = n_bias * ats_snd1.band_energy[band][snd1_start_merge_frame]
+            else:
+                prior_ind = snd1_start_merge_frame - 1
+                interp = (frame_t_in_snd1_time - ats_snd1.time[prior_ind]) / (ats_snd1.time[snd1_start_merge_frame] - ats_snd1.time[prior_ind])
+                for pt, inds in snd1_partial_map.items():
+                    f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], 0.5)
+                    a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], 0.5)
+                    n_bins = len(inds)
+                    ats_out.frq[inds[0]][merge_start_ind] = f_bias * (((ats_snd1.frq[pt][snd1_start_merge_frame] - ats_snd1.frq[pt][prior_ind]) * interp) \
+                            + ats_snd1.frq[pt][prior_ind])
+                    ats_out.amp[inds[0]][merge_start_ind] = a_bias * (((ats_snd1.amp[pt][snd1_start_merge_frame] - ats_snd1.amp[pt][prior_ind]) * interp) \
+                            + ats_snd1.amp[pt][prior_ind]) / n_bins
+
+                if has_noi:
+                    for band in ats_out.bands:
+                        n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], 0.5)
+                        ats_out.band_energy[band][merge_start_ind] = ((ats_snd1.band_energy[band][snd1_start_merge_frame] \
+                                - ats_snd1.band_energy[band][prior_ind]) * interp) + ats_snd1.band_energy[band][prior_ind]
+        # ats_snd2 single frame
+        frame_t_in_snd2_time = frame_t + ats_snd2_start - merge_start
+        if within_dev(ats_snd2.time[snd2_start_merge_frame], frame_t_in_snd2_time, pad):
+            # add a bias-scaled version of the exactly timed frame              
+            for pt, inds in snd2_partial_map.items():
+                f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], 0.5)
+                a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], 0.5)
+                n_bins = len(inds)
+                ats_out.frq[inds[0]][merge_start_ind] += f_bias * ats_snd2.frq[pt][snd2_start_merge_frame]
+                ats_out.amp[inds[0]][merge_start_ind] += a_bias * ats_snd2.amp[pt][snd2_start_merge_frame] / n_bins
+
+            if has_noi:
+                for band in ats_out.bands:
+                    n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], 0.5)
+                    ats_out.band_energy[band][merge_start_ind] += n_bias * ats_snd2.band_energy[band][snd2_start_merge_frame]
+        else:
+            prior_ind = snd2_start_merge_frame - 1
+            interp = (frame_t_in_snd2_time - ats_snd2.time[prior_ind]) / (ats_snd2.time[snd2_start_merge_frame] - ats_snd2.time[prior_ind])
+            for pt, inds in snd2_partial_map.items():
+                f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], 0.5)
+                a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], 0.5)
+                n_bins = len(inds)
+                ats_out.frq[inds[0]][merge_start_ind] += f_bias * (((ats_snd2.frq[pt][snd2_start_merge_frame] - ats_snd2.frq[pt][prior_ind]) * interp) \
+                        + ats_snd2.frq[pt][prior_ind])
+                ats_out.amp[inds[0]][merge_start_ind] += a_bias * (((ats_snd2.amp[pt][snd2_start_merge_frame] - ats_snd2.amp[pt][prior_ind]) * interp) \
+                        + ats_snd2.amp[pt][prior_ind]) / n_bins
+
+            if has_noi:
+                for band in ats_out.bands:
+                    n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], 0.5)
+                    ats_out.band_energy[band][merge_start_ind] += ((ats_snd2.band_energy[band][snd2_start_merge_frame] \
+                            - ats_snd2.band_energy[band][prior_ind]) * interp) + ats_snd2.band_energy[band][prior_ind]
+    
+    else:
+        stop = merge_end_ind
+        if snd1_early_cutoff_ind is not None and snd1_early_cutoff_ind < stop:
+            stop = snd1_early_cutoff_ind
+        frame_n = merge_start_ind
+        for frame_t in ats_out.time[merge_start_ind:stop]:
+            print(frame_t, frame_n, merge_start_ind, merge_end_ind)
+            snd1_ind = snd1_start_merge_frame
+            exact = False
+            frame_t_in_snd1_time = frame_t + ats_snd1_start
+            while(True):
+                if within_dev(ats_snd1.time[snd1_ind], frame_t_in_snd1_time, pad):
+                    exact = True
+                    break
+                elif ats_snd1.time[snd1_ind] > frame_t_in_snd1_time:
+                    break
+                snd1_ind += 1
+            frame_t_in_bias_time = frame_t - merge_start 
+            if exact:
+                # add a bias-scaled version of the exactly timed frame                         
+                for pt, inds in snd1_partial_map.items():
+                    f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], frame_t_in_bias_time)
+                    a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], frame_t_in_bias_time)
+                    n_bins = len(inds)
+                    ats_out.frq[inds[0]][frame_n] = f_bias * ats_snd1.frq[pt][snd1_ind]
+                    ats_out.amp[inds[0]][frame_n] = a_bias * ats_snd1.amp[pt][snd1_ind] / n_bins
+
+                if has_noi:
+                    for band in ats_out.bands:
+                        n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], frame_t_in_bias_time)
+                        ats_out.band_energy[band][frame_n] = n_bias * ats_snd1.band_energy[band][snd1_ind]
+            else:
+                prior_ind = snd1_ind - 1
+                interp = (frame_t_in_snd1_time - ats_snd1.time[prior_ind]) / (ats_snd1.time[snd1_ind] - ats_snd1.time[prior_ind])
+                for pt, inds in snd1_partial_map.items():
+                    f_bias = 1.0 - get_env_val_at_t(frequency_bias_curve[inds[0]], frame_t_in_bias_time)
+                    a_bias = 1.0 - get_env_val_at_t(amplitude_bias_curve[inds[0]], frame_t_in_bias_time)
+                    n_bins = len(inds)
+                    ats_out.frq[inds[0]][frame_n] = f_bias * (((ats_snd1.frq[pt][snd1_ind] - ats_snd1.frq[pt][prior_ind]) * interp) \
+                            + ats_snd1.frq[pt][prior_ind])
+                    ats_out.amp[inds[0]][frame_n] = a_bias * (((ats_snd1.amp[pt][snd1_ind] - ats_snd1.amp[pt][prior_ind]) * interp) \
+                            + ats_snd1.amp[pt][prior_ind]) / n_bins
+
+                if has_noi:
+                    for band in ats_out.bands:
+                        n_bias = 1.0 - get_env_val_at_t(noise_bias_curve[band], frame_t_in_bias_time)
+                        ats_out.band_energy[band][frame_n] = ((ats_snd1.band_energy[band][snd1_ind] \
+                                - ats_snd1.band_energy[band][prior_ind]) * interp) + ats_snd1.band_energy[band][prior_ind]
+
+            frame_n += 1
+
+        
+    # TODO if other partial is None? or freq = 0.0/amp = 0.0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     
     # add end
+   
 
-    # handle merge section
-    # if merge_dur == 0.0 are there special rules for dropping/merging ats_snd2 frame 0? TODO    
-    # TODO what to do about duplicated partials!? (remember to set freq to same +- 1 frame) 
-    # DONT FORGET NOISE! TODO
-    # NOTE: only process a partial # if it exists!?!?!?!!!!!!!
-
-     # handle 0's in prior and latter frames at transition points
+     # handle 0's in prior and latter frames at transition points (remember to set freq to same +- 1 frame) 
      # final frame handling? beyond dur
 
     # phase correction TODO
@@ -507,6 +817,30 @@ def merge(  ats_snd1,
 
     return matches, ats_out
 
+def get_env_val_at_t(env, t):
+    """
+    TODO
+    """
+    if len(env) == 0:
+        return 0.0
+    elif t <= env[0][0]:
+        return env[0][1]
+    elif t > env[-1][0]:
+        return env[-1][1]
+    
+    for i in range(1, len(env)):
+        if t == env[i][0]:
+            return env[i][1]
+        elif t < env[i][0]:
+            interp = (t - env[i-1][0]) / (env[i][0] - env[i-1][0])
+            return ((env[i][1] - env[i-1][1]) * interp) + env[i-1][1]
+
+def within_dev(val, check, dev):
+    """
+    TODO
+    """
+    return val <= check + dev and val >= check - dev
+        
 
 def is_iterable(check):
     """
@@ -1014,15 +1348,15 @@ if __name__ == "__main__":
     #             return_match_list_only = False,
     #             ))
 
-    mock1 = tracker("../../sample_sounds/sine440.wav")
-    mock2 = tracker("../../sample_sounds/sine440.wav")
+    mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sine440.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav")
+    mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sine440.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav")
 
-    print(merge(  mock1,
+    merge_out = merge(  mock1,
             mock2,
-            merge_start = 1.0,
-            merge_dur = None,
-            ats_snd1_start = 0.5,
-            ats_snd2_start = 0.2,
+            merge_start = 1.00,
+            merge_dur = 1.0,
+            ats_snd1_start = 0,
+            ats_snd2_start = 0.4,
             ats_snd2_dur = None,           
             match_mode = "stable",
             force_matches = [(2,4),(2,8)],
@@ -1034,11 +1368,9 @@ if __name__ == "__main__":
             amplitude_bias_curve = None,
             noise_bias_curve = None,
             return_match_list_only = False,
-            ))
+            )
+    print(merge_out)
 
-    # TEST
-    """
-    bias curves
-    cost ranges
-    
-    """
+    from pyatsyn.synthesis.synth import synth
+
+    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False)
