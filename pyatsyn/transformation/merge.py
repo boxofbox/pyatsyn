@@ -23,7 +23,7 @@ from numpy import inf, zeros, copy, where, asarray
 from collections import defaultdict
 
 from pyatsyn.ats_structure import MatchCost, AtsSoundVFR
-from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE, phase_interp_cubic
+from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE, phase_interp_cubic, phase_interp_linear
 from pyatsyn.analysis.critical_bands import ATS_CRITICAL_BAND_EDGES
 
 ATS_VALID_MERGE_MATCH_MODES = [ "plain",
@@ -60,6 +60,7 @@ def merge(  ats_snd1,
             amplitude_bias_curve = None,
             noise_bias_curve = None, # NOTE: currently ignores .energy
             return_match_list_only = False,
+            verbose = False,
             ):
     """
     TODO
@@ -160,6 +161,9 @@ def merge(  ats_snd1,
             TODO: change envelope docs to [] of []s not tuples
 
     """
+    if verbose:
+        print("Beginning merge pre-processing...")
+
     if time_deviation is None:
         time_deviation = 1 / ATS_DEFAULT_SAMPLING_RATE
 
@@ -188,7 +192,14 @@ def merge(  ats_snd1,
     new_frame_time_candidates += list(ats_snd1.time[(ats_snd1.time >= ats_snd1_start) & (ats_snd1.time <= ats_snd1_start + merge_end)] - ats_snd1_start)
     snd2_time_offset = merge_start - ats_snd2_start
     new_frame_time_candidates += list(ats_snd2.time[(ats_snd2.time >= ats_snd2_start) & (ats_snd2.time <= ats_snd2_start + ats_snd2_dur)] + snd2_time_offset)
-    
+
+    ##################
+    # MATCH PARTIALS #
+    ##################
+
+    if verbose:
+        print("Matching partials...")
+
     # get new partials
     matches = []
     p1_remaining = set(range(ats_snd1.partials))
@@ -463,6 +474,9 @@ def merge(  ats_snd1,
 
     partials = len(matches)
 
+    if verbose:
+        print(f"{partials} partial pair(s) mapped")
+
     # assign partial tracks
     snd1_partial_map = defaultdict(list)
     snd2_partial_map = defaultdict(list)
@@ -474,6 +488,13 @@ def merge(  ats_snd1,
             snd1_partial_map[match[0]].append(ind)
         if match[1] is not None:
             snd2_partial_map[match[1]].append(ind)
+
+    #######################
+    # PROCESS BIAS CURVES #
+    #######################
+
+    if verbose:
+        print("Processing bias curves...")
 
     # validate and build bias curves
     check_valid, env_frames, frequency_bias_curve = is_valid_bias_curve(frequency_bias_curve, merge_dur, partials, merge_start)
@@ -492,7 +513,14 @@ def merge(  ats_snd1,
         if not check_valid:
             raise Exception("noise_bias_curve not properly specified")
         new_frame_time_candidates = new_frame_time_candidates + env_frames
-            
+    
+    #######################
+    # PROCESS FRAME TIMES #
+    #######################
+
+    if verbose:
+        print("Processing frame times...")    
+
     # make sure new time frames are not within time_deviation of each other
     new_frame_time_candidates = sorted(set(new_frame_time_candidates))  
     ind = 1
@@ -534,7 +562,15 @@ def merge(  ats_snd1,
         new_frames.append(out_dur + time_deviation)
 
     frames = len(new_frames)
+
+    if verbose:
+        print(f"{frames} frame(s) will be used")
+        print("Initializing AtsSoundVFR...")
     
+    ####################
+    # INIT ATSSOUNDVFR #
+    ####################
+
     # new AtsSoundVFR
     has_pha = ats_snd1.pha is not None and ats_snd2.pha is not None
     ats_out = AtsSoundVFR(frames=frames, partials=partials, dur=out_dur, has_phase=True)
@@ -545,9 +581,14 @@ def merge(  ats_snd1,
         ats_out.bands = copy(ats_snd1.bands)
         ats_out.band_energy = zeros([len(ATS_CRITICAL_BAND_EDGES) - 1, frames], "float64")
 
-    ###############
-    # BEGIN MERGE #
-    ###############
+    last_frame_ind = ats_out.frames - 1
+
+    ###############################
+    # GET IMPORTANT MERGE INDICES #
+    ###############################
+
+    if verbose:
+        print("Computing merge indices...")
 
     # handle start point of snd1
     snd1_start_frame = 0
@@ -567,15 +608,15 @@ def merge(  ats_snd1,
     if merge_start_in_snd1_time - pad > ats_snd1.dur:
         # the merge starts after we run out of ats1_snd        
         snd1_start_merge_frame = None
-        snd1_end_frame = ats_snd1.frames - 1
+        snd1_end_frame = last_frame_ind
         snd1_early_cutoff_out_ind = 0        
-        while (snd1_early_cutoff_out_ind < ats_out.frames - 1):
+        while (snd1_early_cutoff_out_ind < last_frame_ind):
             if within_dev(ats_out.time[snd1_early_cutoff_out_ind], snd1_dur_in_out_time, pad) \
                     or ats_out.time[snd1_early_cutoff_out_ind] > snd1_dur_in_out_time:
                 break
             snd1_early_cutoff_ind += 1
     else:        
-        while (snd1_start_merge_frame < ats_snd1.frames - 1):      
+        while (snd1_start_merge_frame < last_frame_ind):      
             if within_dev(ats_snd1.time[snd1_start_merge_frame], merge_start_in_snd1_time, pad) \
                     or ats_snd1.time[snd1_start_merge_frame] > merge_start_in_snd1_time:
                 break
@@ -586,9 +627,9 @@ def merge(  ats_snd1,
     if snd1_early_cutoff_ind is None:
         if merge_end_in_snd1_time - pad > ats_snd1.dur:
             # the merge ends after we run out of ats1_snd
-            snd1_end_frame = ats_snd1.frames - 1
+            snd1_end_frame = last_frame_ind
             snd1_early_cutoff_ind = merge_start_ind
-            while (snd1_early_cutoff_ind < ats_out.frames - 1):
+            while (snd1_early_cutoff_ind < last_frame_ind):
                 if within_dev(ats_out.time[snd1_early_cutoff_ind], snd1_dur_in_out_time, pad) \
                         or ats_out.time[snd1_early_cutoff_ind] > snd1_dur_in_out_time:
                     break
@@ -621,7 +662,7 @@ def merge(  ats_snd1,
         snd2_end_merge_frame = None
         snd2_end_frame = ats_snd2.frames - 1
         snd2_early_cutoff_ind = merge_start_ind
-        while (snd2_early_cutoff_ind < ats_out.frames - 1):
+        while (snd2_early_cutoff_ind < last_frame_ind):
             if within_dev(ats_out.time[snd2_early_cutoff_ind], snd2_dur_in_out_time, pad) \
                     or ats_out.time[snd2_early_cutoff_ind] > snd2_dur_in_out_time:
                 break
@@ -640,7 +681,7 @@ def merge(  ats_snd1,
             # the output ends after we run out of ats2_snd
             snd2_end_frame = ats_snd2.frames - 1
             snd2_early_cutoff_ind = merge_end_ind
-            while (snd2_early_cutoff_ind < ats_out.frames - 1):
+            while (snd2_early_cutoff_ind < last_frame_ind):
                 if within_dev(ats_out.time[snd2_early_cutoff_ind], snd2_dur_in_out_time, pad) \
                         or ats_out.time[snd2_early_cutoff_ind] > snd2_dur_in_out_time:                
                     break
@@ -653,9 +694,17 @@ def merge(  ats_snd1,
                     break
                 snd2_end_frame += 1
 
+    #################
+    # PERFORM MERGE #
+    #################
+
+    if verbose:
+        print("Starting merge...")
 
     # add beginning
     if merge_start_ind > 0:
+        if verbose:
+            print("Adding pre-merge section...")
         stop = merge_start_ind
         if snd1_early_cutoff_ind is not None and snd1_early_cutoff_ind < stop:
             stop = snd1_early_cutoff_ind + 1     
@@ -708,10 +757,14 @@ def merge(  ats_snd1,
                            + ats_snd1.band_energy[:,prior_ind]
     
     # add merged middle
+    if verbose:
+        print("Merging...")
+
     snd1_stop = snd1_end_frame + 1
-    snd2_stop = snd2_end_merge_frame + 1
+    snd2_stop = snd2_end_merge_frame
     if snd2_stop is None:
         snd2_stop = snd2_end_frame
+    snd2_stop += 1
 
     stop = merge_end_ind + 1
 
@@ -832,16 +885,17 @@ def merge(  ats_snd1,
 
         frame_n += 1
 
-    
     # add end
+    if verbose:
+        print("Adding post-merge section...")
+
     stop = ats_out.frames
-    if snd2_early_cutoff_ind is not None and snd1_early_cutoff_ind < stop:
+    if snd2_early_cutoff_ind is not None and snd2_early_cutoff_ind < stop:
         stop = snd2_early_cutoff_ind + 1
     
     frame_n = merge_end_ind + 1
-    print(stop, frame_n)
+    
     while (frame_n < stop):
-        print(frame_n, stop)
         frame_t = ats_out.time[frame_n]
         frame_t_in_snd2_time = frame_t + ats_snd2_start - merge_start
 
@@ -874,16 +928,62 @@ def merge(  ats_snd1,
                         + ats_snd2.amp[pt][prior_ind]
             if has_noi:
                 ats_out.band_energy[:, frame_n] = ((ats_snd2.band_energy[:, snd2_ind] - ats_snd2.band_energy[:, prior_ind]) * interp) \
-                        + ats_snd1.band_energy[:, prior_ind]
+                        + ats_snd2.band_energy[:, prior_ind]
         
         frame_n += 1
 
-     # handle 0's in prior and latter frames at transition points (remember to set freq to same +- 1 frame) # TODO
-     # final frame handling? beyond dur
+    ##################
+    # CLEAN-UP TASKS #
+    ##################
 
-    # phase correction TODO
+    if verbose:
+        print("Cleaning up transition points...")
+
+     # handle 0's in prior and latter frames at transition points (remember to set freq to same +- 1 frame)     
+    if merge_start_ind > 0:
+        for p in range(ats_out.partials):
+            if ats_out.frq[p][merge_start_ind] > 0.0 and ats_out.frq[p][merge_start_ind - 1] == 0.0 and ats_out.amp[p][merge_start_ind - 1] == 0.0:
+                ats_out.frq[p][merge_start_ind - 1] == ats_out.frq[p][merge_start_ind]
+    if merge_start_ind < last_frame_ind:
+        for p in range(ats_out.partials):
+            if ats_out.frq[p][merge_start_ind] > 0.0 and ats_out.frq[p][merge_start_ind + 1] == 0.0 and ats_out.amp[p][merge_start_ind + 1] == 0.0:
+                ats_out.frq[p][merge_start_ind + 1] == ats_out.frq[p][merge_start_ind]        
+    if merge_end_ind > merge_start_ind:
+        for p in range(ats_out.partials):
+            if ats_out.frq[p][merge_end_ind] > 0.0 and ats_out.frq[p][merge_end_ind - 1] == 0.0 and ats_out.amp[p][merge_end_ind - 1] == 0.0:
+                ats_out.frq[p][merge_end_ind - 1] == ats_out.frq[p][merge_end_ind]        
+        if merge_end_ind < last_frame_ind:
+            for p in range(ats_out.partials):
+                if ats_out.frq[p][merge_end_ind] > 0.0 and ats_out.frq[p][merge_end_ind + 1] == 0.0 and ats_out.amp[p][merge_end_ind + 1] == 0.0:
+                    ats_out.frq[p][merge_end_ind + 1] == ats_out.frq[p][merge_end_ind]            
+    if snd1_early_cutoff_ind is not None and snd1_early_cutoff_ind not in (merge_start_ind, merge_end_ind) \
+            and snd1_early_cutoff_ind < last_frame_ind:
+        for p in range(ats_out.partials):
+            if ats_out.frq[p][snd1_early_cutoff_ind] > 0.0 and ats_out.frq[p][snd1_early_cutoff_ind + 1] == 0.0 and ats_out.amp[p][snd1_early_cutoff_ind + 1] == 0.0:
+                ats_out.frq[p][snd1_early_cutoff_ind + 1] == ats_out.frq[p][snd1_early_cutoff_ind]
+    if snd2_early_cutoff_ind is not None and snd2_early_cutoff_ind not in (merge_start_ind, merge_end_ind, snd1_early_cutoff_ind) \
+            and snd2_early_cutoff_ind < last_frame_ind:
+        for p in range(ats_out.partials):
+            if ats_out.frq[p][snd2_early_cutoff_ind] > 0.0 and ats_out.frq[p][snd2_early_cutoff_ind + 1] == 0.0 and ats_out.amp[p][snd2_early_cutoff_ind + 1] == 0.0:
+                ats_out.frq[p][snd2_early_cutoff_ind + 1] == ats_out.frq[p][snd2_early_cutoff_ind]
+    if last_frame_ind > 0:
+        for p in range(ats_out.partials):
+            if ats_out.frq[p][last_frame_ind] > 0.0 and ats_out.frq[p][last_frame_ind - 1] == 0.0 and ats_out.amp[p][last_frame_ind - 1] == 0.0:
+                ats_out.frq[p][last_frame_ind - 1] == ats_out.frq[p][last_frame_ind]        
+          
+    # phase correction
+    if has_pha:
+        if verbose:
+            print("Performing phase correction...")
+        for frame_n in range(max(1, merge_start_ind), ats_out.frames):
+            t = ats_out.time[frame_n] - ats_out.time[frame_n - 1]
+            for p in range(ats_out.partials):
+                if ats_out.frq[p][frame_n] > 0.0 and ats_out.frq[p][frame_n - 1] > 0.0:
+                    ats_out.pha[p][frame_n] = phase_interp_linear(ats_out.frq[p][frame_n - 1], ats_out.frq[p][frame_n], ats_out.pha[p][frame_n - 1], t)
 
     # update max/av & resort
+    if verbose:
+        print("Optimizing output...")
     ats_out.optimize()
 
     return matches, ats_out
@@ -1390,7 +1490,6 @@ def merge_CLI():
     pass# TODO
 
 
-
 if __name__ == "__main__":
     from numpy import array
     from pyatsyn.analysis.tracker import tracker
@@ -1420,12 +1519,12 @@ if __name__ == "__main__":
     #             return_match_list_only = False,
     #             ))
 
-    mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sine440.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav")
-    mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sine440.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav")
+    # mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/goat2s.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav", verbose=True)
+    # mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/trumpet3s.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav", verbose=True)
 
     from pyatsyn.ats_io import ats_load, ats_save
-    ats_save(mock1, "/Users/jgl/Desktop/temp/merge_mock1.ats")
-    ats_save(mock2, "/Users/jgl/Desktop/temp/merge_mock2.ats")
+    # ats_save(mock1, "/Users/jgl/Desktop/temp/merge_mock1.ats")
+    # ats_save(mock2, "/Users/jgl/Desktop/temp/merge_mock2.ats")
 
     mock1 = ats_load("/Users/jgl/Desktop/temp/merge_mock1.ats")
     mock2 = ats_load("/Users/jgl/Desktop/temp/merge_mock2.ats")
@@ -1433,27 +1532,31 @@ if __name__ == "__main__":
 
     merge_out = merge(  mock1,
             mock2,
-            merge_start = 1.0,
-            merge_dur = None,
-            ats_snd1_start = 0.13,
-            ats_snd2_start = 0.1,
+            merge_start = 0.0,
+            merge_dur = 2.0,
+            ats_snd1_start = 0.0,
+            ats_snd2_start = 0.0,
             ats_snd2_dur = None,           
             match_mode = "stable",
             force_matches = None,
             drop_unmatched = False,
-            drop_unmatched_during_merge = False,
+            drop_unmatched_during_merge = True,
             snd1_frq_av_range = None,
             snd2_frq_av_range = None,
             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
-            frequency_deviation = 0.1,
-            frequency_bias_curve = None, #[(0,0), (0.5, 0),(1,1)],
-            amplitude_bias_curve = None, # [(0,0), (0.5, 0), (0.8, 0), (1,1)],            
-            noise_bias_curve = None, #[(0,0), (0.5, 0),(1,1)],
+            frequency_deviation = 0.2,
+            frequency_bias_curve = 0, #[(0,0), (0.5, 0),(1,1)],
+            amplitude_bias_curve = 1, # [(0,0), (0.5, 0), (0.8, 0), (1,1)],            
+            noise_bias_curve = 1, #[(0,0), (0.5, 0),(1,1)],
             return_match_list_only = False,
+            verbose = True,
             )
     #print(merge_out)
 
     from pyatsyn.synthesis.synth import synth
     
     synth(mock1, export_file = "/Users/jgl/Desktop/temp/merge_mock1.wav", compute_phase=True, noise_pct=0.5)
-    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False, noise_pct=0.0)
+    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False, noise_pct=0.3, normalize_noise=True)
+
+
+# TODO should merge_dur end at the end of sound 2 also???? BUG

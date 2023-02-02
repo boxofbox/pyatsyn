@@ -11,6 +11,7 @@ Changelog
 * i/o updated to account for variable frame rates (adopting .atsv as file extension to distinguish it from .ats, since vfr is not externally supported yet)
 * synth support for variable frame rates
 * Various documentation updates
+* Cross-synthesis capability added with pyatsyn.analysis.merge
 
 
 [v1.0.0](https://github.com/boxofbox/pyatsyn/releases/tag/v1.0.0) Initial Release (2023-01-22)
