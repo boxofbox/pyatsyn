@@ -50,6 +50,8 @@ def merge(  ats_snd1,
             ats_snd2_dur = None,           
             match_mode = "stable",
             force_matches = None,
+            drop_unmatched = False,
+            drop_unmatched_during_merge = False,
             snd1_frq_av_range = None,
             snd2_frq_av_range = None,
             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
@@ -450,11 +452,12 @@ def merge(  ats_snd1,
                     
     
     # assign remaining partials to None
-    for p in p1_remaining:
-        matches.append((p, None))
-    for p in p2_remaining:
-        matches.append((None, p))
-    
+    if not drop_unmatched:
+        for p in p1_remaining:
+            matches.append((p, None))
+        for p in p2_remaining:
+            matches.append((None, p))
+        
     if return_match_list_only:
         return matches, None
 
@@ -655,13 +658,13 @@ def merge(  ats_snd1,
     if merge_start_ind > 0:
         stop = merge_start_ind
         if snd1_early_cutoff_ind is not None and snd1_early_cutoff_ind < stop:
-            stop = snd1_early_cutoff_ind        
+            stop = snd1_early_cutoff_ind + 1     
         for frame_n, frame_t in enumerate(ats_out.time[:stop]):
             
             snd1_ind = snd1_start_frame
             exact = False
             frame_t_in_snd1_time = frame_t + ats_snd1_start
-            while(True):
+            while(snd1_ind < ats_snd1.frames - 1):
                 if within_dev(ats_snd1.time[snd1_ind], frame_t_in_snd1_time, pad):
                     exact = True
                     break
@@ -678,7 +681,7 @@ def merge(  ats_snd1,
                     for pt, inds in snd1_partial_map.items():
                         ats_out.pha[inds[0]][frame_n] = ats_snd1.pha[pt][snd1_ind]                        
                 if has_noi:
-                    ats_out.band_energy[:, frame_n] = ats_snd1.band_energy[:, snd1_ind]
+                    ats_out.band_energy[:, frame_n] = copy(ats_snd1.band_energy[:, snd1_ind])
             else:
                 # otherwise we need to interpolate from snd1
                 prior_ind = snd1_ind - 1
@@ -705,12 +708,12 @@ def merge(  ats_snd1,
                            + ats_snd1.band_energy[:,prior_ind]
     
     # add merged middle
-    snd1_stop = snd1_end_frame
-    snd2_stop = snd2_end_merge_frame
+    snd1_stop = snd1_end_frame + 1
+    snd2_stop = snd2_end_merge_frame + 1
     if snd2_stop is None:
         snd2_stop = snd2_end_frame
 
-    stop = merge_end_ind
+    stop = merge_end_ind + 1
 
     frame_n = merge_start_ind
 
@@ -758,6 +761,8 @@ def merge(  ats_snd1,
             if (match[0] is not None and match[0] >= ats_snd1.partials) or (match[1] is not None and match[1] >= ats_snd2.partials):
                 continue
             if match[0] is None and match[1] is None:
+                continue
+            if drop_unmatched_during_merge and (match[0] is None or match[1] is None):
                 continue
 
             snd1_frq = 0.0
@@ -829,9 +834,51 @@ def merge(  ats_snd1,
 
     
     # add end
-   
+    stop = ats_out.frames
+    if snd2_early_cutoff_ind is not None and snd1_early_cutoff_ind < stop:
+        stop = snd2_early_cutoff_ind + 1
+    
+    frame_n = merge_end_ind + 1
+    print(stop, frame_n)
+    while (frame_n < stop):
+        print(frame_n, stop)
+        frame_t = ats_out.time[frame_n]
+        frame_t_in_snd2_time = frame_t + ats_snd2_start - merge_start
 
-     # handle 0's in prior and latter frames at transition points (remember to set freq to same +- 1 frame) 
+        snd2_ind = snd2_end_merge_frame
+        exact = False
+        while (snd2_ind < ats_snd2.frames - 1):
+            if within_dev(ats_snd2.time[snd2_ind], frame_t_in_snd2_time, pad):
+                exact = True
+                break
+            elif ats_snd2.time[snd2_ind] > frame_t_in_snd2_time:
+                break
+            snd2_ind += 1
+
+        if exact:
+            # just copy the exactly timed frame over
+            for pt, inds in snd2_partial_map.items():
+                ats_out.frq[inds[0]][frame_n] = ats_snd2.frq[pt][snd2_ind]
+                ats_out.amp[inds[0]][frame_n] = ats_snd2.amp[pt][snd2_ind]
+            if has_noi:
+                ats_out.band_energy[:, frame_n] = copy(ats_snd2.band_energy[:, snd2_ind])
+        
+        else:
+            # otherwise we need to interpolate from snd2
+            prior_ind = snd2_ind - 1
+            interp = (frame_t_in_snd2_time - ats_snd2.time[prior_ind]) / (ats_snd2.time[snd2_ind] - ats_snd2.time[prior_ind])
+            for pt, inds in snd2_partial_map.items():
+                ats_out.frq[inds[0]][frame_n] = ((ats_snd2.frq[pt][snd1_ind] - ats_snd2.frq[pt][prior_ind]) * interp) \
+                        + ats_snd2.frq[pt][prior_ind]
+                ats_out.amp[inds[0]][frame_n] = ((ats_snd2.amp[pt][snd1_ind] - ats_snd2.amp[pt][prior_ind]) * interp) \
+                        + ats_snd2.amp[pt][prior_ind]
+            if has_noi:
+                ats_out.band_energy[:, frame_n] = ((ats_snd2.band_energy[:, snd2_ind] - ats_snd2.band_energy[:, prior_ind]) * interp) \
+                        + ats_snd1.band_energy[:, prior_ind]
+        
+        frame_n += 1
+
+     # handle 0's in prior and latter frames at transition points (remember to set freq to same +- 1 frame) # TODO
      # final frame handling? beyond dur
 
     # phase correction TODO
@@ -1373,12 +1420,12 @@ if __name__ == "__main__":
     #             return_match_list_only = False,
     #             ))
 
-    # mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence1.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav")
-    # mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence2.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav")
+    mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sine440.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav")
+    mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sine440.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav")
 
     from pyatsyn.ats_io import ats_load, ats_save
-    # ats_save(mock1, "/Users/jgl/Desktop/temp/merge_mock1.ats")
-    # ats_save(mock2, "/Users/jgl/Desktop/temp/merge_mock2.ats")
+    ats_save(mock1, "/Users/jgl/Desktop/temp/merge_mock1.ats")
+    ats_save(mock2, "/Users/jgl/Desktop/temp/merge_mock2.ats")
 
     mock1 = ats_load("/Users/jgl/Desktop/temp/merge_mock1.ats")
     mock2 = ats_load("/Users/jgl/Desktop/temp/merge_mock2.ats")
@@ -1386,29 +1433,27 @@ if __name__ == "__main__":
 
     merge_out = merge(  mock1,
             mock2,
-            merge_start = 2.0,
-            merge_dur = 30.0,
-            ats_snd1_start = 0,
-            ats_snd2_start = 0.0,
+            merge_start = 1.0,
+            merge_dur = None,
+            ats_snd1_start = 0.13,
+            ats_snd2_start = 0.1,
             ats_snd2_dur = None,           
-            match_mode = "closest",
-            force_matches = None, 
+            match_mode = "stable",
+            force_matches = None,
+            drop_unmatched = False,
+            drop_unmatched_during_merge = False,
             snd1_frq_av_range = None,
             snd2_frq_av_range = None,
             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
             frequency_deviation = 0.1,
-            frequency_bias_curve = [(0,0), (0.5, 0),(1,1)],
-            amplitude_bias_curve = [(0,0), (0.5, 0), (0.8, 0), (1,1)],            
-            noise_bias_curve = [(0,0), (0.5, 0),(1,1)],
+            frequency_bias_curve = None, #[(0,0), (0.5, 0),(1,1)],
+            amplitude_bias_curve = None, # [(0,0), (0.5, 0), (0.8, 0), (1,1)],            
+            noise_bias_curve = None, #[(0,0), (0.5, 0),(1,1)],
             return_match_list_only = False,
             )
     #print(merge_out)
 
     from pyatsyn.synthesis.synth import synth
     
-    #synth(mock1, export_file = "/Users/jgl/Desktop/temp/merge_mock1.wav", compute_phase=False, noise_pct=0.5)
-    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False, noise_pct=0.8)
-
-
-
-    # TODO TODO add ways to drop unmatched (altogether, or just during merge)
+    synth(mock1, export_file = "/Users/jgl/Desktop/temp/merge_mock1.wav", compute_phase=True, noise_pct=0.5)
+    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False, noise_pct=0.0)
