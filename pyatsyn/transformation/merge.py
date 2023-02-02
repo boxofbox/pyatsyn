@@ -36,7 +36,8 @@ ATS_VALID_MERGE_MATCH_MODES = [ "plain",
                                 "twist",
                                 "twist_full",
                                 "random",
-                                "random_full"
+                                "random_full",
+                                "closest",
                                 ]
 
 
@@ -99,6 +100,7 @@ def merge(  ats_snd1,
         "twist" - same as spread, but the bins of one side of the match are flipped lowest <-> highest
         "random" - random pairing
         "random_full" - random pairing but every partial has a match because we will duplicate & fork as needed
+        "closest" - closest frequency, ignoring frequency deviation, allows dupes
 
     snd#_frq_av_range:
         NOTE: only averages non-zero frequency values, unless all are 0.0 in that range
@@ -281,17 +283,17 @@ def merge(  ats_snd1,
         if match_mode == "spread":
             if p1_len == p2_len:
                 matches += zip(p1_remaining, p2_remaining)
-                p1_remaining = {}
-                p2_remaining = {}
+                p1_remaining = set()
+                p2_remaining = set()
             elif p1_len > p2_len:
                 skip = set(random.sample(list(p1_remaining), p1_len - p2_len))
                 matches += zip(p1_remaining - skip, p2_remaining)
                 p1_remaining = skip
-                p2_remaining = {}
+                p2_remaining = set()
             else:         
                 skip = set(random.sample(list(p2_remaining), p2_len - p1_len))
                 matches += zip(p1_remaining, p2_remaining - skip)
-                p1_remaining = {}
+                p1_remaining = set()
                 p2_remaining = skip
             
         elif match_mode == "full":
@@ -303,28 +305,28 @@ def merge(  ats_snd1,
             else:                         
                 dupes = random.choices(list(p1_remaining), k = p2_len - p1_len)
                 matches += zip(sorted(list(p1_remaining) + dupes), p2_remaining)      
-            p1_remaining = {}
-            p2_remaining = {}
+            p1_remaining = set()
+            p2_remaining = set()
 
         elif match_mode == "lower":
             if p1_len == p2_len:
                 matches += zip(p1_remaining, p2_remaining)
-                p1_remaining = {}
-                p2_remaining = {}
+                p1_remaining = set()
+                p2_remaining = set()
             elif p1_len > p2_len:
                 matches += zip(list(p1_remaining)[:p2_len], p2_remaining)
                 p1_remaining = set(list(p1_remaining)[p2_len:])
-                p2_remaining = {}
+                p2_remaining = set()
             else:         
                 matches += zip(p1_remaining, list(p2_remaining)[:p1_len])
-                p1_remaining = {}
+                p1_remaining = set()
                 p2_remaining = set(list(p2_remaining)[p1_len:])
 
         elif match_mode == "middle":
             if p1_len == p2_len:
                 matches += zip(p1_remaining, p2_remaining)
-                p1_remaining = {}
-                p2_remaining = {}
+                p1_remaining = set()
+                p2_remaining = set()
             elif p1_len > p2_len:
                 mid = p1_len // 2
                 lo = mid - (p2_len // 2)
@@ -332,44 +334,44 @@ def merge(  ats_snd1,
                 p1_list = list(p1_remaining)
                 matches += zip(p1_list[lo:hi], p2_remaining)
                 p1_remaining = set(p1_list[:lo] + p1_list[hi:])
-                p2_remaining = {}
+                p2_remaining = set()
             else:                         
                 mid = p2_len // 2
                 lo = mid - (p1_len // 2)
                 hi = lo + p1_len
                 p2_list = list(p2_remaining)
                 matches += zip(p1_remaining, p2_list[lo:hi])
-                p1_remaining = {}
+                p1_remaining = set()
                 p2_remaining = set(p2_list[:lo] + p2_list[hi:])
 
         elif match_mode == "higher":
             if p1_len == p2_len:
                 matches += zip(p1_remaining, p2_remaining)
-                p1_remaining = {}
-                p2_remaining = {}
+                p1_remaining = set()
+                p2_remaining = set()
             elif p1_len > p2_len:
                 matches += zip(list(p1_remaining)[p1_len - p2_len:],p2_remaining)
                 p1_remaining = set(list(p1_remaining)[:p1_len - p2_len])
-                p2_remaining = {}
+                p2_remaining = set()
             else:         
                 matches += zip(p1_remaining, list(p2_remaining)[p2_len - p1_len:])
-                p1_remaining = {}
+                p1_remaining = set()
                 p2_remaining = set(list(p2_remaining)[:p2_len - p1_len])
 
         elif match_mode == "twist":
             if p1_len == p2_len:
                 matches += zip(p1_remaining, list(p2_remaining)[::-1])
-                p1_remaining = {}
-                p2_remaining = {}
+                p1_remaining = set()
+                p2_remaining = set()
             elif p1_len > p2_len:
                 skip = set(random.sample(list(p1_remaining), p1_len - p2_len))
                 matches += zip(p1_remaining - skip, list(p2_remaining)[::-1])
                 p1_remaining = skip
-                p2_remaining = {}
+                p2_remaining = set()
             else:         
                 skip = set(random.sample(list(p2_remaining), p2_len - p1_len))
                 matches += zip(p1_remaining, list(p2_remaining - skip)[::-1])
-                p1_remaining = {}
+                p1_remaining = set()
                 p2_remaining = skip
 
         elif match_mode == "twist_full":
@@ -381,38 +383,71 @@ def merge(  ats_snd1,
             else:                         
                 dupes = random.choices(list(p1_remaining), k = p2_len - p1_len)
                 matches += zip(sorted(list(p1_remaining) + dupes), list(p2_remaining)[::-1])
-            p1_remaining = {}
-            p2_remaining = {}
+            p1_remaining = set()
+            p2_remaining = set()
 
         elif match_mode == "random":
             if p1_len == p2_len:
                 matches += zip(p1_remaining, random.sample(list(p2_remaining),p2_len))
-                p1_remaining = {}
-                p2_remaining = {}
+                p1_remaining = set()
+                p2_remaining = set()
             elif p1_len > p2_len:
                 skip = set(random.sample(list(p1_remaining), p1_len - p2_len))
                 matches += zip(p1_remaining - skip, random.sample(list(p2_remaining), p2_len))
                 p1_remaining = skip
-                p2_remaining = {}
+                p2_remaining = set()
             else:         
                 skip = set(random.sample(list(p2_remaining), p2_len - p1_len))
                 matches += zip(p1_remaining, random.sample(list(p2_remaining - skip), p1_len))
-                p1_remaining = {}
+                p1_remaining = set()
                 p2_remaining = skip
 
         elif match_mode == "random_full":
             if p1_len == p2_len:
                 matches += zip(p1_remaining, random.sample(list(p2_remaining),p2_len))
-                p1_remaining = {}
-                p2_remaining = {}
+                p1_remaining = set()
+                p2_remaining = set()
             elif p1_len > p2_len:
                 dupes = random.choices(list(p2_remaining), k = p1_len - p2_len)
                 matches += zip(p1_remaining, random.sample(sorted(list(p2_remaining) + dupes), p1_len))
             else:                         
                 dupes = random.choices(list(p1_remaining), k = p2_len - p1_len)
                 matches += zip(random.sample(sorted(list(p1_remaining) + dupes), p2_len), p2_remaining)
-            p1_remaining = {}
-            p2_remaining = {}
+            p1_remaining = set()
+            p2_remaining = set()
+
+        elif match_mode == "closest":
+
+            # set frequencies to use for costs
+            check_valid, snd1_cost_frq = is_valid_cost_range(snd1_frq_av_range, ats_snd1, ats_snd1_start + merge_start)
+            if not check_valid:
+                raise Exception("snd1_frq_av_range is not properly specified")      
+            check_valid, snd2_cost_frq = is_valid_cost_range(snd2_frq_av_range, ats_snd2, ats_snd2_start, before_merge = False)
+            if not check_valid:
+                raise Exception("snd2_frq_av_range is not properly specified")
+
+            p1_costs = {p1:inf for p1 in p1_remaining}
+            p1_matches = {p1:-1 for p1 in p1_remaining}  
+            p2_costs = {p2:inf for p2 in p2_remaining}
+            p2_matches = {p2:-1 for p2 in p2_remaining}
+            for p1 in p1_remaining:
+                for p2 in p2_remaining:
+                    cost = abs(snd1_cost_frq[p1] - snd2_cost_frq[p2])
+                    if p1_costs[p1] > cost:
+                        p1_costs[p1] = cost
+                        p1_matches[p1] = p2
+                    if p2_costs[p2] > cost:
+                        p2_costs[p2] = cost
+                        p2_matches[p2] = p1
+            out_matches = set()
+            for p1, p2 in p1_matches.items():
+                out_matches.add((p1,p2))
+            for p2, p1 in p2_matches.items():
+                out_matches.add((p1,p2))
+            matches += list(out_matches)
+            p1_remaining = set()
+            p2_remaining = set()
+                    
     
     # assign remaining partials to None
     for p in p1_remaining:
@@ -615,17 +650,6 @@ def merge(  ats_snd1,
                     break
                 snd2_end_frame += 1
 
-    print("merge_start", merge_start, "merge_dur", merge_dur, "snd1_start", ats_snd1_start, "\n")
-
-    print("1st", snd1_start_frame, "\t", "1sm", snd1_start_merge_frame,  "\t", "1en", snd1_end_frame,  "\t", "1ec", snd1_early_cutoff_ind, "\t", "1dur", ats_snd1.dur, "1out", snd1_dur_in_out_time)
-    print(ats_snd1.time[snd1_start_frame], "\t", ats_snd1.time[snd1_start_merge_frame] if snd1_start_merge_frame is not None else None, "\t", ats_snd1.time[snd1_end_frame] )
-    print(snd1_early_cutoff_ind, "\t", merge_start_ind, "\t", merge_end_ind)
-    print(ats_out.time[snd1_early_cutoff_ind] if snd1_early_cutoff_ind is not None else None, "\t", ats_out.time[merge_start_ind], "\t", ats_out.time[merge_end_ind], "\n")
-    
-    print("2sm", snd2_start_merge_frame, "\t", "2em", snd2_end_merge_frame,  "\t", "2en", snd2_end_frame,  "\t","2ec",  snd2_early_cutoff_ind, "\t","2dur",  ats_snd2.dur, "2out", snd2_dur_in_out_time)
-    print(ats_snd2.time[snd2_start_merge_frame], "\t", ats_snd2.time[snd2_end_merge_frame] if snd2_end_merge_frame is not None else None, "\t", ats_snd2.time[snd2_end_frame] )
-    print(snd2_early_cutoff_ind, merge_start_ind, merge_end_ind)
-    print(ats_out.time[snd2_early_cutoff_ind] if snd2_early_cutoff_ind is not None else None, "\t", ats_out.time[merge_start_ind], "\t", ats_out.time[merge_end_ind])
 
     # add beginning
     if merge_start_ind > 0:
@@ -644,6 +668,7 @@ def merge(  ats_snd1,
                 elif ats_snd1.time[snd1_ind] > frame_t_in_snd1_time:
                     break
                 snd1_ind += 1
+            
             if exact:
                 # just copy the exactly timed frame over
                 for pt, inds in snd1_partial_map.items():
@@ -651,9 +676,9 @@ def merge(  ats_snd1,
                     ats_out.amp[inds[0]][frame_n] = ats_snd1.amp[pt][snd1_ind]
                 if has_pha:
                     for pt, inds in snd1_partial_map.items():
-                        ats_out.pha[inds[0]][frame_n] = ats_snd1.pha[pt][snd1_ind]
+                        ats_out.pha[inds[0]][frame_n] = ats_snd1.pha[pt][snd1_ind]                        
                 if has_noi:
-                    ats_out.band_energy[:, frame_n] = copy(ats_snd1.band_energy[:, snd1_ind])            
+                    ats_out.band_energy[:, frame_n] = ats_snd1.band_energy[:, snd1_ind]
             else:
                 # otherwise we need to interpolate from snd1
                 prior_ind = snd1_ind - 1
@@ -675,10 +700,10 @@ def merge(  ats_snd1,
                                                                             samps_from_0_to_t= t_delta * ATS_DEFAULT_SAMPLING_RATE,
                                                                             sampling_rate=ATS_DEFAULT_SAMPLING_RATE
                                                                             )
-                if has_noi:
+                if has_noi:                    
                     ats_out.band_energy[:,frame_n] = ((ats_snd1.band_energy[:,snd1_ind] - ats_snd1.band_energy[:,prior_ind]) * interp) \
-                            + ats_snd1.band_energy[:,prior_ind]
-
+                           + ats_snd1.band_energy[:,prior_ind]
+    
     # add merged middle
     snd1_stop = snd1_end_frame
     snd2_stop = snd2_end_merge_frame
@@ -732,9 +757,8 @@ def merge(  ats_snd1,
         for ind, match in enumerate(matches):
             if (match[0] is not None and match[0] >= ats_snd1.partials) or (match[1] is not None and match[1] >= ats_snd2.partials):
                 continue
-            if match[0] is None or match[1] is None:
+            if match[0] is None and match[1] is None:
                 continue
-
 
             snd1_frq = 0.0
             snd1_amp = 0.0
@@ -775,8 +799,7 @@ def merge(  ats_snd1,
                 f_bias = get_env_val_at_t(frequency_bias_curve[ind], frame_t_in_bias_time)
                 ats_out.frq[ind][frame_n] = ((1.0 - f_bias) * snd1_frq) + (f_bias * snd2_frq)
                 ats_out.amp[ind][frame_n] = ((1.0 - a_bias) * snd1_amp) + (a_bias * snd2_amp)
-
-        print(frame_n, a_bias)
+        
         if has_noi:
             if snd1_ind < snd1_stop:
                 if snd1_interp is None:
@@ -789,6 +812,18 @@ def merge(  ats_snd1,
                         ats_out.band_energy[band][frame_n] = (((ats_snd1.band_energy[band][snd1_ind] \
                                 - ats_snd1.band_energy[band][snd1_prior_ind]) * snd1_interp) \
                                     + ats_snd1.band_energy[band][snd1_prior_ind]) * n_bias
+
+            if snd2_ind < snd2_stop:
+                if snd2_interp is None:
+                    for band in ats_out.bands:
+                        n_bias = get_env_val_at_t(noise_bias_curve[band], frame_t_in_bias_time)
+                        ats_out.band_energy[band][frame_n] += ats_snd2.band_energy[band][snd2_ind] * n_bias
+                else:
+                    for band in ats_out.bands:
+                        n_bias = get_env_val_at_t(noise_bias_curve[band], frame_t_in_bias_time)
+                        ats_out.band_energy[band][frame_n] += (((ats_snd2.band_energy[band][snd2_ind] \
+                                - ats_snd2.band_energy[band][snd2_prior_ind]) * snd2_interp) \
+                                    + ats_snd2.band_energy[band][snd2_prior_ind]) * n_bias
 
         frame_n += 1
 
@@ -806,7 +841,7 @@ def merge(  ats_snd1,
 
     return matches, ats_out
 
-def get_env_val_at_t(env, t):
+def get_env_val_at_t(env, t):    
     """
     TODO
     """
@@ -1175,7 +1210,8 @@ def is_valid_bias_curve(check, end_time, partials, out_frame_time_offset):
                     collect[ind][0] = time_norm * (collect[ind][0] - min_time)             
                     # export to out_frames
                     out_frames.append(collect[ind][0] + out_frame_time_offset)
-                return True, out_frames, collect
+                out_env = [collect.copy() for p in range(partials) ]
+                return True, out_frames, out_env
 
         # otherwise we possibly have a list of per-match items
         for ck in collect:
@@ -1337,29 +1373,42 @@ if __name__ == "__main__":
     #             return_match_list_only = False,
     #             ))
 
-    mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence1.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav")
-    mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence2.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav")
+    # mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence1.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav")
+    # mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence2.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav")
+
+    from pyatsyn.ats_io import ats_load, ats_save
+    # ats_save(mock1, "/Users/jgl/Desktop/temp/merge_mock1.ats")
+    # ats_save(mock2, "/Users/jgl/Desktop/temp/merge_mock2.ats")
+
+    mock1 = ats_load("/Users/jgl/Desktop/temp/merge_mock1.ats")
+    mock2 = ats_load("/Users/jgl/Desktop/temp/merge_mock2.ats")
+
 
     merge_out = merge(  mock1,
             mock2,
-            merge_start = 1.0,
+            merge_start = 2.0,
             merge_dur = 30.0,
             ats_snd1_start = 0,
             ats_snd2_start = 0.0,
             ats_snd2_dur = None,           
-            match_mode = "random",
+            match_mode = "closest",
             force_matches = None, 
             snd1_frq_av_range = None,
             snd2_frq_av_range = None,
             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
             frequency_deviation = 0.1,
-            frequency_bias_curve = 0,
-            amplitude_bias_curve = 1,
-            noise_bias_curve = None,
+            frequency_bias_curve = [(0,0), (0.5, 0),(1,1)],
+            amplitude_bias_curve = [(0,0), (0.5, 0), (0.8, 0), (1,1)],            
+            noise_bias_curve = [(0,0), (0.5, 0),(1,1)],
             return_match_list_only = False,
             )
     #print(merge_out)
 
     from pyatsyn.synthesis.synth import synth
+    
+    #synth(mock1, export_file = "/Users/jgl/Desktop/temp/merge_mock1.wav", compute_phase=False, noise_pct=0.5)
+    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False, noise_pct=0.8)
 
-    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False)
+
+
+    # TODO TODO add ways to drop unmatched (altogether, or just during merge)

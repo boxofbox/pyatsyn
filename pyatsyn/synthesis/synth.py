@@ -75,6 +75,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
     sampling_rate = ATS_DEFAULT_SAMPLING_RATE
     if hasattr(ats_snd, "sampling_rate"):
         sampling_rate = ats_snd.sampling_rate
+    sampling_rate = int(sampling_rate)
     out_size = int(ats_snd.dur * sampling_rate)
     frames = ats_snd.frames
 
@@ -231,8 +232,11 @@ def synth(ats_snd, normalize=False, compute_phase=True,
 
         # envelope bands
         fil_ptr = 0
-        frame_size_range = frame_size
-        for frame_n in range(frames):
+        
+        for frame_n in range(frames - 1):
+
+            frame_size = round((ats_snd.time[frame_n + 1] - ats_snd.time[frame_n]) * sampling_rate)
+            frame_size_range = frame_size
 
             # constrain number of samples we write at tail end of sound
             if fil_ptr + frame_size_range > out_size:
