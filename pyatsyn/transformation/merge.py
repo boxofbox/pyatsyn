@@ -1519,8 +1519,8 @@ if __name__ == "__main__":
     #             return_match_list_only = False,
     #             ))
 
-    # mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/goat2s.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav", verbose=True)
-    # mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/trumpet3s.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav", verbose=True)
+    # mock2 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence1.wav", residual_file="/Users/jgl/Desktop/temp/merge_res1_temp.wav", verbose=True)
+    # mock1 = tracker("/Users/jgl/Code/pyatsyn/sample_sounds/sentence2.wav", residual_file="/Users/jgl/Desktop/temp/merge_res2_temp.wav", verbose=True)
 
     from pyatsyn.ats_io import ats_load, ats_save
     # ats_save(mock1, "/Users/jgl/Desktop/temp/merge_mock1.ats")
@@ -1533,7 +1533,7 @@ if __name__ == "__main__":
     merge_out = merge(  mock1,
             mock2,
             merge_start = 0.0,
-            merge_dur = 2.0,
+            merge_dur = None,
             ats_snd1_start = 0.0,
             ats_snd2_start = 0.0,
             ats_snd2_dur = None,           
@@ -1545,9 +1545,9 @@ if __name__ == "__main__":
             snd2_frq_av_range = None,
             time_deviation = None, # if None will us 1/ATS_DEFAULT_SAMPLING_RATE to account for floating point error, ignored by start/end of merge
             frequency_deviation = 0.2,
-            frequency_bias_curve = 0, #[(0,0), (0.5, 0),(1,1)],
-            amplitude_bias_curve = 1, # [(0,0), (0.5, 0), (0.8, 0), (1,1)],            
-            noise_bias_curve = 1, #[(0,0), (0.5, 0),(1,1)],
+            frequency_bias_curve = None, #[(0,0), (0.5, 0),(1,1)],
+            amplitude_bias_curve = None, # [(0,0), (0.5, 0), (0.8, 0), (1,1)],            
+            noise_bias_curve = None, #[(0,0), (0.5, 0),(1,1)],
             return_match_list_only = False,
             verbose = True,
             )
@@ -1556,7 +1556,7 @@ if __name__ == "__main__":
     from pyatsyn.synthesis.synth import synth
     
     synth(mock1, export_file = "/Users/jgl/Desktop/temp/merge_mock1.wav", compute_phase=True, noise_pct=0.5)
-    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False, noise_pct=0.3, normalize_noise=True)
+    synth(merge_out[1], export_file = "/Users/jgl/Desktop/temp/merge_out_test.wav", compute_phase=False, noise_pct=0.7, normalize_noise=True)
 
 
 # TODO should merge_dur end at the end of sound 2 also???? BUG

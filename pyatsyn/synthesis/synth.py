@@ -28,7 +28,7 @@ from pyatsyn.ats_utils import ATS_DEFAULT_SAMPLING_RATE
 
 def synth(ats_snd, normalize=False, compute_phase=True, 
             export_file=None, sine_pct = 1.0, noise_pct = 0.0, noise_bands = None, 
-            normalize_sine = False, normalize_noise = False):    
+            normalize_sine = False, normalize_noise = False, force_sampling_rate = None):    
     """Function to synthesize audio from :obj:`~pyatsyn.ats_structure.AtsSound` or :obj:`~pyatsyn.ats_structure.AtsSoundVFR`
 
     Sine generator bank and band-limited noise synthesizer for .ats files. When
@@ -66,6 +66,8 @@ def synth(ats_snd, normalize=False, compute_phase=True,
         normalize sine components to ±1 before mixing (default: False)
     normalize_noise : bool
         normalize noise componenets to ±1 before mixing (default: False)
+    force_sampling_rate : float
+        an overriding sampling rate (in samps/s) to use, or None to use `ats_snd` or `pyatsyn.ats_utils.ATS_DEFAULT_SAMPLING_RATE` if not otherwise defined (defaul: None)
 
     Returns
     -------
@@ -73,8 +75,11 @@ def synth(ats_snd, normalize=False, compute_phase=True,
         A 1D array of amplitudes representing the synthesized sound
     """
     sampling_rate = ATS_DEFAULT_SAMPLING_RATE
-    if hasattr(ats_snd, "sampling_rate"):
+    if force_sampling_rate is not None:
+        sampling_rate = force_sampling_rate
+    elif hasattr(ats_snd, "sampling_rate"):
         sampling_rate = ats_snd.sampling_rate
+    
     sampling_rate = int(sampling_rate)
     out_size = int(ats_snd.dur * sampling_rate)
     frames = ats_snd.frames
@@ -277,7 +282,7 @@ def synth(ats_snd, normalize=False, compute_phase=True,
 
 
 def synth_CLI():    
-    """Command line wrapper for :obj:`~pyatsyn.ats_synth.synth`
+    """Command line wrapper for :obj:`~pyatsyn.analysis.synth.synth`
 
     Example
     ------- 

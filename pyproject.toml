@@ -9,7 +9,7 @@ authors = [
 ]
 description = "python-based implementation of Analysis-Synthesis-Transformation (ATS) spectral music system"
 readme = "README.md"
-version = "1.0.0"
+version = "1.1.0b"
 keywords = ["spectral", "audio", "dsp", "synthesis", "music", "sound", "analysis", "ats"]
 license = {text = "BSD-3-Clause"}
 classifiers = [
@@ -31,7 +31,7 @@ exclude = ['docs*']
 
 [project.scripts]
 pyatsyn-atsa = "pyatsyn.atsa.tracker:tracker_CLI"
-pyatsyn-synth = "pyatsyn.ats_synth:synth_CLI"
+pyatsyn-synth = "pyatsyn.synthesis.synth:synth_CLI"
 pyatsyn-info = "pyatsyn.ats_io:ats_info_CLI"
 
 [project.optional-dependencies]
